@@ -28,6 +28,24 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* RESPONSIVIDAD NOVA MÓVIL */
+        @media (max-width: 500px) {
+            #triggerNova {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 24px;
+            }
+            .nova-window {
+                width: calc(100% - 40px);
+                height: 80vh;
+                right: 20px;
+                bottom: 100px;
+                border-radius: 25px;
+            }
+        }
+
         .nova-header {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: white;

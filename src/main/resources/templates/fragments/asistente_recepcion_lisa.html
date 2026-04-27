@@ -103,6 +103,30 @@
                 }
             }
 
+            /* RESPONSIVIDAD LISA MÓVIL */
+            @media (max-width: 500px) {
+                .lisa-avatar {
+                    width: 60px;
+                    height: 60px;
+                }
+                .lisa-avatar i {
+                    font-size: 1.8rem;
+                }
+                .lisa-bubble {
+                    font-size: 0.75rem;
+                    padding: 6px 12px;
+                }
+                .lisa-panel {
+                    width: calc(100% - 40px);
+                    right: 20px;
+                    bottom: 100px;
+                    max-height: 80vh;
+                }
+                .lisa-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
             .lisa-header {
                 padding: 20px;
                 background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);

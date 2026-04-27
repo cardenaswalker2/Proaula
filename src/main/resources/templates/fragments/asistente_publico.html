@@ -71,6 +71,33 @@
             animation: g-slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
+        /* RESPONSIVIDAD MÓVIL */
+        @media (max-width: 500px) {
+            .guido-trigger {
+                width: 65px;
+                height: 65px;
+                bottom: 20px;
+                left: 20px;
+                border-radius: 20px;
+            }
+            .guido-pulse {
+                border-radius: 20px;
+            }
+            .guido-panel {
+                width: calc(100% - 40px);
+                height: 80vh;
+                left: 20px;
+                bottom: 100px;
+                border-radius: 30px;
+            }
+            .g-header {
+                padding: 20px;
+            }
+            .g-header-title {
+                font-size: 1.1rem;
+            }
+        }
+
         @keyframes g-slideUp {
             from { opacity: 0; transform: translateY(50px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
