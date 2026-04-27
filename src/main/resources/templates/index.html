@@ -4,1280 +4,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Clínica App - Encuentra veterinarios de confianza en Cartagena. Agenda citas en línea, compara servicios y cuida la salud de tu mascota fácilmente.">
-    <title>Clínica App | Veterinarios en Cartagena - Agenda Citas Online</title>
-    <link th:replace="~{fragments/header :: favIcon}">
-    <div th:replace="~{fragments/asistente_publico :: guido-bot}"></div>
-
+    <meta name="description" content="Clínica App - El cuidado que tu mascota merece, a un clic de distancia en Cartagena.">
+    <title>Clínica App | Plataforma #1 en Cartagena</title>
+    
     <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-
-    <style>
-        :root {
-            --medical-blue: #0ea5e9;
-            --medical-dark: #0284c7;
-            --medical-light: #e0f2fe;
-            --healing-green: #10b981;
-            --healing-light: #d1fae5;
-            --care-purple: #8b5cf6;
-            --warm-white: #fafaf9;
-            --soft-gray: #f5f5f4;
-            --text-primary: #1c1917;
-            --text-secondary: #78716c;
-            --shadow-soft: 0 4px 20px rgba(14, 165, 233, 0.08);
-            --shadow-medium: 0 8px 30px rgba(14, 165, 233, 0.12);
-            --shadow-strong: 0 20px 50px rgba(14, 165, 233, 0.15);
-            --radius-xl: 24px;
-            --radius-lg: 16px;
-        }
-
-        * {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: var(--warm-white);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
-
-
-        /* Hero Section - Estilo Clínica Premium */
-        .hero-section {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);
-            min-height: 90vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60%;
-            height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="%230ea5e9" fill-opacity="0.03" d="M45,-58C58.3,-47.3,69.1,-33.8,73.4,-18.3C77.7,-2.8,75.5,14.7,67.6,29.3C59.7,43.9,46.1,55.6,30.9,62.9C15.7,70.2,-1.1,73.1,-16.8,69.3C-32.5,65.5,-47.1,55,-57.6,40.7C-68.1,26.4,-74.5,8.3,-72.6,-8.4C-70.7,-25.1,-60.5,-40.4,-47.2,-51.1C-33.9,-61.8,-17.5,-67.9,-1.2,-66.4C15.1,-64.9,31.7,-68.7,45,-58Z" transform="translate(100 100)"/></svg>') no-repeat center;
-            background-size: cover;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, -20px) rotate(5deg); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, var(--healing-green), #059669);
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-content h1 span {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        /* Search Box Premium */
-        .search-container {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-strong);
-            border: 1px solid rgba(14, 165, 233, 0.1);
-            max-width: 700px;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .search-input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--medical-blue);
-            font-size: 1.25rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 1rem 1.25rem 1rem 3.5rem;
-            border: 2px solid #e7e5e4;
-            border-radius: var(--radius-lg);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--medical-blue);
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
-        }
-
-        .btn-search {
-            background: linear-gradient(135deg, var(--medical-blue), var(--medical-dark));
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: var(--radius-lg);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn-search:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
-        }
-
-        .hero-features {
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .hero-feature {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .hero-feature i {
-            color: var(--healing-green);
-            font-size: 1.25rem;
-        }
-
-        /* Hero Image/Illustration */
-        .hero-visual {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hero-image-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .hero-image {
-            width: 100%;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-strong);
-            position: relative;
-            z-index: 2;
-        }
-
-        .floating-card {
-            position: absolute;
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1rem 1.5rem;
-            box-shadow: var(--shadow-medium);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            z-index: 3;
-            animation: floatCard 6s ease-in-out infinite;
-        }
-
-        .floating-card.card-1 {
-            top: 10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .floating-card.card-2 {
-            bottom: 20%;
-            right: -10%;
-            animation-delay: 3s;
-        }
-
-        @keyframes floatCard {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .floating-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .floating-icon.blue {
-            background: var(--medical-light);
-            color: var(--medical-blue);
-        }
-
-        .floating-icon.green {
-            background: var(--healing-light);
-            color: var(--healing-green);
-        }
-
-        /* Partners Section */
-        .partners-section {
-            background: white;
-            padding: 3rem 0;
-            border-bottom: 1px solid #e7e5e4;
-        }
-
-        .partners-title {
-            text-align: center;
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
-        }
-
-        .partner-logo {
-            max-height: 60px;
-            width: auto;
-            filter: grayscale(100%) opacity(0.5);
-            transition: all 0.3s ease;
-            object-fit: contain;
-        }
-
-        .partner-logo:hover {
-            filter: grayscale(0%) opacity(1);
-            transform: scale(1.05);
-        }
-
-        /* Section Headers */
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--medical-light);
-            color: var(--medical-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .section-subtitle {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Service Cards - Estilo Médico */
-        .services-section {
-            padding: 6rem 0;
-            background: var(--soft-gray);
-        }
-
-        .service-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 2.5rem;
-            height: 100%;
-            transition: all 0.4s ease;
-            border: 1px solid #e7e5e4;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--medical-blue), var(--healing-green));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-strong);
-            border-color: transparent;
-        }
-
-        .service-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .service-icon::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            opacity: 0.1;
-        }
-
-        .service-icon i {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .service-card h5 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .service-card p {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        /* Clinics Section */
-        .clinics-section {
-            padding: 6rem 0;
-            background: white;
-        }
-
-        .clinic-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s ease;
-            border: 1px solid #e7e5e4;
-            height: 100%;
-        }
-
-        .clinic-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-strong);
-        }
-
-        .clinic-image-wrapper {
-            position: relative;
-            overflow: hidden;
-            height: 220px;
-        }
-
-        .clinic-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .clinic-card:hover .clinic-image {
-            transform: scale(1.05);
-        }
-
-        .clinic-badge {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            background: white;
-            color: var(--medical-blue);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .clinic-badge i {
-            color: #fbbf24;
-        }
-
-        .clinic-body {
-            padding: 1.5rem;
-        }
-
-        .clinic-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .clinic-location {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .clinic-location i {
-            color: var(--medical-blue);
-        }
-
-        .clinic-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .clinic-footer {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn-clinic-primary {
-            flex: 1;
-            background: linear-gradient(135deg, var(--medical-blue), var(--medical-dark));
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-clinic-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
-            color: white;
-        }
-
-        .btn-clinic-secondary {
-            width: 48px;
-            height: 48px;
-            border: 2px solid #e7e5e4;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .btn-clinic-secondary:hover {
-            border-color: #fecaca;
-            color: #ef4444;
-            background: #fef2f2;
-        }
-
-        /* Stats Section - Estilo Médico */
-        .stats-section {
-            background: linear-gradient(135deg, var(--medical-blue) 0%, var(--care-purple) 100%);
-            padding: 5rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></svg>');
-            background-size: 50px 50px;
-            opacity: 0.5;
-        }
-
-        .stat-item {
-            text-align: center;
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-number {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-label {
-            font-size: 1.125rem;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        /* For Clinics Section */
-        .for-clinics-section {
-            padding: 6rem 0;
-            background: linear-gradient(135deg, #f0f9ff 0%, #fafaf9 100%);
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 2rem 0;
-        }
-
-        .feature-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-        }
-
-        .feature-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--healing-light);
-            color: var(--healing-green);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-            margin-top: 0.125rem;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
-        }
-
-        .btn-primary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
-            color: white;
-        }
-
-        /* FAQ Section */
-        .faq-section {
-            padding: 6rem 0;
-            background: var(--soft-gray);
-        }
-
-        .accordion-item {
-            background: white;
-            border: none;
-            border-radius: var(--radius-lg) !important;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .accordion-button {
-            padding: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            background: white;
-            border: none;
-        }
-
-        .accordion-button:not(.collapsed) {
-            background: var(--medical-light);
-            color: var(--medical-dark);
-            box-shadow: none;
-        }
-
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        .accordion-body {
-            padding: 0 1.5rem 1.5rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-
-        /* Virtual Office Section */
-        .virtual-office-section {
-            padding: 6rem 0;
-            background: white;
-        }
-
-        .virtual-office-card {
-            background: linear-gradient(135deg, var(--medical-light) 0%, white 100%);
-            border-radius: var(--radius-xl);
-            padding: 3rem;
-            border: 1px solid rgba(14, 165, 233, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .virtual-office-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
-        }
-
-        /* WhatsApp FAB */
-        .whatsapp-fab {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
-            z-index: 1050;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: 3px solid white;
-            animation: pulse-whatsapp 2s infinite;
-        }
-
-        @keyframes pulse-whatsapp {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
-            70% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-
-        .whatsapp-fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            color: white;
-        }
-
-        /* Animations */
-        .section-fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .section-fade-in.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 991.98px) {
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-visual {
-                margin-top: 3rem;
-            }
-
-            .floating-card {
-                display: none;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            .btn-search {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .stat-number {
-                font-size: 2.5rem;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-
-            .section-title {
-                font-size: 1.75rem;
-            }
-
-            .hero-features {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+    <!-- Premium Styles -->
+    <link rel="stylesheet" th:href="@{/css/index_premium.css}">
+    
+    <div th:replace="~{fragments/asistente_publico :: guido-bot}"></div>
 </head>
 
 <body>
 
-    <!-- Header Fragment -->
-    <div th:replace="~{fragments/header :: header-publico}"></div>
-
-    <!-- Botón Flotante WhatsApp -->
-    <a href="https://wa.me/573005722844?text=Hola%2C%20necesito%20ayuda%20con%20la%20plataforma%20ClínicaApp."
-        class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-        <i class="bi bi-whatsapp"></i>
-    </a>
-
-    <!-- Hero Section -->
-    <header class="hero-section">
+    <!-- 1. Header & Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-premium fixed-top">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-content">
-                    <div class="hero-badge">
-                        <i class="bi bi-shield-check"></i>
-                        Plataforma #1 en Cartagena
-                    </div>
-                    <h1>
-                        El cuidado que tu mascota merece, <span>a un clic de distancia</span>
-                    </h1>
-                    <p class="hero-subtitle">
-                        Encuentra veterinarios de confianza en Cartagena, compara servicios y agenda citas en línea de forma rápida, segura y desde la comodidad de tu hogar.
-                    </p>
+            <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                <div class="brand-icon-box" style="width: 40px; height: 40px; background: #4f46e5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <span class="brand-text">ClínicaApp</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link nav-link-premium" th:href="@{/}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-premium" th:href="@{/buscar-clinicas}">Buscar Clínicas</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-premium" href="#servicios">Servicios</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-premium" href="#para-clinicas">Para Clínicas</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-premium" th:href="@{/oficina-virtual}">Oficina Virtual</a></li>
+                </ul>
+                <div class="navbar-nav ms-auto gap-3">
+                    <a class="nav-link nav-link-premium fw-bold" th:href="@{/login}">Login</a>
+                    <a class="premium-btn-primary text-decoration-none" th:href="@{/registro}">Registrarse</a>
+                    <a class="btn btn-dark rounded-pill px-4" th:href="@{/oficina-virtual}">
+                        <i class="bi bi-person-workspace me-2"></i>Mi Oficina
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-                    <div class="search-container">
-                        <form th:action="@{/buscar-clinicas}" method="get" class="search-box">
-                            <div class="search-input-wrapper">
-                                <i class="bi bi-search search-icon"></i>
-                                <input type="search" name="query" class="search-input" 
-                                       placeholder="Busca por clínica, servicio o barrio..." required>
+    <!-- 2. Hero Section -->
+    <section class="hero-premium">
+        <div class="container">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <span class="section-label">🏆 Plataforma #1 en Cartagena</span>
+                        <h1 class="hero-title">El cuidado que tu mascota merece, a un clic de distancia</h1>
+                        <p class="hero-subtitle">Encuentra veterinarios de confianza en Cartagena, compara servicios y agenda citas en línea de forma rápida, segura y desde la comodidad de tu hogar.</p>
+                        
+                        <div class="search-bar-premium mb-4">
+                            <i class="bi bi-search ms-3 text-primary"></i>
+                            <input type="text" placeholder="Busca por clínica, servicio o barrio...">
+                            <button class="premium-btn-primary px-4">Buscar</button>
+                        </div>
+                        
+                        <div class="d-flex gap-4 flex-wrap">
+                            <div class="d-flex align-items-center gap-2 small fw-bold text-slate-500">
+                                <i class="bi bi-check-circle-fill text-success"></i> Cancelación gratis
                             </div>
-                            <button type="submit" class="btn-search">
-                                <i class="bi bi-search"></i>
-                                Buscar
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="hero-features">
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Cancelación gratis</span>
-                        </div>
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Pago seguro</span>
-                        </div>
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Veterinarios verificados</span>
+                            <div class="d-flex align-items-center gap-2 small fw-bold text-slate-500">
+                                <i class="bi bi-check-circle-fill text-success"></i> Pago seguro
+                            </div>
+                            <div class="d-flex align-items-center gap-2 small fw-bold text-slate-500">
+                                <i class="bi bi-check-circle-fill text-success"></i> Veterinarios verificados
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 hero-visual">
-                    <div class="hero-image-container">
-                        <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?q=80&w=1000&auto=format&fit=crop" 
-                             alt="Veterinario cuidando mascota" class="hero-image">
+                <div class="col-lg-6 mt-5 mt-lg-0">
+                    <div class="hero-visual-wrapper">
+                        <img th:src="@{/img/hero_premium.png}" alt="Veterinaria" class="hero-img-main">
                         
-                        <div class="floating-card card-1">
-                            <div class="floating-icon blue">
-                                <i class="bi bi-calendar-check"></i>
+                        <!-- Floating Cards -->
+                        <div class="floating-stats-card top">
+                            <div class="icon bg-primary-light p-2 rounded-circle">
+                                <i class="bi bi-calendar-check text-primary"></i>
                             </div>
                             <div>
                                 <div class="fw-bold">+2,500</div>
-                                <small class="text-muted">Citas este mes</small>
+                                <div class="small text-muted">Citas este mes</div>
                             </div>
                         </div>
-
-                        <div class="floating-card card-2">
-                            <div class="floating-icon green">
-                                <i class="bi bi-heart-pulse"></i>
+                        
+                        <div class="floating-stats-card bottom">
+                            <div class="icon bg-success-light p-2 rounded-circle">
+                                <i class="bi bi-heart-fill text-danger"></i>
                             </div>
                             <div>
                                 <div class="fw-bold">98%</div>
-                                <small class="text-muted">Clientes felices</small>
+                                <div class="small text-muted">Clientes felices</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <!-- Partners Section -->
-    <section class="partners-section">
-        <div class="container">
-            <p class="partners-title">Con la confianza de las mejores marcas</p>
+    <!-- 3. Trust Bar -->
+    <section class="trust-bar">
+        <div class="container text-center">
+            <p class="small fw-bold text-muted text-uppercase letter-spacing-1 mb-4">Con la confianza de las mejores marcas</p>
             <div class="row align-items-center justify-content-center g-4">
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://static-shop.vivapets.com/media/catalog/product/cache/11fc96e7318a291175a0004e054be56e/p/a/packshot_5.jpg"
-                        alt="Royal Canin" class="partner-logo img-fluid" loading="lazy">
-                </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://purina.com.ec/sites/default/files/2024-08/Dog%20Chow%20Selecci%C3%B3n%20de%20Prote%C3%ADnas%20Cordero.png"
-                        alt="Purina" class="partner-logo img-fluid" loading="lazy">
-                </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://petcol.co/cdn/shop/products/hills_adulto_small_paws_pollo_666x.png?v=1578604260"
-                        alt="Hill's" class="partner-logo img-fluid" loading="lazy">
-                </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://schmidtherman.cl/wp-content/uploads/2024/06/WhatsApp-Image-2024-07-09-at-9.31.36-AM.jpeg"
-                        alt="NexGard" class="partner-logo img-fluid" loading="lazy">
+                <div class="col-12">
+                    <img th:src="@{/img/brand_logos.png}" alt="Marcas Aliadas" class="brand-logos-img">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Servicios Section -->
-    <section class="services-section section-fade-in">
+    <!-- 4. Services Section -->
+    <section id="servicios" class="services-premium">
         <div class="container">
-            <div class="section-header">
-                <div class="section-label">
-                    <i class="bi bi-grid-3x3-gap"></i>
-                    Nuestros Servicios
-                </div>
-                <h2 class="section-title">Cuidado integral para tu mascota</h2>
-                <p class="section-subtitle">Todo lo que necesitas para mantener a tu mejor amigo saludable y feliz en un solo lugar.</p>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="bi bi-clipboard2-pulse-fill"></i>
-                        </div>
-                        <h5>Consultas y Chequeos</h5>
-                        <p>Agendamiento rápido para revisiones generales, diagnósticos especializados y segundas opiniones con los mejores veterinarios de Cartagena.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="bi bi-shield-plus"></i>
-                        </div>
-                        <h5>Vacunación y Prevención</h5>
-                        <p>Mantén al día el esquema de vacunación y desparasitación con recordatorios automáticos y alertas personalizadas para tu mascota.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <i class="bi bi-scissors"></i>
-                        </div>
-                        <h5>Peluquería y Bienestar</h5>
-                        <p>Servicios de grooming profesional, baños medicados y spa para consentir a tu mejor amigo como se merece.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Clínicas Destacadas -->
-    <section class="clinics-section section-fade-in">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-label">
-                    <i class="bi bi-star-fill"></i>
-                    Destacados
-                </div>
-                <h2 class="section-title">Clínicas Populares en Cartagena</h2>
-                <p class="section-subtitle">Explora algunas de las clínicas mejor valoradas por nuestra comunidad de dueños responsables.</p>
-            </div>
-
-            <div class="row g-4" th:if="${!clinicasDestacadas.isEmpty()}">
-                <div class="col-lg-4 col-md-6" th:each="clinica : ${clinicasDestacadas}">
-                    <article class="clinic-card">
-                        <div class="clinic-image-wrapper">
-                            <img th:src="${clinica.imagenUrl != null and !#strings.isEmpty(clinica.imagenUrl)} 
-                                        ? ${clinica.imagenUrl} 
-                                        : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop'"
-                                class="clinic-image" alt="Imagen de la clínica" loading="lazy">
-                            <div class="clinic-badge">
-                                <i class="bi bi-star-fill"></i>
-                                4.8
-                            </div>
-                        </div>
-                        <div class="clinic-body">
-                            <h5 class="clinic-name" th:text="${clinica.nombre}">Nombre Clínica</h5>
-                            <div class="clinic-location">
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span th:text="${#strings.abbreviate(clinica.direccion, 40)}">Dirección</span>
-                            </div>
-                            <p class="clinic-description" th:text="${#strings.abbreviate(clinica.descripcion, 100)}">Descripción...</p>
-                            <div class="clinic-footer">
-                                <a th:href="@{/detalle-clinica/{id}(id=${clinica.id})}" class="btn-clinic-primary">
-                                    Ver Servicios
-                                </a>
-                                <button class="btn-clinic-secondary" aria-label="Guardar en favoritos">
-                                    <i class="bi bi-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <div class="text-center mt-5">
-                <a th:href="@{/buscar-clinicas}" class="btn-primary-custom">
-                    Ver Todas las Clínicas
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Estadísticas -->
-    <section class="stats-section section-fade-in">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-heart-pulse"></i>
-                        </div>
-                        <div class="stat-number" data-count="12560">0</div>
-                        <div class="stat-label">Mascotas Atendidas</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <div class="stat-number" data-count="8734">0</div>
-                        <div class="stat-label">Familias Felices</div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-hospital"></i>
-                        </div>
-                        <div class="stat-number" data-count="50">0</div>
-                        <div class="stat-label">Clínicas Asociadas</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Para Clínicas -->
-    <section class="for-clinics-section section-fade-in">
-        <div class="container">
-            <div class="row align-items-center g-5">
+            <div class="row mb-5">
                 <div class="col-lg-6">
-                    <div class="section-label" style="display: inline-flex;">
-                        <i class="bi bi-briefcase"></i>
-                        Para Profesionales
+                    <span class="section-label">Nuestros Servicios</span>
+                    <h2 class="fw-800 display-5 mb-3">Cuidado integral para tu mascota</h2>
+                    <p class="text-slate-500 lead">Todo lo que necesitas para mantener a tu mejor amigo saludable y feliz.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card-premium">
+                        <div class="service-icon-box"><i class="bi bi-stethoscope"></i></div>
+                        <h4>Consultas y Chequeos</h4>
+                        <p class="text-slate-500">Revisiones generales, diagnósticos especializados y segundas opiniones con los mejores veterinarios.</p>
+                        <a href="#" class="text-decoration-none fw-bold text-primary mt-3 d-inline-block">Saber más <i class="bi bi-arrow-right"></i></a>
                     </div>
-                    <h2 class="section-title text-start">¿Eres una Clínica Veterinaria?</h2>
-                    <p class="lead text-secondary mb-4">
-                        Únete a nuestra red y digitaliza tus servicios. Llega a miles de dueños de mascotas en Cartagena, optimiza tu agenda y gestiona tus pacientes de forma eficiente.
-                    </p>
-                    <ul class="feature-list">
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card-premium">
+                        <div class="service-icon-box"><i class="bi bi-shield-plus"></i></div>
+                        <h4>Vacunación y Prevención</h4>
+                        <p class="text-slate-500">Mantén al día el esquema de vacunación y desparasitación con recordatorios automáticos.</p>
+                        <a href="#" class="text-decoration-none fw-bold text-primary mt-3 d-inline-block">Saber más <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card-premium">
+                        <div class="service-icon-box"><i class="bi bi-scissors"></i></div>
+                        <h4>Peluquería y Bienestar</h4>
+                        <p class="text-slate-500">Servicios de grooming profesional, baños medicados y spa para consentir a tu mejor amigo.</p>
+                        <a href="#" class="text-decoration-none fw-bold text-primary mt-3 d-inline-block">Saber más <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Popular Clinics Section -->
+    <section class="clinics-premium">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-5">
+                <div>
+                    <span class="section-label">Clínicas Destacadas</span>
+                    <h2 class="fw-800 display-5">Clínicas populares en Cartagena</h2>
+                </div>
+                <a th:href="@{/buscar-clinicas}" class="premium-btn-secondary text-decoration-none">Ver todas las clínicas</a>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Thymeleaf Loop for Clinics -->
+                <div th:each="clinica, iter : ${clinicas}" th:if="${iter.index < 3}" class="col-lg-4 col-md-6">
+                    <div class="clinic-card-premium">
+                        <div class="clinic-img-wrapper position-relative">
+                            <img th:src="${clinica.imagenUrl != null ? clinica.imagenUrl : '/img/clinica-placeholder.jpg'}" th:alt="${clinica.nombre}">
+                            <div class="position-absolute top-0 start-0 m-3 badge bg-white text-dark shadow-sm rounded-pill px-3 py-2">
+                                <i class="bi bi-star-fill text-warning me-1"></i> <span th:text="${clinica.rating != null ? clinica.rating : '4.8'}">4.8</span>
                             </div>
-                            <span>Reduce citas no asistidas con pagos anticipados integrados</span>
+                        </div>
+                        <div class="clinic-info">
+                            <h5 class="fw-bold mb-1" th:text="${clinica.nombre}">Nombre de la Clínica</h5>
+                            <p class="text-slate-500 small mb-3">
+                                <i class="bi bi-geo-alt-fill text-primary"></i> <span th:text="${clinica.barrio + ', Cartagena'}">Barrio, Cartagena</span>
+                            </p>
+                            <p class="text-slate-500 small mb-4 line-clamp-2" th:text="${clinica.descripcion}">Descripción de la clínica...</p>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/clinica/{id}(id=${clinica.id})}" class="premium-btn-primary flex-grow-1 text-center py-2">Ver servicios</a>
+                                <button class="btn btn-outline-danger border-2 rounded-3"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Stats Section -->
+    <section class="stats-banner">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-val" data-count="12560">12,560+</div>
+                    <div class="stat-desc">Mascotas atendidas</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-val" data-count="8734">8,734+</div>
+                    <div class="stat-desc">Familias felices</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-val" data-count="50">50+</div>
+                    <div class="stat-desc">Clínicas asociadas</div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-val" data-count="98">98%</div>
+                    <div class="stat-desc">Satisfacción promedio</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. B2B Section (Para Clínicas) -->
+    <section id="para-clinicas" class="b2b-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-5">
+                    <span class="section-label">Para Clínicas Veterinarias</span>
+                    <h2 class="fw-800 display-5 mb-4">Digitaliza tu clínica y crece con nosotros</h2>
+                    <p class="text-slate-500 mb-4">Únete a nuestra red y llega a miles de dueños de mascotas en Cartagena.</p>
+                    
+                    <ul class="list-unstyled mb-5">
+                        <li class="mb-3 d-flex gap-3 align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i> 
+                            <span class="fw-bold">Reduce citas no asistidas con pagos anticipados</span>
                         </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
-                            </div>
-                            <span>Panel de administración intuitivo y completo con analytics</span>
+                        <li class="mb-3 d-flex gap-3 align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i> 
+                            <span class="fw-bold">Panel de administración intuitivo y completo</span>
                         </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
-                            </div>
-                            <span>Soporte técnico 24/7 especializado para tu clínica</span>
+                        <li class="mb-3 d-flex gap-3 align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i> 
+                            <span class="fw-bold">Soporte técnico 24/7 especializado</span>
                         </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
-                            </div>
-                            <span>Integración con sistemas de historial médico digital</span>
+                        <li class="mb-3 d-flex gap-3 align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i> 
+                            <span class="fw-bold">Integración con historiales médicos digitales</span>
                         </li>
                     </ul>
-                    <a th:href="@{/clinica/registrar-clinica}" class="btn-primary-custom">
-                        Registra tu Clínica
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
+                    
+                    <a th:href="@{/registro-clinica}" class="premium-btn-primary text-decoration-none">Registra tu clínica ahora</a>
                 </div>
-                <div class="col-lg-6">
-                    <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=2070&auto=format&fit=crop"
-                            class="img-fluid rounded-4 shadow-lg" alt="Equipo de veterinarios trabajando" loading="lazy">
-                        <div class="position-absolute bottom-0 start-0 m-4 bg-white p-4 rounded-4 shadow-lg d-none d-md-block">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                                    <i class="bi bi-graph-up-arrow text-success fs-3"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-0 fw-bold fs-4">+150%</p>
-                                    <p class="mb-0 small text-secondary">Incremento promedio en citas</p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="col-lg-7 mt-5 mt-lg-0">
+                    <div class="dashboard-visual p-4 bg-white rounded-4 shadow-xl">
+                        <img th:src="@{/img/dashboard_preview.png}" alt="Dashboard Preview" class="dashboard-preview-img">
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section section-fade-in">
+    <!-- 8. FAQ & Virtual Office -->
+    <section class="help-section">
         <div class="container">
-            <div class="section-header">
-                <div class="section-label">
-                    <i class="bi bi-question-circle"></i>
-                    Preguntas Frecuentes
-                </div>
-                <h2 class="section-title">Resolvemos tus dudas</h2>
-            </div>
-
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
+            <div class="row g-5">
+                <div class="col-lg-7">
+                    <h2 class="fw-800 mb-5">Preguntas frecuentes</h2>
+                    <div class="accordion accordion-flush" id="faqAccordion">
+                        <div class="accordion-item border-bottom py-3">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                                    <i class="bi bi-credit-card me-3 text-primary"></i>
+                                <button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
                                     ¿Cómo funciona el pago de las citas?
                                 </button>
                             </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Al solicitar tu cita, serás redirigido a nuestra pasarela de pago segura (procesada por Stripe). Puedes pagar con tarjeta de crédito, débito y otros métodos. La cita solo se enviará a la clínica para su confirmación una vez que el pago haya sido procesado exitosamente.
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-slate-500">
+                                    Puedes realizar el pago de forma segura a través de nuestra plataforma utilizando tarjeta de crédito, débito o transferencia bancaria. El pago se procesa al momento de confirmar la cita.
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item">
+                        <div class="accordion-item border-bottom py-3">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                                    <i class="bi bi-calendar-x me-3 text-primary"></i>
+                                <button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
                                     ¿Qué pasa si necesito cancelar mi cita?
                                 </button>
                             </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Puedes cancelar tu cita desde tu panel de usuario. Las políticas de reembolso dependen de cada clínica y del tiempo de antelación con el que realices la cancelación. Generalmente, cancelaciones con más de 24 horas de anticipación tienen reembolso completo.
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-slate-500">
+                                    Ofrecemos cancelación gratuita hasta 24 horas antes de la cita. El reembolso se procesará automáticamente a tu medio de pago original.
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-item">
+                        <div class="accordion-item border-bottom py-3">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                                    <i class="bi bi-coin me-3 text-primary"></i>
+                                <button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
                                     ¿Registrarse tiene algún costo?
                                 </button>
                             </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    <strong>No.</strong> Crear tu cuenta en ClínicaApp es y siempre será <em>totalmente gratis</em>. Solo pagas por los servicios veterinarios que agendas a través de la plataforma. No hay cuotas mensuales ni cargos ocultos para los dueños de mascotas.
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-slate-500">
+                                    El registro para dueños de mascotas es totalmente gratuito. Solo pagas por los servicios veterinarios que contrates.
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Oficina Virtual -->
-    <section class="virtual-office-section section-fade-in">
-        <div class="container">
-            <div class="virtual-office-card">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 position-relative z-1">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-2">
-                                <i class="bi bi-headset text-primary fs-2"></i>
-                            </div>
-                            <div>
-                                <h2 class="fw-bold mb-0">Visita nuestra Oficina Virtual</h2>
-                                <p class="text-secondary mb-0">Soporte personalizado 24/7</p>
-                            </div>
+                <div class="col-lg-5">
+                    <div class="virtual-office-cta">
+                        <div class="text-center text-lg-start">
+                            <span class="section-label">Oficina Virtual</span>
+                            <h3 class="fw-800 mb-4">¿Necesitas ayuda? Estamos para ti 24/7</h3>
+                            <p class="text-slate-500 mb-5">Accede a tu panel, gestiona tus citas y obtén soporte personalizado de forma inmediata.</p>
+                            <a th:href="@{/oficina-virtual}" class="premium-btn-primary text-decoration-none">Ir a la Oficina Virtual</a>
                         </div>
-                        <p class="lead text-secondary mb-0">
-                            ¿Tienes preguntas sobre tu rol en la plataforma o necesitas soporte rápido? Nuestra Oficina Virtual está diseñada para ayudarte con accesos directos a tu panel de control y ayuda contextualizada.
-                        </p>
-                    </div>
-                    <div class="col-lg-4 text-lg-end text-center mt-4 mt-lg-0 position-relative z-1">
-                        <a th:href="@{/oficina-virtual}" class="btn-primary-custom">
-                            <i class="bi bi-box-arrow-in-right"></i>
-                            Ir a la Oficina Virtual
-                        </a>
+                        <div class="mt-4 mt-lg-0">
+                            <img th:src="@{/img/support_agent.png}" alt="Soporte" class="support-agent-img">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Fragment -->
-    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- 9. Footer -->
+    <footer class="footer-dark">
+        <div class="container">
+            <div class="row g-5 mb-5">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="brand-icon-box" style="width: 32px; height: 32px; background: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="brand-text text-white fs-4 fw-800">ClínicaApp</span>
+                    </div>
+                    <p class="text-slate-500 small mb-4">La plataforma que conecta el amor por las mascotas con el mejor cuidado veterinario en Cartagena. Tu confianza es nuestra mayor prioridad.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <h6 class="fw-bold mb-4">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="#" class="footer-link-premium small">Buscar Clínicas</a></li>
+                        <li><a href="#" class="footer-link-premium small">Nuestros Servicios</a></li>
+                        <li><a href="#" class="footer-link-premium small">Para Clínicas</a></li>
+                        <li><a href="#" class="footer-link-premium small">Oficina Virtual</a></li>
+                        <li><a href="#" class="footer-link-premium small">Preguntas Frecuentes</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <h6 class="fw-bold mb-4">Información</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="#" class="footer-link-premium small">Sobre Nosotros</a></li>
+                        <li><a href="#" class="footer-link-premium small">Términos y Condiciones</a></li>
+                        <li><a href="#" class="footer-link-premium small">Política de Privacidad</a></li>
+                        <li><a href="#" class="footer-link-premium small">Política de Reembolsos</a></li>
+                        <li><a href="#" class="footer-link-premium small">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="fw-bold mb-4">Newsletter</h6>
+                    <p class="text-slate-500 small mb-4">Recibe tips de cuidado y noticias para tu mascota en tu correo.</p>
+                    <div class="d-flex gap-2">
+                        <input type="email" class="form-control bg-dark border-secondary text-white small" placeholder="Tu correo electrónico">
+                        <button class="premium-btn-primary py-2 px-3 small">Suscribirme</button>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-4 border-top border-secondary text-center">
+                <p class="text-slate-500 small">© 2024 ClínicaApp. Todos los derechos reservados. Hecho con ❤️ para las mascotas de Cartagena.</p>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-
-    <!-- Custom Scripts -->
-    <script th:src="@{/js/scripts.js}"></script>
-
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Intersection Observer para animaciones
-            const observerOptions = {
-                root: null,
-                rootMargin: "0px",
-                threshold: 0.1
-            };
-
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación de contadores sutil
+            const counters = document.querySelectorAll('.stat-val');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.section-fade-in').forEach(section => {
-                observer.observe(section);
-            });
-
-            // Animación de contadores
-            function animateValue(obj, start, end, duration) {
-                let startTimestamp = null;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-                    obj.innerHTML = Math.floor(easeOutQuart * (end - start) + start).toLocaleString('es-CO');
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    }
-                };
-                window.requestAnimationFrame(step);
-            }
-
-            const counterObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const counters = entry.target.querySelectorAll('[data-count]');
-                        counters.forEach(counter => {
-                            animateValue(counter, 0, parseInt(counter.dataset.count), 2000);
-                        });
-                        counterObserver.unobserve(entry.target);
+                        const target = entry.target;
+                        const count = parseInt(target.getAttribute('data-count'));
+                        let current = 0;
+                        const increment = count / 100;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= count) {
+                                target.innerText = count.toLocaleString() + (target.innerText.includes('+') ? '+' : (target.innerText.includes('%') ? '%' : ''));
+                                clearInterval(timer);
+                            } else {
+                                target.innerText = Math.floor(current).toLocaleString();
+                            }
+                        }, 20);
+                        observer.unobserve(target);
                     }
                 });
             }, { threshold: 0.5 });
-
-            document.querySelectorAll('.stats-section').forEach(section => {
-                counterObserver.observe(section);
-            });
+            
+            counters.forEach(counter => observer.observe(counter));
         });
     </script>
 </body>
-
 </html>
