@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catálogo Maestro | Admin</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+            --dark-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.98);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f5f3ff 100%);
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 3rem;
+        }
+
+        /* Header de Página */
+        .page-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .page-header small {
+            color: #64748b;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        /* Botón Agregar Premium */
+        .btn-add-service {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 1.75rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .btn-add-service::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-add-service:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-add-service:hover::before {
+            left: 100%;
+        }
+
+        .btn-add-service i {
+            font-size: 1.25rem;
+        }
+
+        /* Grid de Servicios */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 768px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Card de Servicio Premium */
+        .service-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.05s; }
+        .service-card:nth-child(2) { animation-delay: 0.1s; }
+        .service-card:nth-child(3) { animation-delay: 0.15s; }
+        .service-card:nth-child(4) { animation-delay: 0.2s; }
+        .service-card:nth-child(5) { animation-delay: 0.25s; }
+        .service-card:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .service-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .service-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .service-price {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .service-description {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .service-actions {
+            padding: 1rem 1.5rem 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .btn-service-action {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-service-action.edit {
+            background: white;
+            border-color: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .btn-service-action.edit:hover {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-color: #c7d2fe;
+            transform: translateY(-2px);
+        }
+
+        .btn-service-action.delete {
+            flex: 0 0 auto;
+            width: 48px;
+            background: white;
+            border-color: #fecaca;
+            color: #dc2626;
+            padding: 0.875rem 0;
+        }
+
+        .btn-service-action.delete:hover {
+            background: var(--danger-gradient);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Estado Vacío */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .empty-state h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 767.98px) {
+            .page-header {
+                padding: 1rem 0;
+            }
+
+            .page-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .btn-add-service {
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .service-title {
+                font-size: 1.15rem;
+            }
+
+            .service-price {
+                font-size: 1rem;
+                padding: 0.375rem 0.875rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .service-header {
+                padding: 1.25rem;
+            }
+
+            .service-actions {
+                padding: 0.875rem 1.25rem 1.25rem;
+            }
+
+            .btn-service-action {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+
+    <!-- Header de Página -->
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2>Catálogo Global de Servicios</h2>
+                    <small>Servicios base disponibles para todas las sedes</small>
+                </div>
+                <a th:href="@{/admin/servicios/nuevo}" class="btn-add-service">
+                    <i class="bi bi-plus-circle"></i>
+                    Agregar Servicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Grid de Servicios -->
+        <div class="services-grid">
+            <div th:each="s : ${servicios}" class="service-card">
+                <div class="service-header">
+                    <div class="service-title-row">
+                        <h5 class="service-title" th:text="${s.nombre}">Consulta General</h5>
+                        <span class="service-price" th:text="'$' + ${#numbers.formatDecimal(s.costo, 1, 'COMMA', 2, 'POINT')}">$25.00</span>
+                    </div>
+                    <p class="service-description" th:text="${s.descripcion}">
+                        Evaluación médica completa del paciente, incluye revisión física y diagnóstico inicial.
+                    </p>
+                </div>
+                <div class="service-actions">
+                    <a th:href="@{'/admin/servicios/editar/' + ${s.id}}" class="btn-service-action edit">
+                        <i class="bi bi-pencil"></i>
+                        Editar
+                    </a>
+                    <a href="#" class="btn-service-action delete" onclick="return confirm('¿Eliminar este servicio?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estado Vacío -->
+            <div th:if="${#lists.isEmpty(servicios)}" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h5>No hay servicios registrados</h5>
+                <p>Comienza agregando tu primer servicio maestro.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

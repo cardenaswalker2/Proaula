@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Visor de PDF</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        .pdf-viewer { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+    <!-- Este visor espera una URL que devuelva el contenido de un PDF -->
+    <embed th:src="${pdfUrl}" type="application/pdf" class="pdf-viewer"/>
+</body>
+</html>

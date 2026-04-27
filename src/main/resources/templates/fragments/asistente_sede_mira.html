@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <div th:fragment="mira-sede">
+        <style>
+            :root {
+                --m-primary: #667eea;
+                --m-secondary: #764ba2;
+                --m-accent: #00f2fe;
+                --m-dark: #16213e;
+                --m-glass: rgba(255, 255, 255, 0.96);
+            }
+
+            /* ACTIVADOR MIRA */
+            .mira-wrapper {
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .mira-avatar {
+                width: 85px;
+                height: 85px;
+                background: linear-gradient(135deg, var(--m-primary) 0%, var(--m-dark) 100%);
+                border-radius: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                border: 4px solid white;
+                box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+                position: relative;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            .mira-avatar:hover {
+                transform: scale(1.1) rotate(5deg);
+            }
+
+            .mira-avatar i {
+                font-size: 2.8rem;
+                color: white;
+                filter: drop-shadow(0 0 10px var(--m-accent));
+            }
+
+            /* NOTIFICACIÓN CRÍTICA */
+            .mira-badge {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                background: #ef4444;
+                color: white;
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 800;
+                border: 3px solid white;
+                animation: m-pulse 1.5s infinite;
+            }
+
+            @keyframes m-pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+                }
+
+                100% {
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                }
+            }
+
+            /* PANEL PRINCIPAL */
+            .mira-panel {
+                position: fixed;
+                bottom: 130px;
+                left: 30px;
+                width: 420px;
+                max-height: 700px;
+                background: var(--m-glass);
+                backdrop-filter: blur(20px);
+                border-radius: 30px;
+                box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3);
+                display: none;
+                flex-direction: column;
+                border: 1px solid rgba(102, 126, 234, 0.3);
+                z-index: 10000;
+                overflow: hidden;
+                animation: m-slideUp 0.5s ease;
+            }
+
+            @keyframes m-slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px) scale(0.9);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .m-header {
+                padding: 25px;
+                background: linear-gradient(135deg, var(--m-primary) 0%, var(--m-secondary) 100%);
+                color: white;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .m-body {
+                padding: 20px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                background: #f8fafc;
+            }
+
+            /* MENSAJES ESTILO BOT */
+            .m-msg {
+                background: white;
+                padding: 15px;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                color: #334155;
+                border-left: 5px solid var(--m-primary);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+                line-height: 1.5;
+            }
+
+            .m-msg strong {
+                color: var(--m-primary);
+            }
+
+            /* GRID DE COMANDOS */
+            .m-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 15px;
+                background: white;
+                border-top: 1px solid #f1f5f9;
+            }
+
+            .m-btn {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                padding: 12px;
+                border-radius: 15px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #475569;
+                cursor: pointer;
+                transition: 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .m-btn:hover {
+                background: var(--m-primary);
+                color: white;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            /* BARRA DE ESCANEO */
+            .m-scanner {
+                height: 3px;
+                background: var(--m-accent);
+                width: 0%;
+                box-shadow: 0 0 10px var(--m-accent);
+                transition: width 2s ease-in-out;
+            }
+        </style>
+
+        <!-- UI ESTRUCTURA -->
+        <div class="mira-wrapper">
+            <div
+                style="background:white; padding:8px 15px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:10px; font-weight:800; color:var(--m-primary); border:2px solid #eef2ff; font-size: 0.8rem;">
+                MIRA: Sede Inteligente ⚡
+            </div>
+            <div class="mira-avatar" onclick="miraBot.toggle()">
+                <i class="bi bi-robot"></i>
+                <div th:if="${not #lists.isEmpty(salaDeEspera)}" class="mira-badge"
+                    th:text="${#lists.size(salaDeEspera)}">0</div>
+            </div>
+        </div>
+
+        <!-- VENTANA MIRA -->
+        <div class="mira-panel" id="miraPanel">
+            <div class="m-header">
+                <i class="bi bi-cpu-fill fs-2"></i>
+                <div>
+                    <h6 class="m-0 fw-bold">MIRA: Core Operations</h6>
+                    <small class="opacity-75">Medical Data Intelligence v4.0</small>
+                </div>
+                <button class="btn-close btn-close-white ms-auto" onclick="miraBot.toggle()"></button>
+            </div>
+
+            <div class="m-scanner" id="mScanner"></div>
+
+            <div class="m-body" id="mChat">
+                <div class="m-msg" id="mWelcome">
+                    Iniciando protocolos de supervisión... <br>
+                    <strong>Sede:</strong> Verificada ✅ <br>
+                    <strong>Finanzas:</strong> Sincronizadas 💹 <br>
+                    <strong>Sala de Espera:</strong> Escaneando...
+                </div>
+            </div>
+
+            <div class="m-grid">
+                <button class="m-btn" onclick="miraBot.analyze('ops')">
+                    <i class="bi bi-activity"></i> Análisis Operativo
+                </button>
+                <button class="m-btn" onclick="miraBot.analyze('money')">
+                    <i class="bi bi-graph-up-arrow"></i> Reporte Financiero
+                </button>
+                <button class="m-btn" onclick="miraBot.analyze('security')">
+                    <i class="bi bi-shield-lock"></i> Protocolo Seguridad
+                </button>
+                <button class="m-btn" onclick="miraBot.analyze('tips')">
+                    <i class="bi bi-lightbulb"></i> Optimizar Sede
+                </button>
+
+                <button th:if="${not #lists.isEmpty(salaDeEspera)}" class="m-btn"
+                    style="grid-column: span 2; background: #fff1f2; color: #e11d48; border-color: #fecdd3;"
+                    onclick="miraBot.urgent()">
+                    <i class="bi bi-megaphone-fill"></i> ATENDER PACIENTES CRÍTICOS (<span
+                        th:text="${#lists.size(salaDeEspera)}">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const miraBot = {
+                panel: document.getElementById('miraPanel'),
+                chat: document.getElementById('mChat'),
+                scanner: document.getElementById('mScanner'),
+                synth: window.speechSynthesis,
+
+                toggle: function () {
+                    const isHidden = this.panel.style.display === 'none' || !this.panel.style.display;
+                    this.panel.style.display = isHidden ? 'flex' : 'none';
+                    if (isHidden) {
+                        this.runSystemCheck();
+                        this.speak("Sistemas operativos. Bienvenida, dirección médica. He preparado el informe de hoy.");
+                    }
+                },
+
+                runSystemCheck: function () {
+                    this.scanner.style.width = '0%';
+                    setTimeout(() => this.scanner.style.width = '100%', 100);
+                },
+
+                analyze: function (type) {
+                    let report = "";
+                    let title = "";
+
+                    if (type === 'ops') {
+                        const citas = document.querySelectorAll('.stat-card h1')[0].innerText;
+                        title = "📊 ANÁLISIS OPERATIVO:";
+                        report = `El volumen actual es de ${citas} citas procesadas. He detectado que la carga de pacientes está dentro de los parámetros normales para este turno.`;
+                    } else if (type === 'money') {
+                        const total = document.querySelectorAll('.stat-card h1')[1].innerText;
+                        title = "💰 ESTADO FINANCIERO:";
+                        report = `La recaudación total registrada es de ${total}. Todos los pagos han sido validados a través de la pasarela Stripe con éxito.`;
+                    } else if (type === 'security') {
+                        title = "🛡️ SEGURIDAD DE DATOS:";
+                        report = "Protocolo de privacidad activo. Recuerde que el historial clínico es confidencial. No comparta su contraseña de sede con personal no autorizado.";
+                    } else if (type === 'tips') {
+                        title = "💡 CONSEJO DE GESTIÓN:";
+                        report = "Para aumentar la eficiencia, asegúrese de completar las recetas digitales inmediatamente después de la consulta. Esto agiliza la salida del paciente.";
+                    }
+
+                    this.addMsg(`<strong>${title}</strong><br>${report}`);
+                    this.speak(report);
+                },
+
+                urgent: function () {
+                    const total = document.querySelector('.mira-badge').innerText;
+                    const msg = `Atención inmediata requerida: Hay ${total} pacientes en sala de espera. Por favor, proceda al llamado a consultorio para mantener el flujo operativo.`;
+                    this.addMsg(`🚨 <strong>ALERTA DE RECEPCIÓN:</strong><br>${msg}`);
+                    this.speak(msg);
+                },
+
+                addMsg: function (html) {
+                    const div = document.createElement('div');
+                    div.className = 'm-msg';
+                    div.innerHTML = html;
+                    this.chat.appendChild(div);
+                    this.chat.scrollTop = this.chat.scrollHeight;
+                },
+
+                speak: function (t) {
+                    this.synth.cancel();
+                    const u = new SpeechSynthesisUtterance(t);
+                    u.lang = 'es-ES'; u.rate = 1.0; u.pitch = 0.8; // Voz de IA avanzada
+                    this.synth.speak(u);
+                }
+            };
+        </script>
+    </div>
+
+</body>
+
+</html>

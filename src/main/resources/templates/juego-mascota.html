@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova-Pet - Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nova-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow-premium: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #fdfdfd;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .premium-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: var(--shadow-premium);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Entorno Animado */
+        #pet-environment {
+            position: relative;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F2FE 100%);
+            border-radius: 28px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s ease;
+        }
+
+        .phase-badge {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        /* Mascota Flotante */
+        .pet-wrapper {
+            position: relative;
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .pet-glow {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: rgba(0,0,0,0.1);
+            filter: blur(8px);
+            border-radius: 50%;
+        }
+
+        .thought-bubble {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            position: absolute;
+            top: -60px;
+            right: -40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            font-weight: 600;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .thought-bubble.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Barras de Progreso Estilizadas */
+        .stat-bar-container {
+            margin-bottom: 20px;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .progress-premium {
+            height: 12px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Botones Royale */
+        .btn-royale {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 16px;
+            font-weight: 700;
+            color: #64748b;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .btn-royale:hover:not(:disabled) {
+            transform: translateY(-4px);
+            border-color: #6366f1;
+            color: #6366f1;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-royale i {
+            font-size: 1.5rem;
+        }
+
+        .btn-royale:disabled {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        /* Animación de acción */
+        .action-vibrant {
+            animation: vibrant 0.5s ease-out;
+        }
+
+        @keyframes vibrant {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    
+    <main class="container py-5">
+        <div class="row g-5">
+            <!-- Columna Izquierda: La Mascota -->
+            <div class="col-lg-7">
+                <div id="pet-environment">
+                    <div class="phase-badge shadow-lg">
+                        <i class="bi bi-clock me-2"></i>
+                        <span id="time-display">08:00</span> - <span id="day-phase" class="text-uppercase small">Mañana</span>
+                    </div>
+
+                    <div class="pet-wrapper" id="pet-display">
+                        <div id="thought-bubble" class="thought-bubble">¡Hola!</div>
+                        <img id="pet-image" th:src="${mascotaVirtual.salud > 30 ? 'https://i.imgur.com/8s1s27a.png' : 'https://cdn.dogsplanet.com/wp-content/uploads/2021/02/perro-triste.jpg'}" 
+                             alt="Nova Pet" style="max-height: 280px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));">
+                        <div class="pet-glow"></div>
+                    </div>
+
+                    <div class="mt-5 text-center px-4">
+                        <h2 id="pet-status-text" class="fw-bold mb-0 text-white" style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">¡Rocky está radiante!</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Control -->
+            <div class="col-lg-5">
+                <div class="premium-card p-4">
+                    <div class="text-center mb-4">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">Simulador Nova-Pet v2.0</span>
+                        <h1 class="fw-800 mb-0" th:text="${mascotaVirtual.nombre}">Nova-Pet</h1>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-panel mb-5">
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span><i class="bi bi-heart-fill text-danger me-2"></i>Salud</span>
+                                <span id="label-health" th:text="${#numbers.formatDecimal(mascotaVirtual.salud, 0, 0)} + '%'">100%</span>
+                            </div>
+                            <div class="progress-premium">
+                                <div id="bar-health" class="progress-fill bg-danger" th:style="'width: ' + ${mascotaVirtual.salud} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span><i class="bi bi-egg-fried text-warning me-2"></i>Hambre</span>
+                                <span id="label-hunger" th:text="${#numbers.formatDecimal(mascotaVirtual.hambre, 0, 0)} + '%'">0%</span>
+                            </div>
+                            <div class="progress-premium">
+                                <div id="bar-hunger" class="progress-fill bg-warning" th:style="'width: ' + ${mascotaVirtual.hambre} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span><i class="bi bi-stars text-info me-2"></i>Felicidad</span>
+                                <span id="label-happiness" th:text="${#numbers.formatDecimal(mascotaVirtual.felicidad, 0, 0)} + '%'">100%</span>
+                            </div>
+                            <div class="progress-premium">
+                                <div id="bar-happiness" class="progress-fill bg-info" th:style="'width: ' + ${mascotaVirtual.felicidad} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span><i class="bi bi-lightning-charge-fill text-primary me-2"></i>Energía</span>
+                                <span id="label-energy" th:text="${#numbers.formatDecimal(mascotaVirtual.energia, 0, 0)} + '%'">100%</span>
+                            </div>
+                            <div class="progress-premium">
+                                <div id="bar-energy" class="progress-fill bg-primary" th:style="'width: ' + ${mascotaVirtual.energia} + '%'"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <button onclick="realizarAccion('FEED')" class="btn-royale w-100">
+                                <i class="bi bi-apple text-success"></i>
+                                <span>Alimentar</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button onclick="realizarAccion('PLAY')" class="btn-royale w-100">
+                                <i class="bi bi-controller text-info"></i>
+                                <span>Jugar</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button onclick="realizarAccion('HEAL')" class="btn-royale w-100">
+                                <i class="bi bi-heart-pulse text-danger"></i>
+                                <span>Curar</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button onclick="realizarAccion('SLEEP')" class="btn-royale w-100">
+                                <i class="bi bi-moon-stars text-primary"></i>
+                                <span>Dormir</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function realizarAccion(tipo) {
+            const btn = event.currentTarget;
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`/usuario/api/juego/accion?accion=${tipo}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                actualizarUI(data);
+                showThought(tipo === 'FEED' ? '¡Yum! Gracias.' : tipo === 'PLAY' ? '¡Yuhu!' : 'Me siento mejor.');
+                
+                // Efecto visual
+                document.getElementById('pet-display').classList.add('action-vibrant');
+                setTimeout(() => document.getElementById('pet-display').classList.remove('action-vibrant'), 500);
+                
+            } catch (error) {
+                console.error("Error al realizar acción:", error);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function actualizarUI(data) {
+            document.getElementById('label-health').textContent = Math.round(data.salud) + '%';
+            document.getElementById('bar-health').style.width = data.salud + '%';
+            
+            document.getElementById('label-hunger').textContent = Math.round(data.hambre) + '%';
+            document.getElementById('bar-hunger').style.width = data.hambre + '%';
+            
+            document.getElementById('label-happiness').textContent = Math.round(data.felicidad) + '%';
+            document.getElementById('bar-happiness').style.width = data.felicidad + '%';
+            
+            document.getElementById('label-energy').textContent = Math.round(data.energia) + '%';
+            document.getElementById('bar-energy').style.width = data.energia + '%';
+
+            // Textos de estado
+            const statusText = document.getElementById('pet-status-text');
+            if(data.salud < 30) statusText.textContent = "¡Cuidado! Tu mascota se siente mal.";
+            else if(data.hambre > 70) statusText.textContent = "Tu mascota tiene mucha hambre.";
+            else statusText.textContent = "¡" + data.nombre + " está muy feliz acompañándote!";
+        }
+
+        function showThought(text) {
+            const bubble = document.getElementById('thought-bubble');
+            bubble.textContent = text;
+            bubble.classList.add('visible');
+            setTimeout(() => bubble.classList.remove('visible'), 3000);
+        }
+
+        // Simulación de tiempo visual
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('time-display').textContent = timeStr;
+            
+            const hour = now.getHours();
+            const env = document.getElementById('pet-environment');
+            const phase = document.getElementById('day-phase');
+            
+            if (hour >= 6 && hour < 18) {
+                env.style.background = 'linear-gradient(180deg, #87CEEB 0%, #E0F2FE 100%)';
+                phase.textContent = "Mañana";
+            } else {
+                env.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)';
+                phase.textContent = "Noche";
+            }
+        }, 1000);
+        
+        // Polling de estado cada 10 segundos
+        setInterval(async () => {
+             const response = await fetch('/usuario/api/juego/estado');
+             const data = await response.json();
+             actualizarUI(data);
+        }, 10000);
+    </script>
+</body>
+</html>
+>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deja tu reseña sobre la atención veterinaria recibida. Tu opinión ayuda a otros dueños de mascotas.">
+    <title>Dejar Reseña | Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .review-container {
+            padding: 2rem 0;
+        }
+
+        /* Header */
+        .review-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .review-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.3);
+        }
+
+        .review-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        /* Card */
+        .review-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+        }
+
+        .review-card-body {
+            padding: 2rem;
+        }
+
+        /* Info Box */
+        .cita-info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .cita-info-box h5 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #1e40af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cita-info-box p {
+            color: #1e293b;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .cita-info-box strong {
+            color: #0d6efd;
+        }
+
+        /* Rating Stars */
+        .rating-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 16px;
+        }
+
+        .rating-label {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .rating {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            color: #e2e8f0;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .rating label:before {
+            content: '\2605';
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label,
+        .rating input:checked ~ label {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+
+        .rating-text {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+            min-height: 24px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #0d6efd;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        textarea.form-control-custom {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-cancel {
+            padding: 0.875rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        /* Tips */
+        .tips-box {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .tips-box i {
+            color: #22c55e;
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+        }
+
+        .tips-box p {
+            color: #166534;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .review-card-body {
+                padding: 1.5rem;
+            }
+
+            .rating label {
+                font-size: 2.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .cita-info-box {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <main class="review-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9">
+                    
+                    <!-- Header -->
+                    <div class="review-header">
+                        <div class="review-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <h1 class="review-title">Valora tu Experiencia</h1>
+                        <p class="review-subtitle">Tu opinión es muy importante para nosotros y ayuda a otros dueños de mascotas</p>
+                    </div>
+
+                    <!-- Review Card -->
+                    <div class="review-card">
+                        <div class="review-card-body">
+                            
+                            <!-- Info de la cita -->
+                            <div th:if="${citaInfo}" class="cita-info-box">
+                                <h5>
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    Estás reseñando
+                                </h5>
+                                <p>
+                                    Tu visita a <strong th:text="${citaInfo.nombreClinica}">Clínica</strong> 
+                                    con <strong th:text="${citaInfo.nombreMascota}">Mascota</strong> 
+                                    el <strong th:text="${citaInfo.fechaHora}">Fecha</strong>
+                                </p>
+                            </div>
+
+                            <!-- Tips -->
+                            <div class="tips-box">
+                                <i class="bi bi-lightbulb-fill"></i>
+                                <p>Sé específico: menciona la atención recibida, instalaciones, tiempo de espera y resultados del tratamiento.</p>
+                            </div>
+
+                            <form th:action="@{/usuario/resena/guardar}" th:object="${resenaDTO}" method="post" id="reviewForm">
+                                <input type="hidden" th:field="*{citaId}" />
+
+                                <!-- Rating -->
+                                <div class="rating-section">
+                                    <label class="rating-label">¿Cómo calificarías tu experiencia?</label>
+                                    <div class="rating">
+                                        <input type="radio" id="star5" th:field="*{calificacion}" value="5" required>
+                                        <label for="star5" title="Excelente - 5 estrellas"></label>
+                                        
+                                        <input type="radio" id="star4" th:field="*{calificacion}" value="4">
+                                        <label for="star4" title="Muy buena - 4 estrellas"></label>
+                                        
+                                        <input type="radio" id="star3" th:field="*{calificacion}" value="3">
+                                        <label for="star3" title="Buena - 3 estrellas"></label>
+                                        
+                                        <input type="radio" id="star2" th:field="*{calificacion}" value="2">
+                                        <label for="star2" title="Regular - 2 estrellas"></label>
+                                        
+                                        <input type="radio" id="star1" th:field="*{calificacion}" value="1">
+                                        <label for="star1" title="Mala - 1 estrella"></label>
+                                    </div>
+                                    <div class="rating-text" id="ratingText">Selecciona una calificación</div>
+                                </div>
+
+                                <!-- Título -->
+                                <div class="form-group">
+                                    <label for="titulo" class="form-label">Título de tu reseña</label>
+                                    <input type="text" 
+                                           class="form-control-custom" 
+                                           id="titulo" 
+                                           th:field="*{titulo}" 
+                                           placeholder="Ej: ¡Excelente atención y profesionales!"
+                                           maxlength="100"
+                                           required>
+                                    <div class="char-counter">
+                                        <span id="tituloCount">0</span>/100
+                                    </div>
+                                </div>
+
+                                <!-- Comentario -->
+                                <div class="form-group">
+                                    <label for="comentario" class="form-label">Tu experiencia detallada</label>
+                                    <textarea class="form-control-custom" 
+                                              id="comentario" 
+                                              th:field="*{comentario}" 
+                                              rows="5" 
+                                              placeholder="Cuéntanos más sobre tu experiencia: qué te gustó, qué podría mejorar, recomendaciones..."
+                                              maxlength="500"
+                                              required></textarea>
+                                    <div class="char-counter">
+                                        <span id="comentarioCount">0</span>/500 caracteres
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="form-actions">
+                                    <a th:href="@{/usuario/mis-citas}" class="btn-cancel">
+                                        <i class="bi bi-x-lg"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn-submit">
+                                        <i class="bi bi-send-fill"></i>
+                                        Publicar Reseña
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+            crossorigin="anonymous"></script>
+
+    <script>
+        // Rating text update
+        const ratingInputs = document.querySelectorAll('input[name="calificacion"]');
+        const ratingText = document.getElementById('ratingText');
+        const ratingLabels = {
+            '1': 'Mala - Necesita mejorar mucho',
+            '2': 'Regular - Hay aspectos a mejorar',
+            '3': 'Buena - Cumplió con lo esperado',
+            '4': 'Muy buena - Superó mis expectativas',
+            '5': 'Excelente - ¡Totalmente recomendado!'
+        };
+
+        ratingInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                ratingText.textContent = ratingLabels[this.value];
+                ratingText.style.color = '#0d6efd';
+                ratingText.style.fontWeight = '600';
+            });
+        });
+
+        // Character counters
+        const tituloInput = document.getElementById('titulo');
+        const comentarioInput = document.getElementById('comentario');
+        const tituloCount = document.getElementById('tituloCount');
+        const comentarioCount = document.getElementById('comentarioCount');
+
+        tituloInput.addEventListener('input', function() {
+            tituloCount.textContent = this.value.length;
+        });
+
+        comentarioInput.addEventListener('input', function() {
+            comentarioCount.textContent = this.value.length;
+        });
+    </script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+</html>

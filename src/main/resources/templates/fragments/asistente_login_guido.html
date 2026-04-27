@@ -1,0 +1,290 @@
+<div th:fragment="guido-login">
+    <style>
+        :root {
+            --g-login-blue: #0ea5e9;
+            --g-login-purple: #6366f1;
+            --g-login-grad: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        }
+
+        /* CONTENEDOR DEL BOT "LLAMANDO" */
+        .guido-login-wrapper {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* GLOBO "HOLA" */
+        .guido-login-alert {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            font-weight: 800;
+            color: var(--g-login-blue);
+            margin-bottom: 15px;
+            border: 2px solid #e0f2fe;
+            animation: bounce-login 2s infinite ease-in-out;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .guido-login-alert::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        /* AVATAR ROBOT GRANDE */
+        .guido-login-avatar {
+            width: 90px;
+            height: 90px;
+            background: var(--g-login-grad);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 4px solid white;
+            box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4);
+            position: relative;
+            transition: 0.4s;
+            animation: float-login 3s infinite ease-in-out;
+        }
+
+        .guido-login-avatar i {
+            font-size: 3.2rem;
+            color: white;
+        }
+
+        /* EFECTO PULSO */
+        .guido-login-avatar::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            background: var(--g-login-blue);
+            z-index: -1;
+            animation: pulse-login 2s infinite;
+        }
+
+        @keyframes pulse-login {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce-login {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes float-login {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* VENTANA DE CONTROL */
+        .guido-login-panel {
+            position: fixed;
+            bottom: 150px;
+            left: 40px;
+            width: 380px;
+            height: 65vh;
+            max-height: 550px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10001;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slide-up-login 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes slide-up-login {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lp-header {
+            padding: 25px;
+            background: var(--g-login-grad);
+            color: white;
+        }
+
+        .lp-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* CHIPS DE ACCIÓN */
+        .lp-card {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+            border-left: 5px solid var(--g-login-blue);
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .lp-btn {
+            background: #f0f9ff;
+            border: 2px solid #e0f2fe;
+            color: #0369a1;
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lp-btn:hover {
+            background: var(--g-login-blue);
+            color: white;
+            transform: translateX(5px);
+        }
+    </style>
+
+    <!-- UI ESTRUCTURA -->
+    <div class="guido-login-wrapper" id="guidoLoginTrigger">
+        <div class="guido-login-alert" id="loginBubble" onclick="guidoLogin.open()">
+            ¡Ey! 👋 ¿Entramos?
+        </div>
+        <div class="guido-login-avatar" onclick="guidoLogin.open()">
+            <i class="bi bi-robot"></i>
+        </div>
+    </div>
+
+    <!-- VENTANA DEL ASISTENTE -->
+    <div class="guido-login-panel" id="loginPanel">
+        <div class="lp-header">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-lock-fill fs-2"></i>
+                <div>
+                    <h6 class="m-0 fw-bold">GUIDO: Acceso Seguro</h6>
+                    <small class="opacity-75">Soporte de Identidad</small>
+                </div>
+                <button class="btn-close btn-close-white ms-auto" onclick="guidoLogin.close()"></button>
+            </div>
+        </div>
+
+        <div class="lp-body" id="lpBody">
+            <div class="lp-card">
+                ¡Hola! Soy **Guido**. Bienvenido de vuelta. Tenemos varias formas seguras de entrar a tu panel. ¿Cuál
+                prefieres?
+            </div>
+
+            <div class="lp-btn" onclick="guidoLogin.explain('facial')">
+                <i class="bi bi-person-bounding-box"></i> ¿Cómo funciona el Rostro?
+            </div>
+            <div class="lp-btn" onclick="guidoLogin.explain('google')">
+                <i class="bi bi-google"></i> Entrar con Google
+            </div>
+            <div class="lp-btn" onclick="guidoLogin.explain('olvido')">
+                <i class="bi bi-key"></i> Olvidé mi contraseña
+            </div>
+            <div class="lp-btn" style="background: #f0fdf4; border-color: #dcfce7; color: #166534;"
+                onclick="guidoLogin.triggerFace()">
+                <i class="bi bi-lightning-charge-fill"></i> ¡USAR LOGIN FACIAL YA!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const guidoLogin = {
+            panel: document.getElementById('loginPanel'),
+            body: document.getElementById('lpBody'),
+            bubble: document.getElementById('loginBubble'),
+            synth: window.speechSynthesis,
+
+            open: function () {
+                this.panel.style.display = 'flex';
+                this.bubble.style.display = 'none';
+                this.speak("¡Hola! Soy Guido. Estoy aquí para ayudarte a entrar a tu cuenta de forma segura y rápida.");
+            },
+
+            close: function () {
+                this.panel.style.display = 'none';
+                this.bubble.style.display = 'block';
+                this.synth.cancel();
+            },
+
+            explain: function (topic) {
+                let text = "";
+                if (topic === 'facial') text = "Es nuestra opción más rápida. Si ya registraste tu rostro, solo presiona el botón morado y la IA verificará que eres tú en 2 segundos.";
+                if (topic === 'google') text = "Si vinculaste tu cuenta con Google, solo haz clic en el botón superior para entrar sin usar contraseñas.";
+                if (topic === 'olvido') text = "No te preocupes. Haz clic en el enlace de '¿Olvidaste tu contraseña?' abajo del formulario y te enviaremos un código.";
+
+                const div = document.createElement('div');
+                div.className = 'lp-card';
+                div.style.background = "#f0f9ff";
+                div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                this.body.appendChild(div);
+                this.body.scrollTop = this.body.scrollHeight;
+                this.speak(text);
+            },
+
+            triggerFace: function () {
+                this.speak("Iniciando escaneo biométrico. Por favor, mantente frente a la cámara.");
+                // Ejecutamos el clic del botón real de login facial que ya tienes en tu página
+                const btnReal = document.getElementById('btnFacial');
+                if (btnReal) btnReal.click();
+            },
+
+            speak: function (t) {
+                this.synth.cancel();
+                const u = new SpeechSynthesisUtterance(t.replace(/\*\*(.*?)\*\*/g, ''));
+                u.lang = 'es-ES'; u.rate = 1.1;
+                this.synth.speak(u);
+            }
+        };
+    </script>
+</div>

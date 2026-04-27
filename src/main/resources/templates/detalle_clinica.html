@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        th:content="'Clínica veterinaria ' + ${clinica.nombre} + ' en Cartagena. ' + ${clinica.descripcion}">
+    <title th:text="${clinica.nombre} + ' | Clínica App - Cartagena'">Detalle de Clínica</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <div th:replace="~{fragments/asistente_publico :: guido-bot}"></div>
+
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --success-color: #059669;
+            --warning-color: #f59e0b;
+            --danger-color: #dc2626;
+            --info-color: #0ea5e9;
+            --light-bg: #f8fafc;
+            --dark-text: #0f172a;
+            --medium-text: #334155;
+            --light-text: #64748b;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --card-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+            --card-shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --radius-xl: 32px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Mejorado */
+        .clinic-hero {
+            position: relative;
+            height: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .clinic-hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            transform: scale(1.1);
+            animation: heroZoom 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes heroZoom {
+            from {
+                transform: scale(1.1);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .clinic-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.7) 40%, transparent 100%);
+            padding: 6rem 0 3.5rem;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .elite-feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .clinic-title {
+            color: white;
+            font-size: clamp(2rem, 8vw, 3.75rem);
+            font-weight: 800;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .clinic-location {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 400;
+        }
+
+        .clinic-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .stat-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Rating Card Flotante */
+        .rating-float {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow-xl);
+            text-align: center;
+            min-width: 140px;
+            z-index: 100;
+        }
+
+        .rating-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--warning-color);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-count {
+            font-size: 0.85rem;
+            color: var(--medium-text);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: -4rem;
+            position: relative;
+            z-index: 10;
+            padding-bottom: 4rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2.25rem;
+            box-shadow: var(--card-shadow-lg);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            transition: var(--transition);
+        }
+
+        .content-card:hover {
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.08);
+            border-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .description-text {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #374151;
+            font-weight: 450;
+        }
+
+        /* Service Filter Bar */
+        .service-search-bar {
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 2px solid #e5e7eb;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .service-search-bar:focus-within {
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.1);
+        }
+
+        .service-search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        /* Sticky Bottom Mobile CTA */
+        .sticky-mobile-cta {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 1050;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            display: none;
+            animation: slideUpCTA 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUpCTA {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 767.98px) {
+            .sticky-mobile-cta {
+                display: block;
+            }
+        }
+
+        /* Trust Seals Section */
+        .trust-seals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #fcfcfd;
+            border-radius: 20px;
+            border: 1px dashed #d1d5db;
+        }
+
+        .trust-seal-item {
+            text-align: center;
+        }
+
+        .trust-seal-item i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .trust-seal-item span {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--medium-text);
+        }
+
+        /* Galería */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-lg);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item.main {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            padding: 1rem;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        /* Servicios Mejorados */
+        .service-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px rgba(13, 110, 253, 0.15);
+            transform: translateX(8px);
+        }
+
+        .service-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-light);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-info h5 {
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .service-info p {
+            color: var(--medium-text);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .service-price {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .service-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 20px;
+            border: 2px dashed #d1d5db;
+        }
+
+        .service-empty i {
+            font-size: 4rem;
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        /* Equipo Médico */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .team-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-lg);
+        }
+
+        .team-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .team-info {
+            padding: 1.5rem;
+        }
+
+        .team-name {
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .team-role {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-exp {
+            color: var(--medium-text);
+            font-size: 0.85rem;
+        }
+
+        /* Testimonios */
+        .testimonial-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 6rem;
+            color: var(--primary-light);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-light);
+        }
+
+        .testimonial-meta h5 {
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .testimonial-stars {
+            color: var(--warning-color);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-text {
+            color: var(--medium-text);
+            font-size: 1rem;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        /* Sidebar */
+        .sidebar-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--card-shadow-lg);
+            overflow: hidden;
+            position: sticky;
+            top: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .sidebar-header h4 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.25rem;
+            position: relative;
+        }
+
+        .sidebar-body {
+            padding: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: #f9fafb;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+
+        .contact-item:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .contact-value {
+            font-weight: 700;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-footer {
+            padding: 0 2rem 2rem;
+        }
+
+        .btn-agendar {
+            width: 100%;
+            padding: 1.1rem;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-agendar::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        .btn-agendar:hover::after {
+            transform: scale(1);
+        }
+
+        .btn-agendar-primary {
+            background: linear-gradient(135deg, var(--success-color), #157347);
+            color: white;
+            box-shadow: 0 4px 16px rgba(25, 135, 84, 0.4);
+        }
+
+        .btn-agendar-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(25, 135, 84, 0.5);
+            color: white;
+        }
+
+        .btn-agendar-login {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-agendar-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(13, 110, 253, 0.5);
+            color: white;
+        }
+
+        /* Mapa Real */
+        .map-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            background: #e5e7eb;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .map-overlay {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Horarios */
+        .schedule-widget {
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .schedule-title {
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95rem;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-day {
+            font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-time {
+            color: var(--medium-text);
+            font-weight: 500;
+        }
+
+        .schedule-time.open {
+            color: var(--success-color);
+            font-weight: 700;
+            background: rgba(25, 135, 84, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .badge-urgent {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: #f9fafb;
+            border-radius: 16px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .feature-item:hover {
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--card-shadow);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+        }
+
+        /* Certificaciones */
+        .cert-badges {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .cert-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .cert-badge i {
+            color: var(--success-color);
+            font-size: 1.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .clinic-hero {
+                height: 450px;
+            }
+
+            .clinic-title {
+                font-size: 2.5rem;
+            }
+
+            .rating-float {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 1.5rem auto 0;
+                display: inline-flex;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-item.main {
+                grid-column: span 2;
+                grid-row: span 1;
+                aspect-ratio: 16/9;
+            }
+
+            .sidebar-card {
+                position: relative;
+                top: 0;
+                margin-top: 2rem;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+
+            .clinic-title {
+                font-size: 2rem;
+            }
+
+            .service-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .service-price {
+                width: 100%;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utilidades */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Fragment -->
+    <div th:replace="~{fragments/header :: header-publico}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+
+    <!-- Hero Section Mejorado -->
+    <section class="clinic-hero">
+        <div class="clinic-hero-bg"
+            th:style="'background-image: url(\'' + (${clinica.imagenUrl != null and !#strings.isEmpty(clinica.imagenUrl)} ? ${clinica.imagenUrl} : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2000&auto=format&fit=crop') + '\');'">
+        </div>
+
+        <div class="clinic-hero-overlay">
+            <div class="container">
+                <div class="row align-items-end">
+                    <div class="col-lg-8" data-aos="fade-up">
+                        <h1 class="clinic-title" th:text="${clinica.nombre}">Clínica Veterinaria del Mar</h1>
+                        <p class="clinic-location">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span th:text="${clinica.direccion}">Carrera 5 # 10-45, Bocagrande, Cartagena</span>
+                        </p>
+
+                        <div class="clinic-stats">
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+                                <span class="stat-text">+10 años de experiencia</span>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="bi bi-heart-pulse"></i></div>
+                                <span class="stat-text">Atención 24/7</span>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="bi bi-people"></i></div>
+                                <span class="stat-text">+5,000 mascotas atendidas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-lg-end" data-aos="fade-left">
+                        <div class="rating-float">
+                            <div class="rating-score">4.9</div>
+                            <div class="rating-stars">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <div class="rating-count">156 reseñas verificadas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container main-content">
+        <div class="row g-4">
+            <!-- Columna Principal -->
+            <div class="col-lg-8">
+                <!-- Sobre Nosotros + Galería -->
+                <div class="content-card mb-4" data-aos="fade-up">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="bi bi-building-heart"></i>
+                            Sobre Nosotros
+                        </h2>
+                    </div>
+                    <p class="description-text" th:text="${clinica.descripcion}">
+                        Somos una clínica veterinaria de vanguardia en Cartagena, dedicada a proporcionar atención
+                        médica de la más alta calidad para tus mascotas. Contamos con un equipo de especialistas
+                        certificados y tecnología de punta para garantizar el bienestar de tu compañero peludo.
+                    </p>
+
+                    <!-- Galería de Imágenes Dinámica -->
+                    <div class="gallery-grid" th:if="${clinica.galeriaFotos != null and !clinica.galeriaFotos.isEmpty()}">
+                        <div th:each="foto, iterStat : ${clinica.galeriaFotos}" 
+                             class="gallery-item" 
+                             th:classappend="${iterStat.index == 0} ? 'main'">
+                            <img th:src="${foto}" alt="Instalaciones" loading="lazy">
+                            <div class="gallery-overlay" th:if="${iterStat.index == 0}">Instalaciones Modernas</div>
+                            <div class="gallery-overlay" th:if="${iterStat.last}">+ Ver más</div>
+                        </div>
+                    </div>
+
+                    <!-- Fallback Galería si está vacía -->
+                    <div class="gallery-grid" th:if="${clinica.galeriaFotos == null or clinica.galeriaFotos.isEmpty()}">
+                        <div class="gallery-item main">
+                            <img src="https://www.clinicaveterinariafunza.com/wp-content/uploads/2024/05/instalaciones2.jpg"
+                                alt="Instalaciones">
+                            <div class="gallery-overlay">Instalaciones Modernas</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?q=80&w=400&auto=format&fit=crop"
+                                alt="Mascotas">
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?q=80&w=400&auto=format&fit=crop"
+                                alt="Veterinario">
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=400&auto=format&fit=crop"
+                                alt="Cirugía">
+                            <div class="gallery-overlay">+8 fotos</div>
+                        </div>
+                    </div>
+
+                    <!-- Certificaciones -->
+                    <div class="cert-badges">
+                        <div class="cert-badge">
+                            <i class="bi bi-award-fill"></i>
+                            <span>AAHA Acreditada</span>
+                        </div>
+                        <div class="cert-badge">
+                            <i class="bi bi-shield-check"></i>
+                            <span>ISO 9001</span>
+                        </div>
+                        <div class="cert-badge">
+                            <i class="bi bi-heart-fill"></i>
+                            <span>Fear Free Certified</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipo Médico -->
+                <div class="content-card mb-4" data-aos="fade-up">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="bi bi-people-fill"></i>
+                            Nuestro Equipo
+                        </h2>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill">Ver todo el equipo</a>
+                    </div>
+                    <!-- Equipo Médico Dinámico -->
+                    <div class="team-grid" th:if="${clinica.equipoMedico != null and !clinica.equipoMedico.isEmpty()}">
+                        <div th:each="doctor : ${clinica.equipoMedico}" class="team-card">
+                            <img th:src="${doctor.fotoUrl}" class="team-img" alt="Foto del Doctor" loading="lazy">
+                            <div class="team-info">
+                                <div class="team-name" th:text="${doctor.nombre}">Nombre Doctor</div>
+                                <div class="team-role" th:text="${doctor.especialidad}">Especialidad</div>
+                                <div class="team-exp" th:text="${doctor.experiencia}">Experiencia</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fallback Equipo si está vacío -->
+                    <div class="team-grid" th:if="${clinica.equipoMedico == null or clinica.equipoMedico.isEmpty()}">
+                        <div class="team-card">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=400&auto=format&fit=crop"
+                                class="team-img" alt="Doctor">
+                            <div class="team-info">
+                                <div class="team-name">Dra. María González</div>
+                                <div class="team-role">Directora Médica</div>
+                                <div class="team-exp">15 años de experiencia</div>
+                            </div>
+                        </div>
+                        <div class="team-card">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=400&auto=format&fit=crop"
+                                class="team-img" alt="Doctor">
+                            <div class="team-info">
+                                <div class="team-name">Dr. Carlos Rodríguez</div>
+                                <div class="team-role">Cirujano</div>
+                                <div class="team-exp">Especialista en ortopedia</div>
+                            </div>
+                        </div>
+                        <div class="team-card">
+                            <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=400&auto=format&fit=crop"
+                                class="team-img" alt="Doctor">
+                            <div class="team-info">
+                                <div class="team-name">Dra. Ana Martínez</div>
+                                <div class="team-role">Medicina Interna</div>
+                                <div class="team-exp">Especialista en felinos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicios -->
+                <div class="content-card mb-4" data-aos="fade-up">
+                    <div class="section-header d-flex flex-column align-items-start gap-3">
+                        <div class="d-flex justify-content-between w-100 align-items-center">
+                            <h2 class="section-title">
+                                <i class="bi bi-clipboard2-pulse"></i>
+                                Servicios y Precios
+                            </h2>
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">Disponibles hoy</span>
+                        </div>
+                        
+                        <!-- Búsqueda de servicios integrada -->
+                        <div class="service-search-bar w-100 mb-0">
+                            <i class="bi bi-search text-primary fs-6"></i>
+                            <input type="text" id="serviceSearch" placeholder="Busca un servicio...">
+                        </div>
+                    </div>
+                    <p class="text-muted mb-4">Todos nuestros servicios incluyen evaluación inicial gratuita y garantía
+                        de satisfacción.</p>
+
+                    <div th:if="${!servicios.isEmpty()}">
+                        <div th:each="servicio : ${servicios}" class="service-card">
+                            <div class="service-icon">
+                                <i class="bi bi-heart-pulse"></i>
+                            </div>
+                            <div class="service-info">
+                                <h5 th:text="${servicio.nombre}">Consulta General</h5>
+                                <p th:text="${servicio.descripcion}">Evaluación completa del estado de salud de tu
+                                    mascota</p>
+                            </div>
+                            <div class="service-price">
+                                $65.000
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${servicios.isEmpty()}">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="bi bi-heart-pulse"></i></div>
+                            <div class="service-info">
+                                <h5>Consulta General</h5>
+                                <p>Evaluación completa del estado de salud de tu mascota</p>
+                            </div>
+                            <div class="service-price">$65.000</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="bi bi-scissors"></i></div>
+                            <div class="service-info">
+                                <h5>Peluquería y Spa</h5>
+                                <p>Baño, corte de pelo, uñas y limpieza de oídos</p>
+                            </div>
+                            <div class="service-price">$45.000</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="bi bi-shield-plus"></i></div>
+                            <div class="service-info">
+                                <h5>Vacunación</h5>
+                                <p>Esquema completo de vacunación y desparasitación</p>
+                            </div>
+                            <div class="service-price">$55.000</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="bi bi-hospital"></i></div>
+                            <div class="service-info">
+                                <h5>Cirugía Veterinaria</h5>
+                                <p>Procedimientos quirúrgicos con anestesia segura</p>
+                            </div>
+                            <div class="service-price">$350.000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonios -->
+                <div class="content-card mb-4" data-aos="fade-up">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="bi bi-chat-square-heart"></i>
+                            Lo que dicen nuestros clientes
+                        </h2>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-header">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop"
+                                class="testimonial-avatar" alt="Cliente">
+                            <div class="testimonial-meta">
+                                <h5>Laura Mendoza</h5>
+                                <div class="testimonial-stars">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="testimonial-text">
+                            "Excelente atención para mi golden retriever. El Dr. Carlos fue muy paciente y profesional.
+                            Las instalaciones son impecables y el personal muy amable. Definitivamente mi clínica de
+                            confianza en Cartagena."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Horarios -->
+                <div class="content-card" data-aos="fade-up">
+                    <h2 class="section-title mb-4">
+                        <i class="bi bi-clock"></i>
+                        Horario de Atención
+                    </h2>
+                    <div class="schedule-widget">
+                        <div class="schedule-item">
+                            <span class="schedule-day">
+                                <i class="bi bi-calendar3"></i>
+                                Lunes - Viernes
+                            </span>
+                            <span class="schedule-time open">8:00 AM - 8:00 PM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-day">
+                                <i class="bi bi-calendar3"></i>
+                                Sábados
+                            </span>
+                            <span class="schedule-time open">9:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-day">
+                                <i class="bi bi-calendar3"></i>
+                                Domingos
+                            </span>
+                            <span class="schedule-time">10:00 AM - 4:00 PM</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-day">
+                                <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                                Urgencias
+                            </span>
+                            <span class="badge-urgent">24 horas / 7 días</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar-card" data-aos="fade-left" id="form-agendar">
+                    <div class="sidebar-header">
+                        <h4><i class="bi bi-calendar-check me-2"></i>Agenda tu Cita</h4>
+                    </div>
+
+                    <div class="sidebar-body">
+                        <div class="alert alert-info bg-opacity-10 border-0 rounded-3 mb-3">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <small>Primer consulta con 20% de descuento</small>
+                        </div>
+
+                        <!-- Contacto -->
+                        <a th:href="'tel:' + ${clinica.telefono}" href="tel:+573001234567" class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Teléfono</div>
+                                <div class="contact-value" th:text="${clinica.telefono}">+57 300 123 4567</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <a th:href="'mailto:' + ${clinica.email}" href="mailto:contacto@clinicadelmar.com"
+                            class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-envelope-fill"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Correo Electrónico</div>
+                                <div class="contact-value" th:text="${clinica.email}">contacto@clinicadelmar.com</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <a href="#" class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-whatsapp"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">WhatsApp</div>
+                                <div class="contact-value">+57 300 123 4567</div>
+                            </div>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+
+                        <!-- Features -->
+                        <div class="features-grid mt-3">
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                                <span class="feature-text">Profesionales Certificados</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="bi bi-clock-history"></i></div>
+                                <span class="feature-text">Atención 24/7</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="bi bi-credit-card"></i></div>
+                                <span class="feature-text">Pago Seguro</span>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon"><i class="bi bi-car-front"></i></div>
+                                <span class="feature-text">Parqueadero</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <div sec:authorize="!isAuthenticated()">
+                            <a th:href="@{/login}" href="/login" class="btn btn-agendar btn-agendar-login">
+                                <i class="bi bi-person-circle"></i>
+                                Inicia sesión para agendar
+                            </a>
+                            <div class="text-center mt-3">
+                                <small class="text-muted">¿Nuevo usuario? <a th:href="@{/registro}" href="/registro"
+                                        class="text-decoration-none fw-bold text-primary">Regístrate gratis</a></small>
+                            </div>
+                        </div>
+
+                        <div sec:authorize="isAuthenticated()">
+                            <a th:href="@{/usuario/citas/solicitar(clinicaId=${clinica.id})}" href="#"
+                                class="btn btn-agendar btn-agendar-primary">
+                                <i class="bi bi-calendar2-plus-fill"></i>
+                                Solicitar Cita Ahora
+                            </a>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mt-3 text-muted small">
+                                <i class="bi bi-shield-check text-success"></i>
+                                <span>Pago seguro garantizado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mapa Real de Google Maps -->
+                <div class="content-card mt-4" data-aos="fade-up">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                        Ubicación
+                    </h5>
+                    <div class="map-container">
+                        <iframe
+                            th:src="'https://maps.google.com/maps?q=' + ${#strings.replace(clinica.direccion, '#', '')} + '&t=&z=15&ie=UTF8&iwloc=&output=embed'"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                        <div class="map-overlay">
+                            <i class="bi bi-geo-alt-fill text-primary fs-4"></i>
+                            <div>
+                                <!-- Mostramos la dirección tal cual está en la DB para el usuario -->
+                                <div class="fw-bold text-dark" th:text="${clinica.direccion}"
+                                    style="font-size: 0.8rem; line-height: 1.2;">Dirección</div>
+                                <small class="text-muted">Cartagena de Indias</small>
+                            </div>
+                        </div>
+                    </div>
+                    <a th:href="'https://www.google.com/maps/search/?api=1&query=' + ${#strings.replace(clinica.direccion, '#', '')}"
+                        target="_blank" class="btn btn-outline-primary w-100 mt-3 rounded-pill">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                        Cómo llegar con Google Maps
+                    </a>
+                </div>
+
+                <!-- Seguro / Garantía -->
+                <div class="content-card mt-4 bg-pattern" data-aos="fade-up">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Garantía de Satisfacción</h5>
+                        <p class="text-muted small mb-3">Si no estás satisfecho con la atención, te devolvemos tu
+                            dinero. Sin preguntas.</p>
+                        <div class="d-flex justify-content-center gap-3 text-muted small">
+                            <span><i class="bi bi-check-circle-fill text-success me-1"></i>Calidad</span>
+                            <span><i class="bi bi-check-circle-fill text-success me-1"></i>Confianza</span>
+                            <span><i class="bi bi-check-circle-fill text-success me-1"></i>Experiencia</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Fragment -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Sticky Mobile CTA -->
+    <div class="sticky-mobile-cta d-md-none">
+        <a href="#form-agendar" class="btn btn-agendar btn-agendar-primary w-100 shadow-none">
+            <i class="bi bi-calendar-plus me-2"></i>
+            Agendar Cita Ahora
+        </a>
+    </div>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
+        // Búsqueda de servicios dinámica
+        document.getElementById('serviceSearch').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const services = document.querySelectorAll('.service-card');
+            
+            services.forEach(service => {
+                const title = service.querySelector('h5').innerText.toLowerCase();
+                const desc = service.querySelector('p').innerText.toLowerCase();
+                if (title.includes(term) || desc.includes(term)) {
+                    service.style.display = 'flex';
+                } else {
+                    service.style.display = 'none';
+                }
+            });
+        });
+
+        // Smooth scroll para el botón flotante
+        document.querySelector('.sticky-mobile-cta a').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('form-agendar').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        // Animación de contador para el rating
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingScore = document.querySelector('.rating-score');
+            if (ratingScore) {
+                let current = 0;
+                const target = 4.9;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    ratingScore.textContent = current.toFixed(1);
+                }, 20);
+            }
+        });
+    </script>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

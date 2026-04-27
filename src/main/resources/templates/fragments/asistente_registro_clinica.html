@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <div th:fragment="alex-registro">
+        <style>
+            :root {
+                --alex-primary: #6366f1;
+                --alex-primary-dark: #4f46e5;
+                --alex-secondary: #ec4899;
+                --alex-accent: #06b6d4;
+                --alex-success: #10b981;
+                --alex-warning: #f59e0b;
+                --alex-danger: #ef4444;
+                --alex-bg: #ffffff;
+                --alex-text: #1e293b;
+                --alex-text-light: #64748b;
+                --alex-border: #e2e8f0;
+                --alex-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+                --alex-glass: rgba(255, 255, 255, 0.98);
+            }
+
+            /* CONTENEDOR FLOTANTE */
+            .alex-wrapper {
+                position: fixed;
+                bottom: 30px;
+                left: 30px;
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+
+            /* BURBUJA CONTEXTUAL DINÁMICA */
+            .alex-bubble {
+                background: white;
+                padding: 14px 22px;
+                border-radius: 24px 24px 24px 6px;
+                box-shadow: 0 10px 40px rgba(99, 102, 241, 0.25), 0 4px 12px rgba(0, 0, 0, 0.08);
+                font-weight: 700;
+                color: var(--alex-primary);
+                font-size: 0.95rem;
+                cursor: pointer;
+                max-width: 280px;
+                animation: alex-float 3s infinite ease-in-out, alex-fadeIn 0.6s ease;
+                position: relative;
+                border: 2px solid #e0e7ff;
+                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                line-height: 1.4;
+            }
+
+            .alex-bubble:hover {
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: 0 15px 50px rgba(99, 102, 241, 0.35);
+            }
+
+            .alex-bubble::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                left: 30px;
+                width: 16px;
+                height: 16px;
+                background: white;
+                border-right: 2px solid #e0e7ff;
+                border-bottom: 2px solid #e0e7ff;
+                transform: rotate(45deg);
+            }
+
+            .alex-bubble.urgent {
+                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                border-color: var(--alex-warning);
+                color: #92400e;
+                animation: alex-shake 0.5s ease, alex-float 3s infinite ease-in-out;
+            }
+
+            .alex-bubble.urgent::after {
+                border-color: var(--alex-warning);
+            }
+
+            .alex-bubble.success {
+                background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+                border-color: var(--alex-success);
+                color: #065f46;
+            }
+
+            @keyframes alex-shake {
+
+                0%,
+                100% {
+                    transform: translateX(0);
+                }
+
+                25% {
+                    transform: translateX(-5px);
+                }
+
+                75% {
+                    transform: translateX(5px);
+                }
+            }
+
+            /* AVATAR PREMIUM */
+            .alex-avatar-container {
+                position: relative;
+                cursor: pointer;
+            }
+
+            .alex-avatar {
+                width: 70px;
+                height: 70px;
+                background: var(--alex-grad);
+                border-radius: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 4px solid white;
+                box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4), 0 0 0 4px rgba(99, 102, 241, 0.1);
+                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .alex-avatar::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transform: rotate(45deg);
+                animation: alex-shine 3s infinite;
+            }
+
+            @keyframes alex-shine {
+                0% {
+                    transform: translateX(-100%) rotate(45deg);
+                }
+
+                100% {
+                    transform: translateX(100%) rotate(45deg);
+                }
+            }
+
+            .alex-avatar:hover {
+                transform: scale(1.1) rotate(3deg);
+            }
+
+            .alex-avatar.speaking {
+                animation: alex-speakPulse 0.8s ease infinite;
+            }
+
+            @keyframes alex-speakPulse {
+
+                0%,
+                100% {
+                    transform: scale(1);
+                    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+                }
+
+                50% {
+                    transform: scale(1.05);
+                    box-shadow: 0 20px 50px rgba(99, 102, 241, 0.6);
+                }
+            }
+
+            .alex-avatar i {
+                font-size: 2.2rem;
+                color: white;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+                z-index: 1;
+            }
+
+            .alex-status {
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+                width: 18px;
+                height: 18px;
+                background: var(--alex-success);
+                border: 3px solid white;
+                border-radius: 50%;
+                animation: alex-pulse 2s infinite;
+                z-index: 2;
+            }
+
+            @keyframes alex-pulse {
+
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+                }
+
+                50% {
+                    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+                }
+            }
+
+            /* PANEL EXPANDIDO */
+            .alex-panel {
+                position: fixed;
+                bottom: 120px;
+                left: 30px;
+                width: 450px;
+                max-height: 700px;
+                background: var(--alex-glass);
+                backdrop-filter: blur(20px);
+                border-radius: 32px;
+                box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 10001;
+                border: 1px solid rgba(99, 102, 241, 0.1);
+                animation: alex-slideUp 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            }
+
+            @keyframes alex-slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px) scale(0.95);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .ap-header {
+                padding: 24px;
+                background: var(--alex-grad);
+                color: white;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                position: relative;
+            }
+
+            .ap-avatar-header {
+                width: 50px;
+                height: 50px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .ap-header-text h6 {
+                margin: 0;
+                font-weight: 800;
+                font-size: 1.1rem;
+            }
+
+            .ap-header-text small {
+                opacity: 0.9;
+                font-weight: 500;
+            }
+
+            .ap-close {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                margin-left: auto;
+            }
+
+            .ap-close:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(90deg);
+            }
+
+            /* BODY CON MENSAJES */
+            .ap-body {
+                padding: 20px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+                max-height: 400px;
+            }
+
+            /* MENSAJE CONTEXTUAL DESTACADO */
+            .ap-context-message {
+                background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+                padding: 18px;
+                border-radius: 20px;
+                border-left: 4px solid var(--alex-primary);
+                font-size: 0.95rem;
+                color: var(--alex-text);
+                line-height: 1.6;
+                animation: alex-popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                position: relative;
+                box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+            }
+
+            @keyframes alex-popIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.9) translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+
+            .ap-context-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 10px;
+                font-weight: 700;
+                color: var(--alex-primary);
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .ap-tip-box {
+                background: white;
+                padding: 12px 16px;
+                border-radius: 12px;
+                margin-top: 12px;
+                border: 1px solid #e0e7ff;
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                font-size: 0.9rem;
+            }
+
+            .ap-tip-box i {
+                color: var(--alex-warning);
+                font-size: 1.1rem;
+                margin-top: 2px;
+            }
+
+            /* VALIDACIÓN EN TIEMPO REAL */
+            .ap-validation {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 10px;
+                padding: 8px 12px;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                animation: alex-slideRight 0.3s ease;
+            }
+
+            @keyframes alex-slideRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .ap-validation.success {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .ap-validation.error {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .ap-validation.warning {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            /* SUGERENCIAS RÁPIDAS */
+            .ap-suggestions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            .ap-chip {
+                background: white;
+                border: 1.5px solid #e2e8f0;
+                padding: 8px 14px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: var(--alex-text);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .ap-chip:hover {
+                background: var(--alex-primary);
+                color: white;
+                border-color: var(--alex-primary);
+                transform: translateY(-2px);
+            }
+
+            .ap-chip i {
+                font-size: 0.9rem;
+            }
+
+            /* FOOTER */
+            .ap-footer {
+                padding: 16px 20px;
+                background: white;
+                border-top: 1px solid #e2e8f0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .ap-input {
+                flex: 1;
+                border: 2px solid #e2e8f0;
+                border-radius: 16px;
+                padding: 12px 16px;
+                font-size: 0.9rem;
+                outline: none;
+                transition: all 0.3s ease;
+                font-family: inherit;
+            }
+
+            .ap-input:focus {
+                border-color: var(--alex-primary);
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            }
+
+            .ap-send {
+                width: 42px;
+                height: 42px;
+                border-radius: 14px;
+                background: var(--alex-grad);
+                border: none;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .ap-send:hover {
+                transform: scale(1.1);
+                box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            }
+
+            /* OVERLAY */
+            .alex-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .alex-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            /* ANIMACIONES */
+            @keyframes alex-float {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-6px);
+                }
+            }
+
+            @keyframes alex-fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            /* RESPONSIVE */
+            @media (max-width: 480px) {
+                .alex-wrapper {
+                    bottom: 20px;
+                    left: 20px;
+                }
+
+                .alex-panel {
+                    left: 10px;
+                    right: 10px;
+                    width: auto;
+                    bottom: 100px;
+                }
+
+                .alex-bubble {
+                    max-width: 220px;
+                    font-size: 0.85rem;
+                }
+            }
+
+            /* HIGHLIGHT DE CAMPO ACTIVO */
+            .field-highlight {
+                animation: fieldPulse 2s ease infinite;
+                border-color: var(--alex-primary) !important;
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+            }
+
+            @keyframes fieldPulse {
+
+                0%,
+                100% {
+                    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+                }
+
+                50% {
+                    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.1);
+                }
+            }
+        </style>
+
+        <!-- OVERLAY -->
+        <div class="alex-overlay" id="alexOverlay" onclick="alexRegistro.closePanel()"></div>
+
+        <!-- WIDGET FLOTANTE -->
+        <div class="alex-wrapper">
+            <div class="alex-bubble" id="alexBubble" onclick="alexRegistro.openPanel()">
+                <span>¡Hola! Soy Alex 👋<br><small style="font-weight: 500; opacity: 0.8;">Click para
+                        ayuda</small></span>
+            </div>
+            <div class="alex-avatar-container">
+                <div class="alex-avatar" id="alexAvatar" onclick="alexRegistro.openPanel()">
+                    <i class="bi bi-briefcase-fill"></i>
+                    <div class="alex-status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL PRINCIPAL -->
+        <div class="alex-panel" id="alexPanel">
+            <div class="ap-header">
+                <div class="ap-avatar-header">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <div class="ap-header-text">
+                    <h6>ALEX</h6>
+                    <small>Tu asistente de registro</small>
+                </div>
+                <button class="ap-close" onclick="alexRegistro.closePanel()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="ap-body" id="apBody">
+                <!-- Los mensajes contextuales aparecerán aquí -->
+            </div>
+
+            <div class="ap-footer">
+                <input type="text" class="ap-input" id="alexInput" placeholder="¿Alguna duda? Escríbeme..."
+                    onkeypress="if(event.key==='Enter') alexRegistro.handleFreeText()">
+                <button class="ap-send" onclick="alexRegistro.handleFreeText()">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const alexRegistro = {
+                panel: document.getElementById('alexPanel'),
+                bubble: document.getElementById('alexBubble'),
+                avatar: document.getElementById('alexAvatar'),
+                body: document.getElementById('apBody'),
+                overlay: document.getElementById('alexOverlay'),
+                input: document.getElementById('alexInput'),
+                synth: window.speechSynthesis,
+                isOpen: false,
+                currentField: null,
+                fieldHistory: [],
+
+                // Guía contextual por campo
+                fieldGuide: {
+                    'nombreClinica': {
+                        title: '🏥 Nombre de la Clínica',
+                        tips: [
+                            'Usa el nombre oficial registrado',
+                            'Incluye "Veterinaria" o "Centro Médico" para mejor SEO',
+                            'Evita abreviaciones confusas'
+                        ],
+                        examples: ['VetSalud Centro Veterinario', 'Clínica Animalia Premium', 'PetCare Hospital Veterinario'],
+                        validation: (val) => val.length >= 3 ? 'success' : 'error',
+                        messages: {
+                            focus: '¡Empecemos! El nombre es tu carta de presentación. Piensa en algo profesional y fácil de recordar.',
+                            typing: 'Buena elección. Recuerda que este nombre aparecerá en Google y en la app.',
+                            blur: '¡Perfecto! Ahora los clientes podrán encontrarte fácilmente.'
+                        }
+                    },
+                    'emailClinica': {
+                        title: '📧 Email de Contacto',
+                        tips: [
+                            'Usa un email corporativo (no personal)',
+                            'Verifica que esté activo',
+                            'Este email recibirá las notificaciones de citas'
+                        ],
+                        examples: ['citas@tuclinica.com', 'contacto@veterinaria.co'],
+                        validation: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? 'success' : 'error',
+                        messages: {
+                            focus: 'Este email será el canal principal de comunicación con tus clientes. ¡Que sea profesional!',
+                            typing: 'Revisa bien la ortografía, un error aquí podría costarte citas.',
+                            blur: 'Email registrado. Las notificaciones llegarán aquí.'
+                        }
+                    },
+                    'telefonoClinica': {
+                        title: '📞 Teléfono de Contacto',
+                        tips: [
+                            'Número de WhatsApp Business ideal',
+                            'Debe estar disponible en horario laboral',
+                            'Incluye prefijo de país si es necesario'
+                        ],
+                        examples: ['+57 300 123 4567', '601 234 5678'],
+                        validation: (val) => val.length >= 7 ? 'success' : 'warning',
+                        messages: {
+                            focus: 'Los clientes llamarán a este número para emergencias. ¿Es el correcto?',
+                            typing: 'Si tienes WhatsApp Business en este número, ¡excelente! Podrás confirmar citas rápido.',
+                            blur: 'Teléfono guardado. Los clientes te contactarán aquí.'
+                        }
+                    },
+                    'direccion': {
+                        title: '📍 Dirección Completa',
+                        tips: [
+                            'Incluye barrio y ciudad',
+                            'Agrega referencias cercanas (ej: "frente al parque")',
+                            'Verifica el código postal'
+                        ],
+                        examples: ['Carrera 45 #123-45, Barrio Salamanca, Bogotá', 'Av. Principal 123, Local 5, Medellín'],
+                        validation: (val) => val.length >= 10 ? 'success' : 'warning',
+                        messages: {
+                            focus: 'La dirección exacta es crucial. Muchos clientes llegarán por primera vez usando GPS.',
+                            typing: 'Si es difícil de encontrar, agrega una referencia como "frente al supermercado".',
+                            blur: '¡Ubicación registrada! Aparecerás en el mapa de clínicas cercanas.'
+                        }
+                    },
+                    'nombreDuenio': {
+                        title: '👤 Tu Nombre',
+                        tips: [
+                            'Nombre como aparece en tu cédula',
+                            'Será visible para el equipo de soporte'
+                        ],
+                        examples: ['Carlos Andrés', 'María Fernanda'],
+                        validation: (val) => val.length >= 2 ? 'success' : 'error',
+                        messages: {
+                            focus: '¡Hola futuro administrador! ¿Cómo te llamas?',
+                            typing: 'Este nombre aparecerá en tu perfil de administrador.',
+                            blur: '¡Gusto en conocerte! Continuemos con tu apellido.'
+                        }
+                    },
+                    'apellidoDuenio': {
+                        title: '👤 Tu Apellido',
+                        tips: ['Apellido completo'],
+                        examples: ['Gómez Rodríguez', 'Martínez López'],
+                        validation: (val) => val.length >= 2 ? 'success' : 'error',
+                        messages: {
+                            focus: 'Tu apellido completo para completar tu perfil.',
+                            typing: '',
+                            blur: '¡Perfil completado! Ahora creemos tus credenciales de acceso.'
+                        }
+                    },
+                    'emailDuenio': {
+                        title: '🔐 Email de Administrador',
+                        tips: [
+                            'Este será tu usuario para iniciar sesión',
+                            'Usa un email que revises constantemente',
+                            'No lo compartas con nadie'
+                        ],
+                        examples: ['tu.nombre@email.com'],
+                        validation: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? 'success' : 'error',
+                        messages: {
+                            focus: '⚠️ Importante: Este email será tu llave de acceso al sistema. ¡Guárdalo bien!',
+                            typing: 'Recomendación: usa un email diferente al de la clínica para mayor seguridad.',
+                            blur: 'Usuario registrado. Contraséña siguiente...'
+                        }
+                    },
+                    'password': {
+                        title: '🔒 Contraseña Segura',
+                        tips: [
+                            'Mínimo 8 caracteres',
+                            'Combina MAYÚSCULAS, minúsculas y números',
+                            'Evita fechas de cumpleaños o "123456"'
+                        ],
+                        examples: ['MiCl1n1ca2024!', 'Vet$egura#89'],
+                        validation: (val) => {
+                            if (val.length < 8) return 'error';
+                            if (!/[A-Z]/.test(val) || !/[a-z]/.test(val) || !/[0-9]/.test(val)) return 'warning';
+                            return 'success';
+                        },
+                        messages: {
+                            focus: 'Último paso. Crea una fortaleza digital para proteger los datos de tu clínica.',
+                            typing: 'Usa una frase memorable pero compleja. Ej: "MiPerroTiene5Años!"',
+                            blur: '¡Sistema seguro! Tu clínica está protegida.'
+                        }
+                    }
+                },
+
+                init: function () {
+                    this.observeFields();
+                    this.startIntroSequence();
+                },
+
+                startIntroSequence: function () {
+                    setTimeout(() => {
+                        this.speakBubble('¡Hola! Soy Alex. Estoy aquí para ayudarte a completar tu registro en solo 3 minutos. ¡Empecemos!', 6000);
+                    }, 1500);
+                },
+
+                observeFields: function () {
+                    const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="password"]');
+
+                    inputs.forEach(input => {
+                        // Detectar campo por th:field o id
+                        const fieldName = input.getAttribute('th:field')?.replace('*{', '').replace('}', '') ||
+                            input.id ||
+                            input.name;
+
+                        input.addEventListener('focus', () => this.onFieldFocus(fieldName, input));
+                        input.addEventListener('input', () => this.onFieldInput(fieldName, input));
+                        input.addEventListener('blur', () => this.onFieldBlur(fieldName, input));
+                    });
+                },
+
+                onFieldFocus: function (fieldName, input) {
+                    this.currentField = fieldName;
+                    const guide = this.fieldGuide[fieldName];
+
+                    if (guide) {
+                        // Resaltar campo
+                        input.classList.add('field-highlight');
+
+                        // Mostrar guía en burbuja
+                        this.showBubble(guide.messages.focus, 'normal');
+
+                        // Si el panel está abierto, mostrar detalle completo
+                        if (this.isOpen) {
+                            this.showContextMessage(guide);
+                        }
+
+                        this.speak(guide.messages.focus);
+                    }
+                },
+
+                onFieldInput: function (fieldName, input) {
+                    const guide = this.fieldGuide[fieldName];
+                    const value = input.value;
+
+                    if (!guide) return;
+
+                    // Validación en tiempo real
+                    const status = guide.validation(value);
+
+                    // Mensajes contextuales según progreso
+                    if (value.length === 0) {
+                        this.showBubble('Escribe aquí...', 'normal');
+                    } else if (value.length < 3) {
+                        this.showBubble('Sigue escribiendo...', 'normal');
+                    } else if (status === 'success') {
+                        this.showBubble('¡Perfecto! ✅', 'success');
+                        if (this.isOpen) this.showValidation('¡Excelente! Dato válido.', 'success');
+                    } else if (status === 'warning') {
+                        this.showBubble('Casi listo... ⚠️', 'normal');
+                    } else {
+                        this.showBubble('Revisa esto... ❌', 'urgent');
+                        if (this.isOpen) this.showValidation('Necesitas más caracteres o formato válido.', 'error');
+                    }
+
+                    // Sugerencias específicas
+                    if (value.length > 0 && value.length < 5 && guide.messages.typing) {
+                        if (Math.random() > 0.7) { // No saturar
+                            this.showBubble(guide.messages.typing, 'normal');
+                        }
+                    }
+                },
+
+                onFieldBlur: function (fieldName, input) {
+                    input.classList.remove('field-highlight');
+                    const guide = this.fieldGuide[fieldName];
+
+                    if (guide && input.value.trim() !== '') {
+                        this.showBubble(guide.messages.blur, 'success');
+                        this.speak(guide.messages.blur);
+
+                        // Auto-salto al siguiente campo sugerido
+                        setTimeout(() => {
+                            this.showBubble('¿Pasamos al siguiente campo? 👇', 'normal');
+                        }, 2000);
+                    }
+                },
+
+                showContextMessage: function (guide) {
+                    const html = `
+                        <div class="ap-context-message">
+                            <div class="ap-context-header">
+                                <i class="bi bi-lightbulb-fill"></i>
+                                ${guide.title}
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: var(--alex-primary-dark);">💡 Tips:</strong>
+                                <ul style="margin: 8px 0; padding-left: 20px; font-size: 0.9rem;">
+                                    ${guide.tips.map(tip => `<li style="margin: 4px 0;">${tip}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="ap-tip-box">
+                                <i class="bi bi-stars"></i>
+                                <div>
+                                    <strong>Ejemplos:</strong><br>
+                                    ${guide.examples.map(ex => `<code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem;">${ex}</code>`).join('<br>')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    this.addMessage(html);
+                },
+
+                showValidation: function (text, type) {
+                    const icon = type === 'success' ? 'check-circle-fill' : type === 'error' ? 'exclamation-triangle-fill' : 'info-circle-fill';
+                    const html = `
+                        <div class="ap-validation ${type}">
+                            <i class="bi bi-${icon}"></i>
+                            <span>${text}</span>
+                        </div>
+                    `;
+                    this.addMessage(html);
+                },
+
+                showBubble: function (text, type = 'normal') {
+                    this.bubble.innerHTML = `<span>${text}</span>`;
+                    this.bubble.className = 'alex-bubble ' + (type === 'urgent' ? 'urgent' : type === 'success' ? 'success' : '');
+
+                    // Animación de atención
+                    this.bubble.style.animation = 'none';
+                    setTimeout(() => {
+                        this.bubble.style.animation = 'alex-float 3s infinite ease-in-out, alex-fadeIn 0.6s ease';
+                    }, 10);
+
+                    // Auto-hide después de tiempo según tipo
+                    const duration = type === 'success' ? 3000 : type === 'urgent' ? 5000 : 4000;
+                    clearTimeout(this.bubbleTimeout);
+                    this.bubbleTimeout = setTimeout(() => {
+                        if (!this.isOpen) {
+                            this.bubble.innerHTML = '<span>¿Necesitas ayuda? 👋<br><small style="font-weight: 500; opacity: 0.8;">Click aquí</small></span>';
+                            this.bubble.className = 'alex-bubble';
+                        }
+                    }, duration);
+                },
+
+                speakBubble: function (text, duration = 4000) {
+                    this.showBubble(text, 'normal');
+                    this.speak(text);
+
+                    // Animación de habla en avatar
+                    this.avatar.classList.add('speaking');
+                    setTimeout(() => this.avatar.classList.remove('speaking'), duration);
+                },
+
+                openPanel: function () {
+                    this.isOpen = true;
+                    this.panel.style.display = 'flex';
+                    this.overlay.classList.add('active');
+                    this.bubble.style.opacity = '0';
+                    this.bubble.style.pointerEvents = 'none';
+
+                    // Mostrar mensaje de contexto actual si hay campo activo
+                    if (this.currentField && this.fieldGuide[this.currentField]) {
+                        this.body.innerHTML = '';
+                        this.showContextMessage(this.fieldGuide[this.currentField]);
+                    } else {
+                        // Mensaje de bienvenida general
+                        this.body.innerHTML = `
+                            <div class="ap-context-message">
+                                <div class="ap-context-header">
+                                    <i class="bi bi-robot"></i>
+                                    Modo Asistencia Activo
+                                </div>
+                                <p>Haz click en cualquier campo del formulario y te guiaré paso a paso. 
+                                Estoy atento a tus dudas. 🎯</p>
+                                <div class="ap-suggestions">
+                                    <div class="ap-chip" onclick="alexRegistro.suggestHelp('datos')">
+                                        <i class="bi bi-question-circle"></i> ¿Qué datos necesito?
+                                    </div>
+                                    <div class="ap-chip" onclick="alexRegistro.suggestHelp('tiempo')">
+                                        <i class="bi bi-clock"></i> ¿Cuánto tarda?
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                },
+
+                closePanel: function () {
+                    this.isOpen = false;
+                    this.panel.style.display = 'none';
+                    this.overlay.classList.remove('active');
+                    this.bubble.style.opacity = '1';
+                    this.bubble.style.pointerEvents = 'auto';
+                },
+
+                addMessage: function (html) {
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = html;
+                    this.body.appendChild(wrapper);
+                    this.body.scrollTop = this.body.scrollHeight;
+                },
+
+                suggestHelp: function (topic) {
+                    if (topic === 'datos') {
+                        this.addMessage(`
+                            <div class="ap-context-message">
+                                <strong>📋 Checklist de documentos:</strong><br>
+                                • Nombre oficial de la clínica<br>
+                                • Email corporativo activo<br>
+                                • Teléfono con WhatsApp<br>
+                                • Dirección completa con ciudad<br>
+                                • Tus datos personales<br>
+                                • Una contraseña segura
+                            </div>
+                        `);
+                        this.speak('Necesitas: nombre de clínica, email, teléfono, dirección, tus datos personales y una contraseña segura.');
+                    } else if (topic === 'tiempo') {
+                        this.addMessage(`
+                            <div class="ap-context-message">
+                                <strong>⏱️ Timeline:</strong><br>
+                                • Registro: 3 minutos<br>
+                                • Aprobación: 24-48 horas<br>
+                                • Activación: Inmediata<br><br>
+                                <span style="color: var(--alex-success);">¡95% aprobadas en el primer intento!</span>
+                            </div>
+                        `);
+                        this.speak('El registro toma tres minutos. La aprobación entre veinticuatro y cuarenta y ocho horas.');
+                    }
+                },
+
+                handleFreeText: function () {
+                    const text = this.input.value.trim();
+                    if (!text) return;
+
+                    // Mostrar mensaje del usuario
+                    this.addMessage(`
+                        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 14px 18px; border-radius: 20px 20px 6px 20px; margin-left: auto; max-width: 85%; font-size: 0.9rem;">
+                            ${text}
+                        </div>
+                    `);
+                    this.input.value = '';
+
+                    // Respuesta inteligente
+                    setTimeout(() => {
+                        const lower = text.toLowerCase();
+                        let response = '';
+
+                        if (lower.includes('hola') || lower.includes('hey')) {
+                            response = '¡Hola! Estoy aquí para ayudarte. ¿En qué campo necesitas asistencia?';
+                        } else if (lower.includes('gracias')) {
+                            response = '¡Con gusto! Estoy aquí para lo que necesites. ¡Vamos a completar ese registro! 💪';
+                        } else if (lower.includes('error') || lower.includes('no funciona')) {
+                            response = 'Dime qué campo te da problemas y te ayudo a solucionarlo. ¿Es el email, la contraseña o algún otro?';
+                        } else {
+                            response = 'Entiendo. Para ayudarte mejor, haz click en el campo del formulario donde tengas dudas y te daré tips específicos. 🎯';
+                        }
+
+                        this.addMessage(`
+                            <div class="ap-context-message" style="background: #f0fdf4; border-left-color: var(--alex-success);">
+                                ${response}
+                            </div>
+                        `);
+                        this.speak(response);
+                    }, 600);
+                },
+
+                speak: function (text) {
+                    if (!window.speechSynthesis) return;
+                    this.synth.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'es-CO';
+                    utterance.rate = 1.0;
+                    utterance.pitch = 0.95;
+                    utterance.volume = 0.7;
+                    this.synth.speak(utterance);
+                }
+            };
+
+            // Inicializar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => alexRegistro.init());
+            } else {
+                alexRegistro.init();
+            }
+
+            // Cerrar con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && alexRegistro.isOpen) {
+                    alexRegistro.closePanel();
+                }
+            });
+        </script>
+    </div>
+
+</body>
+
+</html>

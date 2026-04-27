@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Confirmación de Cita</title>
+        <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; }
+        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .header { background-color: #3B82F6; /* Azul de tu marca */ color: white; padding: 40px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .content { padding: 30px; }
+        .content p { line-height: 1.6; color: #4B5563; }
+        .details-box { background-color: #F7F8FA; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-top: 20px; }
+        .details-box h3 { margin-top: 0; color: #1F2937; }
+        .detail-item { padding: 10px 0; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-item strong { color: #1F2937; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #9CA3AF; }
+        .brand-logo { max-height: 50px; margin-bottom: 10px; } /* Para tu logo */
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <!-- <img th:src="${logoUrl}" alt="ClínicaApp Logo" class="brand-logo" /> -->
+            <h1>¡Tu Cita está Confirmada!</h1>
+        </div>
+        <div class="content">
+            <p>Hola <strong th:text="${nombreCliente}"></strong>,</p>
+            <p>¡Buenas noticias! Tu solicitud de cita ha sido confirmada por la clínica. A continuación, te dejamos los detalles para tu referencia.</p>
+            
+            <div class="details-box">
+                <h3>Detalles de la Cita</h3>
+                <div class="detail-item">
+                    <span>Mascota:</span>
+                    <strong th:text="${nombreMascota}"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Servicio:</span>
+                    <strong th:text="${nombreServicio}"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Fecha y Hora:</span>
+                    <strong th:text="${#temporals.format(fechaHoraCita, 'dd ''de'' MMMM, yyyy ''a las'' HH:mm')}"></strong>
+                </div>
+                 <div class="detail-item">
+                    <span>Clínica:</span>
+                    <strong th:text="${nombreClinica}"></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Dirección:</span>
+                    <strong th:text="${direccionClinica}"></strong>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px;">Si tienes alguna pregunta o necesitas reprogramar, por favor contacta directamente a la clínica. ¡Te esperamos!</p>
+        </div>
+        <div class="footer">
+            Generado por ClínicaApp | La salud de tu mascota, simplificada.
+        </div>
+    </div>
+</body>
+</html>

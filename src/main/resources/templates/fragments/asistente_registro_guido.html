@@ -1,0 +1,318 @@
+<div th:fragment="guido-registro">
+    <style>
+        :root {
+            --g-main: #10b981;
+            /* Verde éxito/seguridad */
+            --g-light: #ecfdf5;
+            --g-grad: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+
+        /* CONTENEDOR DEL ROBOT "LLAMANDO" */
+        .guido-call-to-action {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* GLOBO DE TEXTO QUE INVITA */
+        .guido-invite {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            font-weight: 800;
+            color: #065f46;
+            margin-bottom: 20px;
+            border: 3px solid var(--g-main);
+            animation: bounce-invite 2s infinite;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .guido-invite::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid var(--g-main);
+        }
+
+        /* ROBOT GRANDE Y PULSANTE */
+        .guido-big-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--g-grad);
+            border-radius: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 5px solid white;
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+            position: relative;
+            transition: 0.4s;
+        }
+
+        .guido-big-avatar i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        /* EFECTO DE PULSO (PARA LLAMAR LA ATENCIÓN) */
+        .guido-big-avatar::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 35px;
+            background: var(--g-main);
+            z-index: -1;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounce-invite {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* VENTANA DE GUÍA DE REGISTRO */
+        .guido-reg-panel {
+            position: fixed;
+            bottom: 160px;
+            left: 40px;
+            width: 400px;
+            height: 65vh;
+            max-height: 550px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10001;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            animation: slide-in 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .gr-header {
+            padding: 30px;
+            background: var(--g-grad);
+            color: white;
+        }
+
+        .gr-body {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .hint-bubble {
+            background: var(--g-light);
+            padding: 18px;
+            border-radius: 25px;
+            border-left: 6px solid var(--g-main);
+            font-size: 0.95rem;
+            color: #064e3b;
+            line-height: 1.5;
+            animation: fade-hint 0.3s ease;
+        }
+
+        /* BARRA DE PROGRESO DEL FORMULARIO */
+        .gr-footer {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--g-main);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .bar-bg {
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--g-grad);
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <!-- UI: EL PERSONAJE QUE LLAMA -->
+    <div class="guido-call-to-action" id="guidoCall">
+        <div class="guido-invite" id="inviteBubble" onclick="guidoReg.open()">
+            ¡Oye! 👋 ¿Creamos tu cuenta?
+        </div>
+        <div class="guido-big-avatar" id="guidoRobot" onclick="guidoReg.open()">
+            <i class="bi bi-robot"></i>
+        </div>
+    </div>
+
+    <!-- UI: LA VENTANA DE AYUDA -->
+    <div class="guido-reg-panel" id="regPanel">
+        <div class="gr-header">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-check fs-2"></i>
+                <div>
+                    <h6 class="m-0 fw-bold">GUIDO: Registro Seguro</h6>
+                    <small class="opacity-75">Asistente en tiempo real</small>
+                </div>
+                <button class="btn-close btn-close-white ms-auto" onclick="guidoReg.close()"></button>
+            </div>
+        </div>
+
+        <div class="gr-body" id="grBody">
+            <div class="hint-bubble">
+                ¡Hola! Soy **Guido**. Mi trabajo es ayudarte a que tu registro sea rápido y seguro. ¡Toca cualquier
+                casilla y te explicaré qué hacer!
+            </div>
+        </div>
+
+        <div class="gr-footer">
+            <span class="progress-label" id="percLabel">Formulario: 0%</span>
+            <div class="bar-bg">
+                <div class="bar-fill" id="percFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const guidoReg = {
+            panel: document.getElementById('regPanel'),
+            avatar: document.getElementById('guidoCall'),
+            body: document.getElementById('grBody'),
+            fill: document.getElementById('percFill'),
+            label: document.getElementById('percLabel'),
+            synth: window.speechSynthesis,
+
+            hints: {
+                'nombre': "Tu nombre aparecerá en todas las recetas médicas de tu mascota. ¡Ponlo bien!",
+                'apellido': "El apellido nos ayuda a organizar el expediente de tu familia.",
+                'email': "Usa un correo que revises siempre. Ahí te mandaremos las citas y resultados.",
+                'telefono': "Tu número es vital para avisarte vía WhatsApp si ocurre una emergencia.",
+                'password': "¡Seguridad! Usa una clave fuerte. Los datos de tu mascota son privados.",
+                'confirmPassword': "Asegúrate de repetir la clave exacta para activar tu cuenta."
+            },
+
+            open: function () {
+                this.panel.style.display = 'flex';
+                document.getElementById('inviteBubble').style.display = 'none';
+                this.speak("¡Hola! Soy Guido. Vamos a crear tu cuenta oficial de Clínica App. Yo te guiaré en cada paso.");
+                this.observeFields();
+            },
+
+            close: function () {
+                this.panel.style.display = 'none';
+                document.getElementById('inviteBubble').style.display = 'block';
+                this.synth.cancel();
+            },
+
+            observeFields: function () {
+                const inputs = ['nombre', 'apellido', 'email', 'telefono', 'password', 'confirmPassword'];
+                inputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('focus', () => this.showHint(id));
+                        el.addEventListener('input', () => this.updateBar());
+                    }
+                });
+            },
+
+            showHint: function (id) {
+                const text = this.hints[id];
+                if (!text || this.lastId === id) return;
+                this.lastId = id;
+
+                const div = document.createElement('div');
+                div.className = 'hint-bubble';
+                div.innerHTML = `<strong>Campo ${id.toUpperCase()}:</strong><br>${text}`;
+
+                // Limpiar para no llenar la pantalla
+                if (this.body.children.length > 2) this.body.removeChild(this.body.firstChild);
+
+                this.body.appendChild(div);
+                this.body.scrollTop = this.body.scrollHeight;
+                this.speak(text);
+            },
+
+            updateBar: function () {
+                const inputs = ['nombre', 'apellido', 'email', 'telefono', 'password', 'confirmPassword'];
+                let filled = 0;
+                inputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && el.value.trim() !== "") filled++;
+                });
+
+                const p = Math.round((filled / inputs.length) * 100);
+                this.fill.style.width = p + "%";
+                this.label.innerText = `Formulario: ${p}%`;
+
+                if (p === 100) {
+                    this.label.style.color = "#10b981";
+                    this.label.innerText = "¡TODO LISTO! PUEDES REGISTRARTE";
+                }
+            },
+
+            speak: function (text) {
+                this.synth.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'es-ES'; u.rate = 1.1;
+                this.synth.speak(u);
+            }
+        };
+    </script>
+</div>

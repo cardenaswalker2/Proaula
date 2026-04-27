@@ -1,0 +1,591 @@
+<div th:fragment="mic-button">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        /* Ventana Principal del Bot */
+        .nova-window {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 380px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 10000;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            animation: novaBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        @keyframes novaBounce {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .nova-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nova-avatar-box {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        .nova-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(248, 250, 252, 0.4);
+            scroll-behavior: smooth;
+        }
+
+        /* Burbujas de Chat */
+        .bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 85%;
+            position: relative;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bubble-nova {
+            background: white;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bubble-user {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timestamp {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 5px;
+            align-self: flex-end;
+        }
+
+        /* Indicador de escribiendo */
+        .typing-container {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            width: max-content;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Siri Wave Animation */
+        .sound-wave {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 20px;
+            margin-bottom: 10px;
+        }
+
+        .sound-wave span {
+            width: 3px;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 10px;
+            animation: wave 1s infinite ease-in-out;
+        }
+
+        @keyframes wave {
+            0%, 100% { height: 8px; }
+            50% { height: 20px; }
+        }
+
+        .sound-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .sound-wave span:nth-child(3) { animation-delay: 0.2s; }
+
+        /* Chips */
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .nav-chip {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #4f46e5;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-chip:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        .nova-footer {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pill-input-container {
+            width: 100%;
+            background: #f1f5f9;
+            border-radius: 25px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+
+        .pill-input-container:focus-within {
+            background: white;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .pill-input-container input {
+            border: none;
+            background: transparent;
+            flex: 1;
+            outline: none;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .mic-btn-main {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            background: #0f172a;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.3);
+        }
+
+        .mic-btn-main.listening {
+            background: #ef4444;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Botón de Activación (FAB) */
+        #triggerNova {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 22px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #triggerNova:hover {
+            transform: translateY(-5px) rotate(5deg);
+            background: #1e293b;
+        }
+    </style>
+
+    <!-- Botón Flotante -->
+    <button id="triggerNova" title="Asistente Nova">🤖</button>
+
+    <!-- Ventana del Asistente -->
+    <div id="novaContainer" class="nova-window">
+        <div class="nova-header">
+            <div class="d-flex align-items-center gap-3">
+                <div class="nova-avatar-box">✨</div>
+                <div>
+                    <h6 class="m-0 fw-bold" style="letter-spacing: 0.5px;">NOVA CORE</h6>
+                    <small class="opacity-75">Sincronizado</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white" style="font-size: 12px;" onclick="novaApp.toggle()"></button>
+        </div>
+
+        <div id="chatDisplay" class="nova-body">
+            <!-- El indicador de tipeo siempre queda al fondo y se muestra via JS -->
+            <div id="typingArea" class="typing-container">
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="nova-footer">
+            <div class="sound-wave" id="siriWave">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            
+            <div class="pill-input-container">
+                <input type="text" id="textInput" placeholder="Escribe o pulsa el micro...">
+                <button class="btn btn-link p-0 text-primary" onclick="novaApp.sendText()" style="text-decoration: none;">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+
+            <button id="micAction" class="mic-btn-main">
+                <i class="bi bi-mic-fill"></i>
+            </button>
+            <div class="mt-2 text-muted fw-bold" style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                Asistente de Voz
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Lógica -->
+    <script th:inline="javascript">
+    const novaApp = {
+        config: {
+            // Sintaxis segura: Thymeleaf reemplaza el comentario, JS usa 'Usuario' de respaldo
+            user: /*[[${usuario?.nombre}]]*/ 'Usuario',
+            userId: /*[[${usuario?.id}]]*/ null,
+            
+            // Mapeo de rutas corregido para coincidir con tu sistema
+            routes: {
+                'cita': '/usuario/citas/solicitar',
+                'mis citas': '/usuario/mis-citas',
+                'mascota': '/usuario/mis-mascotas', // CORREGIDO
+                'mis mascotas': '/usuario/mis-mascotas',
+                'pago': '/usuario/pagos',
+                'juego': '/usuario/juego',
+                'perfil': '/usuario/perfil'
+            }
+        },
+
+        sr: null,
+        isOpen: false,
+        history: [],
+
+        init() {
+            // Cargar historial y estado previo al iniciar la página
+            let storedHistory = sessionStorage.getItem('nova_history');
+            if (storedHistory) {
+                try {
+                    let parsed = JSON.parse(storedHistory);
+                    parsed.forEach(item => this.pushMsg(item.role, item.text, item.chips, false, item.time));
+                    this.history = parsed;
+                } catch(e) { console.error("Error cargando historial de Nova", e); }
+            }
+            
+            if(sessionStorage.getItem('nova_isOpen') === 'true') {
+                this.isOpen = false; // Se invertirá a true en toggle
+                this.toggle(false);
+            }
+
+            // Configurar Reconocimiento de Voz (Web Speech API)
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (Speech) {
+                this.sr = new Speech();
+                this.sr.lang = 'es-ES';
+                this.sr.continuous = false;
+                this.sr.interimResults = false;
+                
+                this.sr.onresult = (e) => {
+                    const transcript = e.results[0][0].transcript;
+                    this.processInput(transcript);
+                };
+                
+                this.sr.onstart = () => this.setVisualListening(true);
+                this.sr.onend = () => this.setVisualListening(false);
+                this.sr.onerror = () => this.setVisualListening(false);
+            }
+
+            // Eventos de botones
+            document.getElementById('triggerNova').onclick = () => this.toggle();
+            
+            document.getElementById('micAction').onclick = () => {
+                try { 
+                    this.sr.start(); 
+                } catch(e) { 
+                    console.warn("El reconocimiento ya está activo"); 
+                }
+            };
+
+            document.getElementById('textInput').onkeypress = (e) => { 
+                if (e.key === 'Enter') this.sendText(); 
+            };
+        },
+
+        // FUNCIÓN MEJORADA: Saludo e Introducción inmediata
+        toggle(speakHello = true) {
+            this.isOpen = !this.isOpen;
+            sessionStorage.setItem('nova_isOpen', this.isOpen);
+            const container = document.getElementById('novaContainer');
+            container.style.display = this.isOpen ? 'flex' : 'none';
+            
+            // Si se abre y el chat está vacío, Nova se presenta
+            if (this.isOpen && this.history.length === 0 && speakHello) {
+                const saludoPrincipal = `¡Hola **${this.config.user}**! ✨ Soy **Nova**, tu asistente inteligente. 
+                Mi propósito es ayudarte a cuidar de tus mascotas de la forma más rápida posible. 
+                Puedo agendarte una cita, mostrarte tus pagos o llevarte al juego virtual. 
+                ¿En qué puedo servirte ahora?`;
+                
+                this.pushMsg('nova', saludoPrincipal, ['📅 Agendar Cita', '🐾 Mis Mascotas', '💳 Ver Pagos', '🎮 Jugar']);
+                this.speak(saludoPrincipal);
+            }
+        },
+
+        setVisualListening(state) {
+            const btn = document.getElementById('micAction');
+            const wave = document.getElementById('siriWave');
+            if (state) {
+                btn.classList.add('listening');
+                if(wave) wave.style.display = 'flex';
+            } else {
+                btn.classList.remove('listening');
+                if(wave) wave.style.display = 'none';
+            }
+        },
+
+        sendText() {
+            const input = document.getElementById('textInput');
+            const val = input.value.trim();
+            if (!val) return;
+            this.processInput(val);
+            input.value = "";
+        },
+
+        async processInput(text) {
+            if (!text) return;
+            this.pushMsg('user', text);
+            const lowerText = text.toLowerCase();
+            
+            // Mostrar animación de escribiendo
+            this.showTyping(true);
+
+            // 1. Prioridad: Consultar al Backend (Java)
+            try {
+                const response = await fetch('/api/nova-brain/think', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        mensaje: text, 
+                        contexto: { 
+                            user: this.config.user,
+                            userId: this.config.userId
+                        } 
+                    })
+                });
+                
+                // Simular un ligero retraso para que parezca que está "pensando" (más realista)
+                setTimeout(async () => {
+                    this.showTyping(false);
+                    if(response.ok) {
+                        const data = await response.json();
+                        
+                        this.pushMsg('nova', data.respuesta, data.sugerencias);
+                        this.speak(data.respuesta);
+
+                        // Si el servidor envía una URL de redirección
+                        if (data.data && data.data.redirectUrl) {
+                            setTimeout(() => this.pushMsg('nova', "🚀 **Redirigiendo ahora...**"), 800);
+                            setTimeout(() => window.location.href = data.data.redirectUrl, 2500);
+                        }
+
+                    } else {
+                        this.handleFallback(lowerText);
+                    }
+                }, 800); // 800ms artificial thinking delay
+
+            } catch (e) {
+                console.error("Error conectando con Nova Brain:", e);
+                this.showTyping(false);
+                this.handleFallback(lowerText);
+            }
+        },
+
+        handleFallback(lowerText) {
+            // 2. Fallback: Navegación Local si el servidor falla
+            let matchedRoute = null;
+            for (let key in this.config.routes) {
+                if (lowerText.includes(key)) {
+                    matchedRoute = this.config.routes[key];
+                    break;
+                }
+            }
+
+            if (matchedRoute) {
+                const responseText = `Entendido. El sistema central no responde, pero conozco la ruta. Te llevo a **${lowerText}**...`;
+                this.pushMsg('nova', responseText);
+                this.speak(responseText);
+                setTimeout(() => window.location.href = matchedRoute, 1500);
+            } else {
+                const fallbackMsg = "Lo siento, tuve un problema de conexión con mi núcleo lógico. ¿Podrías intentar de nuevo o elegir una sugerencia?";
+                this.pushMsg('nova', fallbackMsg, ['📅 Citas', '🐾 Mascotas', '🎮 Juego']);
+                this.speak(fallbackMsg);
+            }
+        },
+
+
+
+        showTyping(show) {
+            const typingArea = document.getElementById('typingArea');
+            const chat = document.getElementById('chatDisplay');
+            if (show) {
+                typingArea.style.display = 'flex';
+                typingArea.style.order = '9999'; // Mantener siempre de último
+                chat.appendChild(typingArea); // Mover al final
+            } else {
+                typingArea.style.display = 'none';
+            }
+            chat.scrollTop = chat.scrollHeight;
+        },
+
+        pushMsg(role, text, chips = [], saveParam = true, pastTime = null, isHtml = false) {
+            const chat = document.getElementById('chatDisplay');
+            const typingArea = document.getElementById('typingArea');
+            
+            const div = document.createElement('div');
+            div.className = `bubble bubble-${role}`;
+            if(isHtml) div.style.width = '90%'; // Expanded for visual cards
+            
+            // Procesamiento de texto (Bold, Italic y emojis) si no es HTML puro
+            let formattedText = text;
+            if(!isHtml) {
+                formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+            
+            // Obtener hora actual
+            const now = new Date();
+            const timeString = pastTime || (now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0'));
+
+            if(saveParam) {
+                this.history.push({role: role, text: text, chips: chips, time: timeString});
+                sessionStorage.setItem('nova_history', JSON.stringify(this.history));
+            }
+
+            div.innerHTML = `
+                <div>${formattedText}</div>
+                <div class="timestamp">${timeString}</div>
+            `;
+            
+            chat.insertBefore(div, typingArea);
+
+            // Añadir botones de sugerencias si existen
+            if (chips && chips.length > 0) {
+                const chipContainer = document.createElement('div');
+                chipContainer.className = 'quick-actions';
+                chips.forEach(c => {
+                    const btn = document.createElement('button');
+                    btn.className = 'nav-chip';
+                    btn.innerText = c;
+                    btn.onclick = () => this.processInput(c);
+                    chipContainer.appendChild(btn);
+                });
+                chat.insertBefore(chipContainer, typingArea);
+            }
+            
+            // Scroll automático al fondo
+            setTimeout(() => {
+                chat.scrollTop = chat.scrollHeight;
+            }, 50);
+        },
+
+        speak(text) {
+            if (!window.speechSynthesis) return;
+            
+            // Limpiar colas de voz anteriores
+            window.speechSynthesis.cancel();
+            
+            // Limpiar el texto de caracteres especiales para que la voz sea fluida
+            const cleanText = text.replace(/[*#_]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1; // Un tono ligeramente más tecnológico
+            window.speechSynthesis.speak(utterance);
+        }
+    };
+
+    // Llamarlo de inmediato porque ahora el script está al final del body
+    novaApp.init();
+</script>
+</div>

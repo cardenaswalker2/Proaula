@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel de Recepción | ClínicaApp</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Cargar el fragmento de LISA -->
+    <div th:replace="~{fragments/asistente_recepcion_lisa :: lisa-recepcion}"></div>
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --glass-bg: rgba(255, 255, 255, 0.98);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 2rem;
+        }
+
+        /* Header Premium */
+        .page-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h1 i {
+            font-size: 1.5rem;
+            animation: pulse-headset 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-headset {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .page-header p {
+            margin: 0.25rem 0 0 0;
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Alertas */
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            animation: slideDown 0.4s ease;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        /* Accesos Rápidos - Cards Horizontales en Móvil */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            color: inherit;
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            flex-shrink: 0;
+        }
+
+        .action-card:nth-child(1) .action-icon {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .action-card:nth-child(2) .action-icon {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #059669;
+        }
+
+        .action-card:nth-child(3) .action-icon {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0284c7;
+        }
+
+        .action-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .action-content h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem 0;
+            color: #0f172a;
+        }
+
+        .action-content p {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .action-arrow {
+            color: #94a3b8;
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:hover .action-arrow {
+            transform: translateX(4px);
+            color: #64748b;
+        }
+
+        /* Sección de Citas */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Cards de Citas (Vista Móvil) */
+        .citas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .cita-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .cita-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .cita-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .cita-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cita-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .cita-header {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .paciente-info h6 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .paciente-info small {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .badge-clinica {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #475569;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid #cbd5e1;
+            white-space: nowrap;
+        }
+
+        .cita-body {
+            padding: 1.25rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.375rem;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .badge-pago {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-pago.pagado {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .badge-pago.pendiente {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .badge-estado {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-estado.pendiente {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .badge-estado.confirmada {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .badge-estado.en-espera {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .badge-estado.completada {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        /* Acciones de Cita */
+        .cita-actions {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-registrar {
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-registrar.activo {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-registrar.activo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+
+        .estado-final {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .estado-final.en-espera {
+            color: #0284c7;
+            background: #e0f2fe;
+        }
+
+        .estado-final.completada {
+            color: #059669;
+            background: #f0fdf4;
+        }
+
+        /* Modal Premium */
+        .modal-content {
+            border: none;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .btn-close-white {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-body p {
+            color: #475569;
+            margin-bottom: 1.25rem;
+            font-size: 0.95rem;
+        }
+
+        .modal-body strong {
+            color: #0f172a;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            border: none;
+        }
+
+        .btn-primary-modal {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+        }
+
+        /* Vista Desktop (Tabla) */
+        @media (min-width: 992px) {
+            .quick-actions {
+                flex-direction: row;
+            }
+
+            .action-card {
+                flex: 1;
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1.5rem;
+            }
+
+            .action-icon {
+                width: 72px;
+                height: 72px;
+                font-size: 2.25rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .action-arrow {
+                display: none;
+            }
+
+            .table-container {
+                display: block;
+                background: var(--glass-bg);
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-soft);
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+            }
+
+            .table {
+                margin: 0;
+            }
+
+            .table thead th {
+                background: #f8fafc;
+                color: #475569;
+                font-weight: 700;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 1.25rem;
+                border-bottom: 2px solid #e2e8f0;
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+            }
+
+            .table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+            .table td {
+                padding: 1.25rem;
+                vertical-align: middle;
+            }
+
+            .citas-container {
+                display: none;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .table-container {
+                display: none;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .info-item:nth-child(3) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .page-header h1 {
+                font-size: 1.1rem;
+            }
+
+            .action-card {
+                padding: 1rem;
+            }
+
+            .action-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1e40af;
+        }
+
+        /* Command Center Header Stats */
+        .header-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-banner {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-banner:hover { transform: translateY(-3px); }
+
+        .stat-banner i {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-blue i { background: #eff6ff; color: #1e40af; }
+        .stat-green i { background: #f0fdf4; color: #166534; }
+        .stat-amber i { background: #fffbeb; color: #92400e; }
+
+        .stat-info h4 { font-size: 1.25rem; font-weight: 800; margin: 0; color: #0f172a; }
+        .stat-info span { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+
+        /* Kanban Board Styles */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .kanban-column {
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: var(--radius-xl);
+            padding: 1.25rem;
+            min-height: 400px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .column-header h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #334155;
+        }
+
+        .column-badge {
+            background: white;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Digital Clock */
+        .digital-clock {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-header shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <h1 class="mb-0"><i class="bi bi-headset"></i> Centro de Recepción</h1>
+                <div id="liveClock" class="digital-clock d-none d-md-block">00:00:00</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/recepcion/dashboard" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-clockwise"></i></a>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="container pb-5">
+
+        <!-- Alertas -->
+        <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+
+        <!-- Command Center Metrics -->
+        <div class="header-stats">
+            <div class="stat-banner stat-blue">
+                <i class="bi bi-calendar-event"></i>
+                <div class="stat-info">
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'EEEE, d MMM', new java.util.Locale('es', 'ES'))}">Hoy</span>
+                    <h4 th:text="${totalHoy}">0</h4>
+                </div>
+            </div>
+            <div class="stat-banner stat-amber">
+                <i class="bi bi-房屋-check"></i>
+                <i class="bi bi-building"></i>
+                <div class="stat-info">
+                    <span>En el Edificio</span>
+                    <h4 th:text="${totalEnEdificio}">0</h4>
+                </div>
+            </div>
+            <div class="stat-banner stat-green">
+                <i class="bi bi-check-all"></i>
+                <div class="stat-info">
+                    <span>Atendidos</span>
+                    <h4 th:text="${totalAtendidos}">0</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos -->
+        <div class="quick-actions">
+            <a th:href="@{/recepcion/clientes/nuevo}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <div class="action-content">
+                    <h5>Nuevo Cliente</h5>
+                    <p>Registrar dueño y mascota</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+            </a>
+
+            <a th:href="@{/recepcion/citas/nueva}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-calendar-plus"></i>
+                </div>
+                <div class="action-content">
+                    <h5>Nueva Cita</h5>
+                    <p>Agendar espacio en agenda</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+            </a>
+
+            <a th:href="@{/recepcion/clientes}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="action-content">
+                    <h5>Directorio</h5>
+                    <p>Buscar clientes existentes</p>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Citas Activas -->
+        <h4 class="section-title">
+            <i class="bi bi-clock-history"></i>
+            Control de Flujo Hoy
+        </h4>
+
+        <!-- Vista Móvil: Cards -->
+        <div class="citas-container">
+            <div th:each="cita : ${citasActivas}" class="cita-card">
+                <div class="cita-header">
+                    <div class="paciente-info">
+                        <h6 th:text="${cita.nombreMascota}">Firulais</h6>
+                        <small th:text="${cita.nombreUsuario}">Juan Pérez</small>
+                    </div>
+                    <span class="badge-clinica" th:text="${cita.nombreClinica}">Clínica Central</span>
+                </div>
+
+                <div class="cita-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Hora</div>
+                            <div class="info-value" th:text="${#strings.substring(cita.fechaHora, 11, 16)}">14:30</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Pago</div>
+                            <span class="badge-pago"
+                                th:classappend="${cita.estadoPago == 'PAGADO' ? 'pagado' : 'pendiente'}"
+                                th:text="${cita.estadoPago}">
+                                PAGADO
+                            </span>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Estado</div>
+                            <span class="badge-estado" th:classappend="${cita.estado == 'Pendiente' ? 'pendiente' : 
+                                                   (cita.estado == 'Confirmada' ? 'confirmada' : 
+                                                   (cita.estado == 'En Espera' ? 'en-espera' : 'completada'))}"
+                                th:text="${cita.estado}">
+                                Confirmada
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cita-actions">
+                    <button th:if="${cita.estado == 'Pendiente' or cita.estado == 'Confirmada'}"
+                        class="btn-registrar activo" data-bs-toggle="modal" data-bs-target="#confirmarCitaModal"
+                        th:attr="data-cita-id=${cita.id}, data-usuario-nombre=${cita.nombreUsuario}">
+                        <i class="bi bi-door-open"></i>
+                        Registrar Entrada
+                    </button>
+
+                    <div th:if="${cita.estado == 'En Espera'}" class="estado-final en-espera">
+                        <i class="bi bi-person-check-fill"></i>
+                        <span>En Sala de Espera</span>
+                    </div>
+
+                    <div th:if="${cita.estado == 'Completada'}" class="estado-final completada">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Atención Finalizada</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Command Center: Kanban Board (Desktop Only) -->
+        <div class="kanban-board d-none d-lg-grid">
+            
+            <!-- Columna 1: Programadas -->
+            <div class="kanban-column">
+                <div class="column-header">
+                    <h3><i class="bi bi-calendar2-week text-primary"></i> Programadas</h3>
+                    <div class="column-badge" th:text="${programadas.size()}">0</div>
+                </div>
+                <div class="citas-kanban-list">
+                    <div th:each="cita : ${programadas}"
+                         class="cita-card mb-3"
+                         th:attr="data-cita-hora=${cita.fechaHoraIso != null and #strings.length(cita.fechaHoraIso) >= 16 ? #strings.substring(cita.fechaHoraIso, 11, 16) : 'N/A'},data-cita-id-alert=${cita.id},data-telefono=${cita.telefonoUsuario != null ? cita.telefonoUsuario : ''},data-nombre-usuario=${cita.nombreUsuario != null ? cita.nombreUsuario : 'Cliente'}">
+                        <div class="cita-header py-2 px-3">
+                            <div class="paciente-info">
+                                <h6 class="mb-0 fs-6" th:text="${cita.nombreMascota}">Mascota</h6>
+                                <small class="text-muted" th:text="${cita.nombreUsuario}">Dueño</small>
+                            </div>
+                            <!-- Hora corregida usando fechaHoraIso -->
+                            <span class="badge border text-dark" style="font-size: 0.75rem; font-weight: 700;"
+                                  th:text="${cita.fechaHoraIso != null and #strings.length(cita.fechaHoraIso) >= 16 ? #strings.substring(cita.fechaHoraIso, 11, 16) : 'N/A'}">12:00</span>
+                        </div>
+                        <div class="p-3">
+                            <button class="btn btn-sm btn-primary w-100 rounded-pill"
+                                    data-bs-toggle="modal" data-bs-target="#confirmarCitaModal"
+                                    th:attr="data-cita-id=${cita.id}, data-usuario-nombre=${cita.nombreUsuario}">
+                                <i class="bi bi-door-open"></i> Check-in
+                            </button>
+                        </div>
+                    </div>
+                    <div th:if="${programadas.isEmpty()}" class="text-center py-5 text-muted opacity-50">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i> No hay pendientes
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 2: En Espera -->
+            <div class="kanban-column" style="background: rgba(239, 246, 255, 0.8);">
+                <div class="column-header">
+                    <h3><i class="bi bi-person-walking text-info"></i> En Sala de Espera</h3>
+                    <div class="column-badge bg-info text-white" th:text="${enEspera.size()}">0</div>
+                </div>
+                <div class="citas-kanban-list">
+                    <div th:each="cita : ${enEspera}" class="cita-card mb-3 border-info"
+                         th:attr="data-cita-hora=${cita.fechaHoraIso != null and #strings.length(cita.fechaHoraIso) >= 16 ? #strings.substring(cita.fechaHoraIso, 11, 16) : 'N/A'}, data-cita-id-alert=${cita.id}">
+                        <div class="cita-header py-2 px-3 bg-info-subtle">
+                             <div class="paciente-info">
+                                <h6 class="mb-0 fs-6" th:text="${cita.nombreMascota}">Mascota</h6>
+                                <small class="text-muted" th:text="${cita.nombreUsuario}">Dueño</small>
+                            </div>
+                        </div>
+                        <div class="p-3 text-center">
+                            <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill w-100">
+                                <i class="bi bi-clock-history me-1"></i> Esperando...
+                            </span>
+                        </div>
+                    </div>
+                    <div th:if="${enEspera.isEmpty()}" class="text-center py-5 text-muted opacity-50">
+                        <i class="bi bi-cup-hot fs-1 d-block mb-2"></i> Sala de espera vacía
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 3: Finalizadas -->
+            <div class="kanban-column" style="background: rgba(240, 253, 244, 0.8);">
+                <div class="column-header">
+                    <h3><i class="bi bi-check2-circle text-success"></i> Atendidos</h3>
+                    <div class="column-badge bg-success text-white" th:text="${completadas.size()}">0</div>
+                </div>
+                <div class="citas-kanban-list">
+                    <div th:each="cita : ${completadas}" class="cita-card mb-3 opacity-75 shadow-none">
+                         <div class="cita-header py-2 px-3">
+                             <div class="paciente-info">
+                                <h6 class="mb-0 fs-6" th:text="${cita.nombreMascota}">Mascota</h6>
+                                <small class="text-muted" th:text="${cita.nombreUsuario}">Dueño</small>
+                            </div>
+                        </div>
+                        <div class="p-2 text-center">
+                           <small class="text-success fw-bold"><i class="bi bi-check-circle"></i> Finalizado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmarCitaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verificación de Datos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formConfirmarCita" method="post">
+                    <div class="modal-body">
+                        <p>Confirmando llegada de: <strong id="nombreClienteConfirmar"></strong></p>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Email</label>
+                            <input type="email" class="form-control" name="email" required
+                                placeholder="cliente@email.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" required placeholder="+56912345678">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary-modal">Confirmar y Notificar Clínica</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- PANEL DE SIMULACIÓN DE TIEMPO -->
+    <div id="simulatorPanel" style="position:fixed;bottom:20px;right:20px;z-index:9999;background:rgba(15,23,42,0.92);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:1rem 1.25rem;color:white;min-width:220px;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:0.5rem;">🧪 Simulador de Tiempo</div>
+        <div id="simClockDisplay" style="font-size:1.5rem;font-weight:800;letter-spacing:2px;margin-bottom:0.75rem;font-family:monospace;">--:--:--</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button onclick="advanceTime(1)" style="flex:1;padding:0.4rem;border-radius:8px;border:none;background:#3b82f6;color:white;font-weight:700;cursor:pointer;font-size:0.8rem;">+1 min</button>
+            <button onclick="advanceTime(5)" style="flex:1;padding:0.4rem;border-radius:8px;border:none;background:#f59e0b;color:white;font-weight:700;cursor:pointer;font-size:0.8rem;">+5 min</button>
+            <button onclick="advanceTime(10)" style="flex:1;padding:0.4rem;border-radius:8px;border:none;background:#ef4444;color:white;font-weight:700;cursor:pointer;font-size:0.8rem;">+10 min</button>
+            <button onclick="resetTime()" style="flex:1;padding:0.4rem;border-radius:8px;border:none;background:#475569;color:white;font-weight:700;cursor:pointer;font-size:0.8rem;">Reset</button>
+        </div>
+    </div>
+
+    <!-- Banner de Alerta Global -->
+    <div id="globalAlertBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9998;padding:0.75rem 1.5rem;text-align:center;font-weight:700;font-size:1rem;"></div>
+
+    <style>
+        @keyframes alertPulse { 0%,100%{opacity:1}50%{opacity:0.75} }
+        @keyframes borderPulse { from{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}to{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
+        .cita-card.alerta-proxima { border:2px solid #f59e0b !important; }
+        .cita-card.alerta-hora-exacta { border:2px solid #ef4444 !important; animation:borderPulse 0.5s ease-in-out infinite alternate; }
+        .cita-card.alerta-tardio { border:2px solid #7f1d1d !important; background:#fef2f2 !important; }
+        .badge-tardio { background:#dc2626;color:white;padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;display:inline-flex;align-items:center;gap:4px; }
+        .badge-proxima { background:#f59e0b;color:white;padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;display:inline-flex;align-items:center;gap:4px; }
+        .badge-exacta { background:#dc2626;color:white;padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;display:inline-flex;align-items:center;gap:4px;animation:alertPulse 0.7s ease-in-out infinite; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let timeOffsetMinutes = 0;
+        let alertSoundPlayed = new Set();
+
+        function getSimulatedNow() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + timeOffsetMinutes);
+            return now;
+        }
+
+        function advanceTime(minutes) {
+            timeOffsetMinutes += minutes;
+            alertSoundPlayed.clear();
+            checkAllCitas();
+        }
+
+        function resetTime() {
+            timeOffsetMinutes = 0;
+            alertSoundPlayed.clear();
+            document.querySelectorAll('.cita-card').forEach(c => c.classList.remove('alerta-proxima','alerta-hora-exacta','alerta-tardio'));
+            document.querySelectorAll('.alerta-badge-dinamico').forEach(el => el.remove());
+            document.getElementById('globalAlertBanner').style.display = 'none';
+            const lbl = document.getElementById('offsetLabel');
+            if (lbl) lbl.remove();
+            checkAllCitas();
+        }
+
+        function updateClock() {
+            const now = getSimulatedNow();
+            const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+            document.getElementById('liveClock').textContent = timeStr;
+            document.getElementById('simClockDisplay').textContent = timeStr;
+            const simPanel = document.getElementById('simulatorPanel');
+            let offsetLabel = document.getElementById('offsetLabel');
+            if (timeOffsetMinutes !== 0) {
+                if (!offsetLabel) {
+                    offsetLabel = document.createElement('div');
+                    offsetLabel.id = 'offsetLabel';
+                    offsetLabel.style.cssText = 'font-size:0.7rem;color:#f59e0b;margin-top:0.25rem;';
+                    simPanel.appendChild(offsetLabel);
+                }
+                offsetLabel.textContent = 'Adelantado: +' + timeOffsetMinutes + ' min';
+            } else if (offsetLabel) {
+                offsetLabel.remove();
+            }
+        }
+
+        function parseCitaHora(horaStr) {
+            if (!horaStr || horaStr === 'N/A') return null;
+            const hm = horaStr.trim().split(':');
+            if (hm.length < 2) return null;
+            const t = getSimulatedNow();
+            const cita = new Date(t);
+            cita.setHours(parseInt(hm[0]), parseInt(hm[1]), 0, 0);
+            return cita;
+        }
+
+        function checkAllCitas() {
+            const now = getSimulatedNow();
+            const cards = document.querySelectorAll('[data-cita-hora]');
+            let maxLevel = 0;
+
+            cards.forEach(card => {
+                const horaStr = card.getAttribute('data-cita-hora');
+                const citaId = card.getAttribute('data-cita-id-alert') || horaStr;
+                const telefono = (card.getAttribute('data-telefono') || '').replace('+', '');
+                const nombreUsuario = card.getAttribute('data-nombre-usuario') || 'el cliente';
+                const citaTime = parseCitaHora(horaStr);
+                if (!citaTime) return;
+
+                const diffMin = (now - citaTime) / 60000;
+                card.classList.remove('alerta-proxima','alerta-hora-exacta','alerta-tardio');
+                card.querySelectorAll('.alerta-badge-dinamico').forEach(el => el.remove());
+
+                let badgeHtml = '', alertClass = '';
+
+                if (diffMin > 15) {
+                    // NIVEL 4: MAS DE 15 MIN - CANCELAR + NOTIFICAR
+                    alertClass = 'alerta-tardio';
+                    const telLimpio = telefono.replace(/[+\s\-()]/g, '');
+                    const fechaHoy = new Date().toLocaleDateString('es-CO', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+                    // Emojis usando fromCodePoint para evitar problemas de encoding
+                    const e_hospital = String.fromCodePoint(0x1F3E5);
+                    const e_pata     = String.fromCodePoint(0x1F43E);
+                    const e_alarma   = String.fromCodePoint(0x23F0);
+                    const e_cal      = String.fromCodePoint(0x1F4C5);
+                    const e_check    = String.fromCodePoint(0x2705);
+                    const e_x        = String.fromCodePoint(0x274C);
+                    const e_pin      = String.fromCodePoint(0x1F4CC);
+                    const e_phone    = String.fromCodePoint(0x1F4F2);
+                    const e_bullet   = '\u2022';
+
+                    const waMsgRecordatorio = encodeURIComponent(
+                        e_hospital + ' *CLINICA VETERINARIA - AVISO URGENTE*\n\n'
+                        + 'Estimado/a *' + nombreUsuario + '*,\n\n'
+                        + 'Le contactamos del equipo de atencion al cliente. Su cita programada para las *' + horaStr + '* de hoy ha superado el tiempo de espera establecido.\n\n'
+                        + e_alarma + ' *Tiempo transcurrido:* ' + Math.floor(diffMin) + ' minutos\n'
+                        + e_cal + ' *Fecha:* ' + fechaHoy + '\n\n'
+                        + 'Por favor indicanos a la brevedad:\n'
+                        + e_check + ' Sigue en camino?\n'
+                        + e_x + ' Necesita cancelar o reprogramar?\n\n'
+                        + 'Su mascota y nuestro equipo le esperan. Queremos brindarle la mejor atencion posible.\n\n'
+                        + '_Responda este mensaje para coordinar. Gracias por su comprension._\n\n'
+                        + '*Equipo de Atencion al Cliente*\n'
+                        + '*Clinica Veterinaria* ' + e_pata
+                    );
+
+                    const waMsgCancelacion = encodeURIComponent(
+                        e_hospital + ' *CLINICA VETERINARIA - NOTIFICACION DE CANCELACION*\n\n'
+                        + 'Estimado/a *' + nombreUsuario + '*,\n\n'
+                        + 'Lamentamos informarle que, debido a su inasistencia a la cita programada para las *' + horaStr + '* del dia de hoy, hemos procedido con la *cancelacion de su turno*.\n\n'
+                        + e_pin + ' *Detalles de la cita cancelada:*\n'
+                        + e_bullet + ' ' + e_cal + ' Fecha: ' + fechaHoy + '\n'
+                        + e_bullet + ' ' + e_alarma + ' Hora programada: ' + horaStr + '\n'
+                        + e_bullet + ' ' + e_x + ' Estado: Cancelada por inasistencia\n\n'
+                        + 'Entendemos que pueden surgir imprevistos. Le invitamos cordialmente a reagendar su visita en el horario que mejor le convenga.\n\n'
+                        + e_phone + ' *Para reagendar puede:*\n'
+                        + e_bullet + ' Responder este mensaje directamente\n'
+                        + e_bullet + ' Acceder a nuestra plataforma en linea\n'
+                        + e_bullet + ' Llamarnos para asistencia personalizada\n\n'
+                        + 'La salud de su mascota es nuestra mayor prioridad. Esperamos verle pronto.\n\n'
+                        + '_Atentamente,_\n'
+                        + '*Equipo de Atencion - Clinica Veterinaria* ' + e_pata
+                    );
+                    const fnWA = 'abrirWA_' + (citaId || 'x').replace(/[^a-zA-Z0-9]/g, '');
+                    const fnCancel = 'cancelarCita_' + (citaId || 'x').replace(/[^a-zA-Z0-9]/g, '');
+
+                    window[fnWA] = function() {
+                        let tel = telLimpio;
+                        if (!tel) { tel = prompt('Ingresa el numero con codigo de pais (ej: 573005722844):'); if (!tel) return; tel = tel.replace(/[+\s\-()]/g, ''); }
+                        window.open('https://wa.me/' + tel + '?text=' + waMsgRecordatorio, '_blank');
+                    };
+                    window[fnCancel] = function() {
+                        if (!confirm('¿Seguro que deseas CANCELAR esta cita por inasistencia y notificar al cliente por WhatsApp?')) return;
+                        // 1. Cancelar en el backend
+                        fetch('/recepcion/citas/' + citaId + '/cancelar', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'} })
+                            .then(() => {
+                                // 2. Abrir WhatsApp con mensaje de cancelación
+                                let tel = telLimpio;
+                                if (!tel) { tel = prompt('Ingresa el numero del cliente con codigo de pais:'); if (!tel) return; tel = tel.replace(/[+\s\-()]/g, ''); }
+                                window.open('https://wa.me/' + tel + '?text=' + waMsgCancelacion, '_blank');
+                                // 3. Eliminar la tarjeta del Kanban
+                                const cardEl = document.querySelector('[data-cita-id-alert="' + citaId + '"]');
+                                if (cardEl) cardEl.style.transition = 'opacity 0.5s', cardEl.style.opacity = '0', setTimeout(() => cardEl.remove(), 500);
+                                alert('Cita cancelada. El mensaje de WhatsApp se ha abierto para notificar al cliente.');
+                            })
+                            .catch(() => alert('Error al cancelar. Intenta de nuevo.'));
+                    };
+
+                    badgeHtml = '<div class="alerta-badge-dinamico px-3 pb-2">'
+                        + '<div style="background:#7f1d1d;border-radius:10px;padding:0.5rem 0.75rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;">'
+                        + '<i class="bi bi-x-octagon-fill" style="color:#fca5a5;font-size:1.1rem;"></i>'
+                        + '<div><div style="font-size:0.75rem;font-weight:800;color:white;">INASISTENCIA CONFIRMADA</div>'
+                        + '<div style="font-size:0.7rem;color:#fca5a5;">' + Math.floor(diffMin) + ' min sin presentarse</div></div></div>'
+                        + '<div style="display:flex;gap:0.4rem;">'
+                        + '<button onclick="' + fnWA + '()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.3rem;padding:0.45rem;border-radius:8px;background:linear-gradient(135deg,#25d366,#128c7e);color:white;font-weight:700;font-size:0.75rem;border:none;cursor:pointer;">'
+                        + '<i class="bi bi-whatsapp"></i> Recordar</button>'
+                        + '<button onclick="' + fnCancel + '()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.3rem;padding:0.45rem;border-radius:8px;background:linear-gradient(135deg,#dc2626,#991b1b);color:white;font-weight:700;font-size:0.75rem;border:none;cursor:pointer;">'
+                        + '<i class="bi bi-x-circle-fill"></i> Cancelar + WA</button>'
+                        + '</div></div>';
+                    maxLevel = Math.max(maxLevel, 4);
+                    playAlertSound(citaId + '_tardio');
+
+                } else if (diffMin > 5) {
+                    // 🔴 NIVEL 3: 5-15 MIN — RECORDATORIO WA PROFESIONAL
+                    alertClass = 'alerta-tardio';
+                    const telLimpio = telefono.replace(/[+\s\-()]/g, '');
+                    const fechaHoy2 = new Date().toLocaleDateString('es-CO', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+                    const _e_hosp2 = String.fromCodePoint(0x1F3E5);
+                    const _e_paw2  = String.fromCodePoint(0x1F43E);
+                    const _e_alrm2 = String.fromCodePoint(0x23F0);
+                    const _e_cal2  = String.fromCodePoint(0x1F4C5);
+                    const _e_chk2  = String.fromCodePoint(0x2705);
+                    const _e_crs2  = String.fromCodePoint(0x274C);
+                    const _e_rld2  = String.fromCodePoint(0x1F504);
+                    const _e_loc2  = String.fromCodePoint(0x1F4CD);
+                    const waMsg = encodeURIComponent(
+                        _e_hosp2 + ' *CLINICA VETERINARIA - RECORDATORIO DE CITA*\n\n'
+                        + 'Estimado/a *' + nombreUsuario + '*,\n\n'
+                        + 'Le escribimos del equipo de atencion de nuestra Clinica Veterinaria para recordarle que tiene una cita programada a las *' + horaStr + '* de hoy.\n\n'
+                        + _e_cal2  + ' *Fecha:* ' + fechaHoy2 + '\n'
+                        + _e_alrm2 + ' *Hora de la cita:* ' + horaStr + '\n'
+                        + _e_loc2  + ' *Estado actual:* Pendiente de llegada\n\n'
+                        + 'Por favor haganos saber a la brevedad:\n'
+                        + _e_chk2 + ' Si esta en camino, le esperamos\n'
+                        + _e_rld2 + ' Si necesita reprogramar, con gusto le ayudamos\n'
+                        + _e_crs2 + ' Si desea cancelar, por favor informenos\n\n'
+                        + 'Su mascota y nuestro equipo medico estan listos para recibirle. Queremos brindarle la mejor atencion.\n\n'
+                        + '_Por favor responda este mensaje para confirmar su asistencia._\n\n'
+                        + '*Equipo de Atencion al Cliente*\n'
+                        + '*Clinica Veterinaria* ' + _e_paw2
+                    );
+                    const fnAbrir = 'abrirWA_' + (citaId || 'x').replace(/[^a-zA-Z0-9]/g, '');
+                    window[fnAbrir] = function() {
+                        let tel = telLimpio;
+                        if (!tel) { tel = prompt('No hay telefono registrado. Ingresa el numero (ej: 573005722844):'); if (!tel) return; tel = tel.replace(/[+\s\-()]/g, ''); }
+                        window.open('https://wa.me/' + tel + '?text=' + waMsg, '_blank');
+                    };
+                    badgeHtml = '<div class="alerta-badge-dinamico px-3 pb-2">'
+                        + '<div style="background:#fee2e2;border-radius:10px;padding:0.5rem 0.75rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;">'
+                        + '<i class="bi bi-exclamation-triangle-fill" style="color:#dc2626;font-size:1rem;"></i>'
+                        + '<div><div style="font-size:0.75rem;font-weight:800;color:#7f1d1d;">NO SE PRESENT\u00d3</div>'
+                        + '<div style="font-size:0.7rem;color:#991b1b;">' + Math.floor(diffMin) + ' min de retraso</div></div></div>'
+                        + '<button onclick="' + fnAbrir + '()" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.5rem 0.75rem;border-radius:8px;background:linear-gradient(135deg,#25d366,#128c7e);color:white;font-weight:700;font-size:0.8rem;border:none;cursor:pointer;">'
+                        + '<i class="bi bi-whatsapp"></i> Recordatorio WhatsApp</button></div>';
+                    maxLevel = Math.max(maxLevel, 3);
+                    playAlertSound(citaId + '_tardio');
+
+                } else if (diffMin >= 0) {
+                    // 🟠 NIVEL 2: ES LA HORA
+                    alertClass = 'alerta-hora-exacta';
+                    badgeHtml = '<div class="alerta-badge-dinamico px-3 pb-2">'
+                        + '<div style="background:#fff7ed;border-radius:10px;padding:0.5rem 0.75rem;display:flex;align-items:center;gap:0.5rem;">'
+                        + '<i class="bi bi-alarm-fill" style="color:#f97316;font-size:1rem;"></i>'
+                        + '<div style="font-size:0.78rem;font-weight:800;color:#9a3412;">\u00a1ES LA HORA DE LA CITA!</div></div></div>';
+                    maxLevel = Math.max(maxLevel, 2);
+                    playAlertSound(citaId + '_exacta');
+
+                } else if (diffMin > -6) {
+                    // 🟡 NIVEL 1: PRÓXIMA
+                    alertClass = 'alerta-proxima';
+                    const left = Math.ceil(Math.abs(diffMin));
+                    badgeHtml = '<div class="alerta-badge-dinamico px-3 pb-2">'
+                        + '<div style="background:#fefce8;border-radius:10px;padding:0.45rem 0.75rem;display:flex;align-items:center;gap:0.5rem;">'
+                        + '<i class="bi bi-clock" style="color:#d97706;"></i>'
+                        + '<div style="font-size:0.78rem;font-weight:700;color:#92400e;">Pr\u00f3xima en ' + left + ' min</div></div></div>';
+                    maxLevel = Math.max(maxLevel, 1);
+                }
+
+                if (alertClass) card.classList.add(alertClass);
+                if (badgeHtml) {
+                    const target = card.querySelector('.cita-actions') || card.querySelector('.p-3');
+                    if (target) target.insertAdjacentHTML('beforebegin', badgeHtml);
+                }
+            });
+
+            const banner = document.getElementById('globalAlertBanner');
+            if (maxLevel === 4) {
+                banner.style.display = 'block';
+                banner.style.background = 'linear-gradient(135deg,#7f1d1d,#991b1b)';
+                banner.style.color = 'white';
+                banner.innerHTML = '🚫 ¡INASISTENCIA GRAVE! +15 min sin presentarse. Usa el botón <strong>"Cancelar + WA"</strong> para cancelar y notificar al cliente.';
+            } else if (maxLevel === 3) {
+                banner.style.display = 'block';
+                banner.style.background = 'linear-gradient(135deg,#dc2626,#b91c1c)';
+                banner.style.color = 'white';
+                banner.innerHTML = '🚨 ¡ALERTA CRÍTICA! Un paciente lleva más de 5 min de retraso. Usa el botón de WhatsApp en la tarjeta.';
+            } else if (maxLevel === 2) {
+                banner.style.display = 'block';
+                banner.style.background = 'linear-gradient(135deg,#f97316,#ea580c)';
+                banner.style.color = 'white';
+                banner.innerHTML = '⏰ ¡Es la hora exacta de la cita! ¿El paciente ya está en recepción?';
+            } else if (maxLevel === 1) {
+                banner.style.display = 'block';
+                banner.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
+                banner.style.color = 'white';
+                banner.innerHTML = '🔔 Próxima cita en menos de 5 minutos. Prepara el área de atención.';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        function playAlertSound(key) {
+            if (alertSoundPlayed.has(key)) return;
+            alertSoundPlayed.add(key);
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(key.includes('tardio') ? 880 : 660, ctx.currentTime);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.8);
+            } catch(e) {}
+        }
+
+        setInterval(() => { updateClock(); checkAllCitas(); }, 1000);
+        updateClock();
+        checkAllCitas();
+
+        const modal = document.getElementById('confirmarCitaModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', event => {
+                const btn = event.relatedTarget;
+                document.getElementById('nombreClienteConfirmar').textContent = btn.getAttribute('data-usuario-nombre');
+                document.getElementById('formConfirmarCita').action = '/recepcion/citas/' + btn.getAttribute('data-cita-id') + '/confirmar';
+            });
+        }
+    </script>
+</body>
+</html>

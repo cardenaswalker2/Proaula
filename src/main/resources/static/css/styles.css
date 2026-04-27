@@ -1,0 +1,158 @@
+/* =================================================================
+   CLÍNICA APP - HOJA DE ESTILOS PROFESIONAL
+   Versión: 3.0 | "The Polished Experience"
+================================================================= */
+
+/* --- 1. SISTEMA DE DISEÑO: VARIABLES Y FUNDAMENTOS --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Paleta de Colores Principal */
+    --primary-color: #3B82F6; /* Un azul vibrante pero accesible */
+    --primary-hover: #2563EB;
+    --success-color: #10B981; /* Verde esmeralda para acciones positivas */
+    --success-hover: #059669;
+    --danger-color: #EF4444;  /* Rojo claro para errores */
+    --warning-color: #F59E0B; /* Ámbar para advertencias */
+    
+    /* Paleta de Grises y Texto */
+    --background-light: #F7F8FA; /* Un gris casi blanco para el fondo */
+    --background-white: #FFFFFF;
+    --border-color: #E5E7EB;
+    --text-primary: #1F2937;     /* Gris muy oscuro para titulares */
+    --text-secondary: #4B5563; /* Gris medio para texto normal */
+    --text-muted: #9CA3AF;     /* Gris claro para texto de ayuda */
+    
+    /* Sistema de Espaciado y Sombras */
+    --font-family-sans-serif: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --box-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --box-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --border-radius: 0.75rem; /* Bordes notablemente redondeados */
+    --transition: all 0.25s cubic-bezier(.4,0,.2,1); /* Transición suave universal */
+}
+
+/* --- 2. RESET Y ESTILOS GLOBALES --- */
+body {
+    font-family: var(--font-family-sans-serif);
+    background-color: var(--background-light);
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+main { flex-grow: 1; }
+h1, h2, h3, h4, h5, h6 { color: var(--text-primary); font-weight: 700; }
+a { color: var(--primary-color); text-decoration: none; }
+a:hover { color: var(--primary-hover); }
+
+/* --- 3. COMPONENTES PERSONALIZADOS Y MEJORAS DE BOOTSTRAP --- */
+
+/* Barra de Navegación Elevada */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: saturate(180%) blur(5px); /* Efecto "vidrio esmerilado" */
+    border-bottom: 1px solid var(--border-color);
+}
+.navbar-brand { color: var(--primary-color); }
+.navbar .nav-link { font-weight: 500; transition: var(--transition); }
+.navbar .nav-link:hover { color: var(--primary-color); transform: translateY(-1px); }
+.navbar .dropdown-menu { border-radius: var(--border-radius); box-shadow: var(--box-shadow-lg); border: none; }
+
+/* Botones con Alma */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: var(--transition);
+    border: none;
+    box-shadow: var(--box-shadow-sm);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: var(--box-shadow-md); }
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover { background-color: var(--primary-hover); }
+.btn-success { background-color: var(--success-color); color: white; }
+.btn-success:hover { background-color: var(--success-hover); }
+
+/* Tarjetas con Animación de Entrada */
+.card {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-md);
+    transition: var(--transition);
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+}
+.card:hover { transform: translateY(-5px); box-shadow: var(--box-shadow-lg); }
+.card-header { background-color: transparent; border-bottom: 1px solid var(--border-color); font-size: 1.2rem; }
+
+/* Formularios Elegantes */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    transition: var(--transition);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Tablas Modernas */
+.table { border-collapse: separate; border-spacing: 0; }
+.table thead { background-color: var(--background-light); }
+.table thead th { border: none; font-weight: 600; color: var(--text-secondary); }
+.table tbody tr { background-color: var(--background-white); }
+.table tbody tr:hover { background-color: rgba(59, 130, 246, 0.05); }
+.table td, .table th { vertical-align: middle; }
+.table td:first-child, .table th:first-child { border-top-left-radius: var(--border-radius); border-bottom-left-radius: var(--border-radius); }
+.table td:last-child, .table th:last-child { border-top-right-radius: var(--border-radius); border-bottom-right-radius: var(--border-radius); }
+
+/* --- 4. ESTILOS DE PÁGINAS ESPECÍFICAS --- */
+
+/* Hero Section (Página de Inicio) */
+.hero-section {
+    padding: 8rem 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.hero-section .form-control { box-shadow: var(--box-shadow-lg); }
+
+/* Página de Login y Registro */
+.login-image-side { transition: var(--transition); }
+.login-image-side:hover { transform: scale(1.02); }
+
+/* --- 5. MICRO-INTERACCIONES Y ANIMACIONES --- */
+
+/* Animación de entrada para elementos */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Aplicar animación a las tarjetas con un retraso escalonado */
+.row .col-md-4:nth-child(1) .card, .row .col-lg-4:nth-child(1) .card { animation-delay: 0.1s; }
+.row .col-md-4:nth-child(2) .card, .row .col-lg-4:nth-child(2) .card { animation-delay: 0.2s; }
+.row .col-md-4:nth-child(3) .card, .row .col-lg-4:nth-child(3) .card { animation-delay: 0.3s; }
+/* ... puedes continuar este patrón si tienes más columnas */
+
+
+/* Efecto de pulso para iconos importantes */
+.icon-pulse {
+    animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Estilo para el Footer */
+footer a.text-white-50:hover {
+    color: var(--background-white) !important;
+    text-decoration: none;
+}
+footer .btn-floating:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

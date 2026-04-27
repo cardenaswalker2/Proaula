@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Edita tu perfil en Clínica App. Actualiza tus datos de contacto y seguridad.">
+    <title>Editar Perfil | Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ✅ CORRECTO: headerStyles en el head -->
+    <th:block th:replace="~{fragments/header :: headerStyles}"></th:block>
+
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .profile-container {
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px -10px rgba(13, 110, 253, 0.3);
+            position: relative;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0d6efd;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-edit:hover {
+            transform: scale(1.1);
+            background: #0d6efd;
+            color: white;
+        }
+
+        .profile-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0d6efd;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+
+        .input-group-custom {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #0d6efd;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-control-custom:disabled {
+            background: #f1f5f9;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .form-control-custom::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-control-no-icon {
+            padding-left: 1rem;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .helper-text i {
+            color: #9ca3af;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0;
+        }
+
+        .password-section {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #0d6efd;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-back {
+            padding: 0.875rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+            background: #eff6ff;
+        }
+
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .profile-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Estilos para Registro Facial */
+        .btn-facial-setup {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-facial-setup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        /* Overlay de Cámara */
+        #cameraOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        #videoContainer {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 4px solid #6366f1;
+        }
+
+        #video {
+            width: 480px;
+            height: 360px;
+            background: #000;
+            transform: scaleX(-1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ✅ Solo el nav aquí, sin el link de estilos -->
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <main class="profile-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9">
+
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <span
+                                th:text="${usuarioDTO.nombre != null && !usuarioDTO.nombre.isEmpty() ? usuarioDTO.nombre.substring(0,1) : 'U'}">U</span>
+                            <div class="avatar-edit" title="Cambiar foto (próximamente)">
+                                <i class="bi bi-camera-fill"></i>
+                            </div>
+                        </div>
+                        <h1 class="profile-title">Configuración de tu Perfil</h1>
+                        <p class="profile-subtitle">Mantén tu información de contacto actualizada</p>
+                    </div>
+
+                    <div class="profile-card">
+                        <form th:action="@{/usuario/perfil/actualizar}" th:object="${usuarioDTO}" method="post">
+                            <input type="hidden" name="fromWelcome" th:value="${fromWelcome}"
+                                th:if="${fromWelcome != null}" />
+
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <h5 class="section-title">Datos Personales</h5>
+                            </div>
+                            <div class="card-body-custom">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="nombre" class="form-label required">Nombre</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-person input-icon"></i>
+                                            <input type="text" id="nombre" class="form-control-custom"
+                                                th:field="*{nombre}" placeholder="Tu nombre" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="apellido" class="form-label required">Apellido</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-person input-icon"></i>
+                                            <input type="text" id="apellido" class="form-control-custom"
+                                                th:field="*{apellido}" placeholder="Tu apellido" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Correo Electrónico</label>
+                                    <div class="input-group-custom">
+                                        <i class="bi bi-envelope input-icon"></i>
+                                        <input type="email" id="email" class="form-control-custom form-control-no-icon"
+                                            th:field="*{email}" readonly>
+                                    </div>
+                                    <div class="helper-text">
+                                        <i class="bi bi-info-circle"></i>
+                                        El correo se usa para iniciar sesión y no se puede cambiar
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <div class="input-group-custom">
+                                        <i class="bi bi-telephone input-icon"></i>
+                                        <input type="tel" id="telefono" class="form-control-custom"
+                                            th:field="*{telefono}" placeholder="+57 300 123 4567">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <div class="section-header">
+                                <div class="section-icon">
+                                    <i class="bi bi-shield-lock-fill"></i>
+                                </div>
+                                <h5 class="section-title">Seguridad</h5>
+                            </div>
+                            <div class="card-body-custom">
+                                <div class="form-group password-section mb-0">
+                                    <label for="password" class="form-label">Nueva Contraseña</label>
+                                    <div class="input-group-custom">
+                                        <i class="bi bi-lock input-icon"></i>
+                                        <input type="password" id="password" class="form-control-custom"
+                                            th:field="*{password}" placeholder="••••••••">
+                                        <button type="button" class="password-toggle" id="togglePassword">
+                                            <i class="bi bi-eye-slash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="helper-text">
+                                        <i class="bi bi-info-circle"></i>
+                                        Déjalo en blanco si no deseas cambiar tu contraseña actual
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-top">
+                                    <label class="form-label">Acceso Biométrico</label>
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <span class="text-muted small">Usa tu rostro para iniciar sesión más
+                                            rápido.</span>
+                                        <span th:if="${usuarioDTO.facialLoginHabilitado}"
+                                            class="status-badge bg-success-subtle text-success border border-success">
+                                            ACTIVO
+                                        </span>
+                                        <span th:unless="${usuarioDTO.facialLoginHabilitado}"
+                                            class="status-badge bg-warning-subtle text-warning border border-warning">
+                                            NO CONFIGURADO
+                                        </span>
+                                    </div>
+                                    <button type="button" id="btnConfigurarRostro" class="btn-facial-setup">
+                                        <i class="bi bi-person-bounding-box"></i>
+                                        <span
+                                            th:text="${usuarioDTO.facialLoginHabilitado ? 'Actualizar mi Rostro' : 'Configurar Acceso con Rostro'}"></span>
+                                    </button>
+                                </div>
+
+                                <div class="form-actions">
+                                    <a th:href="@{/usuario/dashboard}" class="btn-back">
+                                        <i class="bi bi-arrow-left"></i>
+                                        Volver al Panel
+                                    </a>
+                                    <button type="submit" class="btn-save">
+                                        <i class="bi bi-check-lg"></i>
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="text-center mt-4 text-muted" style="font-size: 0.9rem;">
+                        <i class="bi bi-shield-check me-1"></i>
+                        Tu información está protegida y nunca será compartida con terceros
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="cameraOverlay">
+        <div class="text-center mb-4">
+            <h3 id="facialStatus">Cargando Sistema...</h3>
+            <p class="text-white-50">Mantén tu rostro centrado y bien iluminado</p>
+        </div>
+        <div id="videoContainer">
+            <video id="video" autoplay muted></video>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-outline-light px-4" onclick="cerrarCamara()">Cancelar</button>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const password = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
+
+        const btnConfig = document.getElementById('btnConfigurarRostro');
+        const overlay = document.getElementById('cameraOverlay');
+        const video = document.getElementById('video');
+        const statusText = document.getElementById('facialStatus');
+        const userEmail = document.getElementById('email').value; // Obtenemos el email del input de arriba
+
+        async function cargarModelos() {
+            const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+            ]);
+        }
+
+        btnConfig.addEventListener('click', async () => {
+            overlay.style.display = 'flex';
+            statusText.innerText = "Preparando cámara...";
+            await cargarModelos();
+
+            navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+                .then(stream => {
+                    video.srcObject = stream;
+                    statusText.innerText = "Escaneando rostro...";
+                    enrolarRostro();
+                })
+                .catch(err => {
+                    alert("Error al abrir cámara: " + err);
+                    cerrarCamara();
+                });
+        });
+
+        async function enrolarRostro() {
+            const interval = setInterval(async () => {
+                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (detection) {
+                    statusText.innerText = "¡Rostro capturado! Guardando...";
+                    clearInterval(interval);
+                    guardarEnBD(Array.from(detection.descriptor));
+                }
+            }, 1000);
+        }
+
+        function guardarEnBD(descriptor) {
+            fetch('/auth/registrar-rostro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    descriptor: descriptor
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert("¡Éxito! Tu rostro ha sido registrado. Ahora puedes usarlo para el login.");
+                    location.reload();
+                })
+                .catch(err => alert("Error al guardar: " + err));
+        }
+
+        function cerrarCamara() {
+            const stream = video.srcObject;
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.style.display = 'none';
+        }
+    </script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+
+</html>

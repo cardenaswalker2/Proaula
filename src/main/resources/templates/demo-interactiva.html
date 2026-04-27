@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiencia Interactiva | Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <!-- CSS Externos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.85);
+            --glass-dark: rgba(15, 23, 42, 0.95);
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #a855f7;
+            --cyan: #06b6d4;
+            --amber: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --dark: #0f172a;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --gradient-2: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --shadow-soft: 0 20px 40px rgba(99, 102, 241, 0.15);
+            --shadow-hover: 0 30px 60px rgba(99, 102, 241, 0.25);
+        }
+
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body { 
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #fae8ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Banner de Modo Demo Mejorado */
+        .demo-mode-indicator {
+            background: linear-gradient(90deg, var(--dark) 0%, #1e1b4b 100%);
+            color: #fbbf24;
+            padding: 14px;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-mode-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            100% { left: 100%; }
+        }
+
+        /* Tarjetas Glassmorphism Premium */
+        .dashboard-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .dashboard-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Stats Cards Mejorados */
+        .stat-card {
+            padding: 24px;
+            border-radius: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-card.bg-primary { background: var(--gradient-1); }
+        .stat-card.bg-dark { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-card.bg-success { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+        .stat-card.bg-warning { background: var(--gradient-3); }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        /* Chat Nova Brain Mejorado */
+        .nova-container {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .nova-header {
+            background: var(--gradient-1);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nova-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nova-dot {
+            width: 10px;
+            height: 10px;
+            background: #22d3ee;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #22d3ee;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.8); opacity: 0.6; }
+        }
+
+        #chatBox {
+            height: 280px;
+            overflow-y: auto;
+            background: #f1f5f9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg { 
+            padding: 14px 18px; 
+            border-radius: 18px; 
+            max-width: 85%;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-ai { 
+            background: white;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .msg-ai::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient-1);
+            border-radius: 18px 0 0 4px;
+        }
+
+        .msg-user { 
+            background: var(--gradient-1);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 20px;
+            align-self: flex-start;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: typing-bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Input de chat mejorado */
+        .nova-input-group {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .nova-input {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .nova-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .nova-btn-send {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: var(--gradient-1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .nova-btn-send:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Botones Premium */
+        .btn-premium {
+            background: var(--gradient-1);
+            color: white; 
+            border: none; 
+            padding: 14px 28px; 
+            border-radius: 16px;
+            font-weight: 700; 
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-premium:hover::before {
+            left: 100%;
+        }
+
+        .btn-premium:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            color: white;
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-premium:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animación de Escaneo Mejorada */
+        .scanner-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            position: absolute;
+            top: 0;
+            animation: scan 2.5s infinite ease-in-out;
+            box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan);
+            z-index: 10;
+        }
+
+        .scan-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .scanning .scan-grid {
+            opacity: 1;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .face-overlay {
+            position: absolute;
+            inset: 10px;
+            border: 2px solid rgba(6, 182, 212, 0.5);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .scanning .face-overlay {
+            opacity: 1;
+            animation: face-pulse 1s infinite;
+        }
+
+        @keyframes face-pulse {
+            0%, 100% { border-color: rgba(6, 182, 212, 0.5); }
+            50% { border-color: rgba(6, 182, 212, 1); }
+        }
+
+        /* Citas Agendadas Mejoradas */
+        .cita-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cita-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cita-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .cita-card:hover::before {
+            opacity: 1;
+        }
+
+        .cita-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .cita-delete {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cita-delete:hover {
+            background: var(--red);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Tabla de historial mejorada */
+        .table-medical {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-medical tbody tr {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .table-medical tbody tr:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .table-medical td {
+            padding: 16px;
+            border: none;
+        }
+
+        .table-medical td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .table-medical td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .badge-medical {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Mascotas Cards */
+        .pet-card {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .pet-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-right: 16px;
+            position: relative;
+        }
+
+        .pet-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--secondary);
+            animation: pet-orbit 3s linear infinite;
+        }
+
+        @keyframes pet-orbit {
+            100% { transform: rotate(360deg); }
+        }
+
+        .pet-avatar.dog { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
+        .pet-avatar.cat { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #db2777; }
+
+        .pet-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pet-status.complete { color: var(--green); }
+        .pet-status.pending { color: var(--amber); }
+
+        /* Notificaciones Toast Premium */
+        .toast-container-nova {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nova-toast {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 320px;
+            border-left: 4px solid var(--primary);
+            animation: toastSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nova-toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99,102,241,0.05), transparent);
+            pointer-events: none;
+        }
+
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateX(100px) scale(0.8); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        .nova-toast.hiding {
+            animation: toastHide 0.3s ease forwards;
+        }
+
+        @keyframes toastHide {
+            to { opacity: 0; transform: translateX(100px) scale(0.8); }
+        }
+
+        .toast-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-icon.success { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .toast-icon.warning { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+        .toast-icon.info { background: rgba(99, 102, 241, 0.15); color: var(--primary); }
+
+        .toast-content h6 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .toast-content p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* HEX Assistant Floating */
+        .hex-assistant {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hex-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 3px solid var(--primary);
+            border-radius: 50% 20% 50% 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+            animation: hex-float 4s ease-in-out infinite;
+        }
+
+        @keyframes hex-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        .hex-avatar::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: conic-gradient(transparent, var(--cyan), transparent);
+            animation: hex-rotate 4s linear infinite;
+        }
+
+        .hex-avatar i {
+            font-size: 2rem;
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+
+        @keyframes hex-rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .hex-bubble {
+            background: white;
+            color: var(--dark);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            animation: hex-bubble-float 3s ease-in-out infinite;
+            border: 2px solid var(--primary);
+            max-width: 220px;
+            text-align: center;
+        }
+
+        @keyframes hex-bubble-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Panel HEX */
+        .hex-panel {
+            position: fixed;
+            bottom: 120px;
+            left: 30px;
+            width: 380px;
+            background: var(--glass-dark);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            color: white;
+            overflow: hidden;
+            z-index: 2001;
+            animation: hex-appear 0.4s ease;
+        }
+
+        @keyframes hex-appear {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .hex-header {
+            padding: 20px;
+            background: linear-gradient(90deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3));
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hex-body {
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .hex-msg {
+            background: rgba(255,255,255,0.1);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--cyan);
+        }
+
+        .hex-commands {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .hex-cmd {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hex-cmd:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hex-panel {
+                width: calc(100vw - 40px);
+                left: 20px;
+            }
+            .hex-assistant {
+                left: 20px;
+                bottom: 20px;
+            }
+            .toast-container-nova {
+                right: 20px;
+                left: 20px;
+            }
+            .nova-toast {
+                min-width: auto;
+            }
+        }
+
+        /* Efectos adicionales */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Banner Demo -->
+    <div class="demo-mode-indicator sticky-top text-center">
+        <i class="bi bi-cpu-fill me-2"></i> Entorno de Prueba Inteligente - Clínica App v2.0
+        <a href="/registro" class="btn btn-sm btn-outline-warning ms-3 rounded-pill fw-bold">Finalizar Demo</a>
+    </div>
+
+    <div class="container py-5">
+        <!-- Header con Stats -->
+        <div class="row mb-5 animate__animated animate__fadeInDown">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h1 class="fw-800 display-5 mb-2">Panel de <span class="gradient-text">Invitado</span></h1>
+                <p class="text-muted fs-5 mb-0">Explora las funcionalidades de nuestra arquitectura veterinaria inteligente.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-card bg-primary animate__animated animate__fadeIn" style="animation-delay: 0.1s">
+                            <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+                            <div>
+                                <div class="stat-value" id="statCitas">124</div>
+                                <div class="stat-label">Citas Hoy</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card bg-dark animate__animated animate__fadeIn" style="animation-delay: 0.2s">
+                            <div class="stat-icon"><i class="bi bi-shield-check"></i></div>
+                            <div>
+                                <div class="stat-value">99.9%</div>
+                                <div class="stat-label">Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card bg-success animate__animated animate__fadeIn" style="animation-delay: 0.3s">
+                            <div class="stat-icon"><i class="bi bi-heart-pulse"></i></div>
+                            <div>
+                                <div class="stat-value">1,847</div>
+                                <div class="stat-label">Mascotas Activas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card bg-warning animate__animated animate__fadeIn" style="animation-delay: 0.4s">
+                            <div class="stat-icon"><i class="bi bi-robot"></i></div>
+                            <div>
+                                <div class="stat-value">Nova</div>
+                                <div class="stat-label">IA Online</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- COLUMNA PRINCIPAL -->
+            <div class="col-lg-8">
+                
+                <!-- AGENDAR CITA INTELIGENTE -->
+                <div class="dashboard-card p-4 mb-4 animate__animated animate__fadeInLeft">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="fw-700 mb-1"><i class="bi bi-calendar-plus text-primary me-2"></i>Agendamiento Express</h4>
+                            <p class="text-muted mb-0 small">IA asigna automáticamente el mejor especialista disponible</p>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                            <i class="bi bi-magic me-1"></i> Procesamiento IA
+                        </span>
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Mascota</label>
+                            <select class="form-select border-2 bg-light" id="demoPet">
+                                <option value="">Selecciona Mascota</option>
+                                <option value="Max">🐕 Max (Golden Retriever)</option>
+                                <option value="Luna">🐈 Luna (Siamesa)</option>
+                                <option value="Rocky">🐕 Rocky (Bulldog)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Tipo de Consulta</label>
+                            <select class="form-select border-2 bg-light" id="demoTipo">
+                                <option>Consulta General</option>
+                                <option>Vacunación</option>
+                                <option>Urgencia</option>
+                                <option>Estética</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Urgencia</label>
+                            <select class="form-select border-2 bg-light" id="demoUrgencia">
+                                <option value="normal">🟢 Normal (24-48h)</option>
+                                <option value="alta">🟡 Alta (Same day)</option>
+                                <option value="critica">🔴 Crítica (Inmediato)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="simularAgendar()" class="btn btn-premium w-100 mb-4">
+                        <i class="bi bi-magic me-2"></i> 
+                        <span id="btnAgendarText">Analizar y Agendar con IA</span>
+                        <div id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status"></div>
+                    </button>
+
+                    <div id="listaCitas">
+                        <div class="text-center py-5 border-2 border-dashed rounded-4 bg-light" id="noCitas">
+                            <i class="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+                            <p class="text-muted mb-0">No hay citas en la cola de procesamiento.<br>
+                            <small>Selecciona una mascota para comenzar</small></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORIAL MÉDICO SIMULADO -->
+                <div class="dashboard-card p-4 animate__animated animate__fadeInUp">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-700 mb-0"><i class="bi bi-file-earmark-medical me-2 text-primary"></i> Expediente Digital</h5>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="mostrarToast('Sincronizando con historial...', 'info')">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-medical">
+                            <thead>
+                                <tr>
+                                    <th class="text-muted small fw-bold">Fecha</th>
+                                    <th class="text-muted small fw-bold">Servicio</th>
+                                    <th class="text-muted small fw-bold">Especialista</th>
+                                    <th class="text-muted small fw-bold">Estado</th>
+                                    <th class="text-end text-muted small fw-bold">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaHistorial">
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">10 Abr 2024</div>
+                                        <small class="text-muted">15:30 hrs</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge-medical">
+                                            <i class="bi bi-shield-plus me-1"></i> Vacunación Rabia
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 32px; height: 32px; font-size: 0.75rem; color: white; font-weight: 700;">DR</div>
+                                            <span class="fw-semibold">Dr. Rodríguez</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Completado</span></td>
+                                    <td class="text-end">
+                                        <button onclick="mostrarDescarga('Vacunación_Rabia_Max_10Abr2024.pdf')" class="btn btn-sm btn-outline-danger rounded-pill">
+                                            <i class="bi bi-file-pdf"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">02 Mar 2024</div>
+                                        <small class="text-muted">09:00 hrs</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge-medical">
+                                            <i class="bi bi-heart-pulse me-1"></i> Chequeo General
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                                 style="width: 32px; height: 32px; font-size: 0.75rem; color: white; font-weight: 700;">DG</div>
+                                            <span class="fw-semibold">Dra. Gómez</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Completado</span></td>
+                                    <td class="text-end">
+                                        <button onclick="mostrarDescarga('Chequeo_General_Max_02Mar2024.pdf')" class="btn btn-sm btn-outline-danger rounded-pill">
+                                            <i class="bi bi-file-pdf"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA SIDEBAR -->
+            <div class="col-lg-4">
+                
+                <!-- NOVA BRAIN IA MEJORADO -->
+                <div class="dashboard-card nova-container mb-4 animate__animated animate__fadeInRight">
+                    <div class="nova-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="position-relative">
+                                <i class="bi bi-robot fs-3"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-cyan border border-white rounded-circle">
+                                    <span class="visually-hidden">Online</span>
+                                </span>
+                            </div>
+                            <div>
+                                <h5 class="fw-700 mb-0">Nova Brain</h5>
+                                <div class="nova-status">
+                                    <div class="nova-dot"></div>
+                                    <span>Asistente IA Activo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-light btn-icon" onclick="novaChat.clear()">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="chatBox">
+                        <div class="msg msg-ai">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-robot text-primary"></i>
+                                <strong class="small">Nova Brain</strong>
+                            </div>
+                            ¡Hola! Soy Nova, tu asistente veterinario inteligente. Puedo ayudarte con:
+                            <ul class="mb-0 mt-2 ps-3 small">
+                                <li>Información sobre servicios</li>
+                                <li>Recordatorios de vacunas</li>
+                                <li>Síntomas básicos</li>
+                                <li>Agendamiento rápido</li>
+                            </ul>
+                            <span class="msg-time">Justo ahora</span>
+                        </div>
+                    </div>
+
+                    <div class="nova-input-group">
+                        <input type="text" id="userInput" class="nova-input" placeholder="Escribe tu consulta..." 
+                               onkeypress="if(event.key==='Enter')novaChat.send()">
+                        <button onclick="novaChat.send()" class="nova-btn-send">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RECONOCIMIENTO FACIAL MEJORADO -->
+                <div class="dashboard-card p-4 mb-4 text-center animate__animated animate__fadeInRight" style="animation-delay: 0.1s">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-700 mb-0"><i class="bi bi-person-bounding-box text-primary me-2"></i>BioSeguridad</h5>
+                        <span class="badge bg-success bg-opacity-10 text-success">Activo</span>
+                    </div>
+                    
+                    <div class="scanner-container bg-dark rounded-4 mb-3 d-flex align-items-center justify-content-center position-relative" 
+                         style="height: 180px;" id="scannerContainer">
+                        <div class="scan-grid"></div>
+                        <div class="scan-line d-none" id="scanLine"></div>
+                        <div class="face-overlay d-none" id="faceOverlay"></div>
+                        
+                        <div class="text-center" id="scanContent">
+                            <i class="bi bi-person-circle text-white-50 display-1 mb-3 d-block" id="cameraIcon"></i>
+                            <p class="text-white-50 small mb-0" id="scanText">Sistema de reconocimiento listo</p>
+                        </div>
+
+                        <div class="position-absolute bottom-0 start-0 end-0 p-3 d-none" id="scanProgress">
+                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.2);">
+                                <div class="progress-bar bg-cyan" style="width: 0%; transition: width 0.3s;" id="progressBar"></div>
+                            </div>
+                            <p class="text-cyan small mt-2 mb-0 fw-bold" id="scanStatus">Inicializando...</p>
+                        </div>
+                    </div>
+
+                    <button onclick="simularEscaneo()" class="btn btn-outline-primary w-100 rounded-pill fw-bold" id="btnScan">
+                        <i class="bi bi-fingerprint me-2"></i>Iniciar Escaneo Biométrico
+                    </button>
+                    
+                    <div id="scanResult" class="mt-3"></div>
+                </div>
+
+                    </div>
+                </div>
+
+                <!-- MASCOTA VIRTUAL (NUEVA SECCIÓN CONECTADA) -->
+                <div class="dashboard-card p-4 mb-4 animate__animated animate__fadeInRight" style="animation-delay: 0.25s">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-700 mb-0"><i class="bi bi-controller text-primary me-2"></i>Mascota Virtual</h5>
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary" id="lastUpdate">Actualizado ahora</span>
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            <div class="pet-avatar dog mx-auto" style="width: 100px; height: 100px; font-size: 3rem;" id="petEmojiContainer">
+                                <span id="petEmoji">🐶</span>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-success border border-white" id="petStatusText">¡Feliz!</span>
+                        </div>
+                        <h4 class="fw-bold mt-3 mb-1" id="petNameDisp">Nova-Pet</h4>
+                        <p class="text-muted small">Tu compañero digital en tiempo real</p>
+                    </div>
+
+                    <div class="space-y-4 mb-4">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold text-muted text-uppercase">❤️ Salud</span>
+                                <span class="small fw-bold" id="val-salud">100%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div id="bar-salud" class="progress-bar bg-danger" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold text-muted text-uppercase">🍖 Hambre</span>
+                                <span class="small fw-bold" id="val-hambre">0%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div id="bar-hambre" class="progress-bar bg-warning" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold text-muted text-uppercase">⚡ Energía</span>
+                                <span class="small fw-bold" id="val-energia">100%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div id="bar-energia" class="progress-bar bg-cyan" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold text-muted text-uppercase">😊 Felicidad</span>
+                                <span class="small fw-bold" id="val-felicidad">100%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div id="bar-felicidad" class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button onclick="petSystem.action('FEED')" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                                <i class="bi bi-egg-fried me-1"></i> Alimentar
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button onclick="petSystem.action('PLAY')" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                                <i class="bi bi-controller me-1"></i> Jugar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card p-4 animate__animated animate__fadeInRight" style="animation-delay: 0.3s">
+                    <h6 class="fw-bold mb-3 text-muted small text-uppercase tracking-wide">Acciones Rápidas</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary rounded-pill text-start d-flex align-items-center gap-2" onclick="novaChat.ask('¿Cuándo es la próxima vacuna de Max?')">
+                            <i class="bi bi-calendar-event"></i>
+                            <span>Consultar próximas vacunas</span>
+                        </button>
+                        <button class="btn btn-outline-primary rounded-pill text-start d-flex align-items-center gap-2" onclick="novaChat.ask('Necesito una cita de emergencia')">
+                            <i class="bi bi-telephone-plus"></i>
+                            <span>Línea de emergencia 24/7</span>
+                        </button>
+                        <button class="btn btn-outline-primary rounded-pill text-start d-flex align-items-center gap-2" onclick="mostrarToast('Farmacia en línea - Próximamente', 'info')">
+                            <i class="bi bi-capsule"></i>
+                            <span>Comprar medicamentos</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container-nova" id="toastContainer"></div>
+
+    <!-- HEX Assistant -->
+    <div class="hex-assistant">
+        <div class="hex-bubble" onclick="hexDemo.toggle()">
+            💡 ¿Necesitas ayuda?
+        </div>
+        <div class="hex-avatar" onclick="hexDemo.toggle()">
+            <i class="bi bi-cpu"></i>
+        </div>
+    </div>
+
+    <!-- HEX Panel -->
+    <div class="hex-panel" id="hexPanel">
+        <div class="hex-header">
+            <div>
+                <h6 class="fw-bold mb-0">HEX Demo Guide</h6>
+                <small class="text-white-50">Asistente de Navegación</small>
+            </div>
+            <button class="btn btn-sm btn-link text-white" onclick="hexDemo.toggle()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="hex-body" id="hexBody">
+            <div class="hex-msg">
+                <strong>👋 Bienvenido al Demo</strong><br>
+                Estoy aquí para guiarte. Este es un entorno simulado donde puedes probar todas las funcionalidades sin riesgo.
+            </div>
+        </div>
+        <div class="hex-commands">
+            <button class="hex-cmd" onclick="hexDemo.explain('citas')">
+                <i class="bi bi-calendar"></i> Agendar
+            </button>
+            <button class="hex-cmd" onclick="hexDemo.explain('nova')">
+                <i class="bi bi-robot"></i> Nova IA
+            </button>
+            <button class="hex-cmd" onclick="hexDemo.explain('bio')">
+                <i class="bi bi-fingerprint"></i> BioSeguridad
+            </button>
+            <button class="hex-cmd" onclick="hexDemo.explain('demo')">
+                <i class="bi bi-info-circle"></i> Sobre Demo
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sistema de Notificaciones Toast Premium
+        const toastSystem = {
+            container: document.getElementById('toastContainer'),
+            
+            show: function(message, type = 'info', duration = 4000) {
+                const icons = {
+                    success: 'bi-check-circle-fill',
+                    warning: 'bi-exclamation-triangle-fill',
+                    info: 'bi-info-circle-fill'
+                };
+                
+                const toast = document.createElement('div');
+                toast.className = 'nova-toast';
+                toast.innerHTML = `
+                    <div class="toast-icon ${type}">
+                        <i class="bi ${icons[type]}"></i>
+                    </div>
+                    <div class="toast-content">
+                        <h6>${type === 'success' ? '¡Éxito!' : type === 'warning' ? 'Atención' : 'Información'}</h6>
+                        <p>${message}</p>
+                    </div>
+                `;
+                
+                this.container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('hiding');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+        };
+
+        // Nova Brain Chat System REESTRUCTURADO (Conexión Real con Backend)
+        const novaChat = {
+            box: document.getElementById('chatBox'),
+            input: document.getElementById('userInput'),
+            
+            send: async function() {
+                const text = this.input.value.trim();
+                if(!text) return;
+                
+                // Agregar mensaje usuario
+                this.addMessage(text, 'user');
+                this.input.value = '';
+                
+                // Mostrar typing
+                this.showTyping();
+                
+                try {
+                    // Llamada al motor real de Nova AI (vía PublicDemoController)
+                    const response = await fetch('/api/public/demo/think', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ mensaje: text })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    this.hideTyping();
+                    this.addMessage(data.respuesta, 'ai');
+                    
+                    // Si hay sugerencias en la respuesta real, mostrarlas como botones
+                    if(data.sugerencias && data.sugerencias.length > 0) {
+                        this.addSuggestions(data.sugerencias);
+                    }
+                    
+                    if(data.intent === 'EMERGENCIA') {
+                        toastSystem.show('Protocolo de emergencia activado. Línea directa disponible.', 'warning', 6000);
+                    }
+                } catch(err) {
+                    console.error("Nova AI Error:", err);
+                    this.hideTyping();
+                    this.addMessage("Vaya, pareces que mi procesador central está ocupado. Intenta de nuevo en un momento.", 'ai');
+                }
+            },
+            
+            ask: function(question) {
+                this.input.value = question;
+                this.send();
+            },
+            
+            addMessage: function(text, type) {
+                const div = document.createElement('div');
+                div.className = `msg msg-${type}`;
+                
+                if(type === 'ai') {
+                    div.innerHTML = `
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-robot text-primary"></i>
+                            <strong class="small">Nova Brain (Procesador IA)</strong>
+                        </div>
+                        ${text}
+                        <span class="msg-time">${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</span>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        ${text}
+                        <span class="msg-time">${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</span>
+                    `;
+                }
+                
+                this.box.appendChild(div);
+                this.box.scrollTop = this.box.scrollHeight;
+            },
+
+            addSuggestions: function(suggestions) {
+                const div = document.createElement('div');
+                div.className = 'd-flex flex-wrap gap-2 mt-2';
+                suggestions.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-sm btn-outline-primary rounded-pill py-1 px-3';
+                    btn.innerHTML = s;
+                    btn.onclick = () => this.ask(s.replace(/^[^a-zA-ZáéíóúÁÉÍÓÚ]+/, ''));
+                    div.appendChild(btn);
+                });
+                this.box.appendChild(div);
+                this.box.scrollTop = this.box.scrollHeight;
+            },
+            
+            showTyping: function() {
+                const typing = document.createElement('div');
+                typing.className = 'typing-indicator';
+                typing.id = 'typingIndicator';
+                typing.innerHTML = '<span></span><span></span><span></span>';
+                this.box.appendChild(typing);
+                this.box.scrollTop = this.box.scrollHeight;
+            },
+            
+            hideTyping: function() {
+                const typing = document.getElementById('typingIndicator');
+                if(typing) typing.remove();
+            },
+            
+            clear: function() {
+                this.box.innerHTML = `
+                    <div class="msg msg-ai">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-robot text-primary"></i>
+                            <strong class="small">Nova Brain</strong>
+                        </div>
+                        Conversación reiniciada por el usuario. ¡Hola! 😄
+                        <span class="msg-time">Justo ahora</span>
+                    </div>
+                `;
+                toastSystem.show('Conversación reiniciada', 'info');
+            }
+        };
+
+        // --- SISTEMA DE MASCOTA VIRTUAL (SIMULADOR REALISTA) ---
+        const petSystem = {
+            state: {
+                salud: 100,
+                hambre: 20,
+                felicidad: 80,
+                energia: 90,
+                nombre: "Nova-Pet",
+                lastUpdate: Date.now()
+            },
+
+            init: function() {
+                const saved = localStorage.getItem('demoPetState');
+                if(saved) {
+                    this.state = JSON.parse(saved);
+                    this.sincronizar();
+                }
+                this.render();
+                setInterval(() => this.tick(), 10000); // Degradación cada 10s
+            },
+
+            tick: function() {
+                this.state.hambre = Math.min(100, this.state.hambre + 1);
+                this.state.energia = Math.max(0, this.state.energia - 0.5);
+                if(this.state.hambre > 70) {
+                    this.state.salud = Math.max(0, this.state.salud - 1);
+                    this.state.felicidad = Math.max(0, this.state.felicidad - 1);
+                }
+                this.save();
+                this.render();
+            },
+
+            action: function(type) {
+                switch(type) {
+                    case 'FEED':
+                        this.state.hambre = Math.max(0, this.state.hambre - 25);
+                        this.state.salud = Math.min(100, this.state.salud + 2);
+                        this.state.felicidad = Math.min(100, this.state.felicidad + 5);
+                        this.animatePet('scale(1.2)');
+                        toastSystem.show('¡Nom nom! Qué rico alimento.', 'success');
+                        break;
+                    case 'PLAY':
+                        if(this.state.energia > 10) {
+                            this.state.felicidad = Math.min(100, this.state.felicidad + 20);
+                            this.state.energia = Math.max(0, this.state.energia - 15);
+                            this.state.hambre = Math.min(100, this.state.hambre + 5);
+                            this.animatePet('rotate(20deg)');
+                            toastSystem.show('¡Guao guao! Eso fue divertido.', 'success');
+                        } else {
+                            toastSystem.show('Estoy demasiado cansado para jugar...', 'warning');
+                        }
+                        break;
+                }
+                this.save();
+                this.render();
+            },
+
+            animatePet: function(transform) {
+                const el = document.getElementById('petEmojiContainer');
+                el.style.transform = transform;
+                setTimeout(() => el.style.transform = 'scale(1)', 300);
+            },
+
+            save: function() {
+                localStorage.setItem('demoPetState', JSON.stringify(this.state));
+            },
+
+            sincronizar: function() {
+                const ahora = Date.now();
+                const diffMinutos = Math.floor((ahora - this.state.lastUpdate) / 60000);
+                if(diffMinutos > 0) {
+                    this.state.hambre = Math.min(100, this.state.hambre + diffMinutos * 0.1);
+                    this.state.energia = Math.max(0, this.state.energia - diffMinutos * 0.05);
+                    this.state.lastUpdate = ahora;
+                }
+            },
+
+            render: function() {
+                const updateBar = (id, val) => {
+                    document.getElementById(`bar-${id}`).style.width = val + '%';
+                    document.getElementById(`val-${id}`).textContent = Math.round(val) + '%';
+                };
+                
+                updateBar('salud', this.state.salud);
+                updateBar('hambre', this.state.hambre);
+                updateBar('energia', this.state.energia);
+                updateBar('felicidad', this.state.felicidad);
+
+                const statusTag = document.getElementById('petStatusText');
+                if(this.state.salud < 40) {
+                    statusTag.textContent = 'Enfermo 🤒'; statusTag.className = 'badge rounded-pill bg-danger border';
+                    document.getElementById('petEmoji').textContent = '🤢';
+                } else if(this.state.hambre > 60) {
+                    statusTag.textContent = 'Hambriento 🦴'; statusTag.className = 'badge rounded-pill bg-warning text-dark border';
+                    document.getElementById('petEmoji').textContent = '🤤';
+                } else {
+                    statusTag.textContent = '¡Feliz! ✨'; statusTag.className = 'badge rounded-pill bg-success border';
+                    document.getElementById('petEmoji').textContent = '🐶';
+                }
+            }
+        };
+
+        // Sistema de Agendamiento Mejorado
+        let citasCount = 0;
+        
+        function simularAgendar() {
+            const pet = document.getElementById('demoPet').value;
+            const tipo = document.getElementById('demoTipo').value;
+            const urgencia = document.getElementById('demoUrgencia').value;
+            
+            if(!pet) {
+                toastSystem.show('Por favor selecciona una mascota primero', 'warning');
+                document.getElementById('demoPet').focus();
+                return;
+            }
+            
+            const btnText = document.getElementById('btnAgendarText');
+            const spinner = document.getElementById('btnSpinner');
+            
+            btnText.textContent = 'Analizando disponibilidad...';
+            spinner.classList.remove('d-none');
+            
+            toastSystem.show('Nova Brain está analizando especialistas disponibles...', 'info', 3000);
+            
+            setTimeout(() => {
+                // Determinar doctor según tipo
+                const doctores = {
+                    'Consulta General': 'Dr. Rodríguez',
+                    'Vacunación': 'Dra. Martínez',
+                    'Urgencia': 'Dr. Chen (Urgencias)',
+                    'Estética': 'Dra. López'
+                };
+                
+                const doctor = doctores[tipo] || 'Dr. Rodríguez';
+                
+                // Generar hora aleatoria próxima
+                const horas = ['09:00', '10:30', '14:00', '15:30', '17:00', '18:30'];
+                const hora = horas[Math.floor(Math.random() * horas.length)];
+                const fecha = new Date();
+                fecha.setDate(fecha.getDate() + (urgencia === 'critica' ? 0 : urgencia === 'alta' ? 1 : Math.floor(Math.random() * 3) + 2));
+                
+                const fechaStr = fecha.toLocaleDateString('es-ES', {day: '2-digit', month: 'short'});
+                
+                // Crear card de cita
+                const lista = document.getElementById('listaCitas');
+                const noCitas = document.getElementById('noCitas');
+                if(noCitas) noCitas.style.display = 'none';
+                
+                const citaId = 'cita-' + Date.now();
+                const card = document.createElement('div');
+                card.className = 'cita-card animate__animated animate__backInDown';
+                card.id = citaId;
+                
+                const urgenciaBadge = urgencia === 'critica' ? '🔴 Crítica' : urgencia === 'alta' ? '🟡 Alta' : '🟢 Normal';
+                const urgenciaClass = urgencia === 'critica' ? 'bg-danger' : urgencia === 'alta' ? 'bg-warning text-dark' : 'bg-success';
+                
+                card.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="cita-time">
+                            <i class="bi bi-clock"></i>
+                            ${fechaStr} • ${hora}
+                        </div>
+                        <span class="badge ${urgenciaClass} bg-opacity-75">${urgenciaBadge}</span>
+                    </div>
+                    <h6 class="fw-bold mb-1">${tipo} - ${pet}</h6>
+                    <p class="text-muted small mb-3"><i class="bi bi-person-badge me-1"></i> ${doctor}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-check2-all me-1"></i> Confirmada
+                        </span>
+                        <button class="cita-delete" onclick="eliminarCita('${citaId}')" title="Cancelar cita">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                `;
+                
+                lista.prepend(card);
+                
+                // Reset button
+                btnText.textContent = 'Analizar y Agendar con IA';
+                spinner.classList.add('d-none');
+                
+                // Actualizar contador
+                citasCount++;
+                document.getElementById('statCitas').textContent = 124 + citasCount;
+                
+                // Notificación
+                toastSystem.show(`✅ Cita confirmada para ${pet} el ${fechaStr} a las ${hora}`, 'success', 5000);
+                
+                // Guardar en persistencia
+                saveCitas();
+            }, 2500);
+        }
+
+        function saveCitas() {
+            const items = Array.from(document.querySelectorAll('.cita-card')).map(el => ({
+                id: el.id,
+                html: el.innerHTML
+            }));
+            localStorage.setItem('demoCitas', JSON.stringify(items));
+        }
+        
+        function eliminarCita(id) {
+            const cita = document.getElementById(id);
+            cita.classList.replace('animate__backInDown', 'animate__backOutRight');
+            setTimeout(() => {
+                cita.remove();
+                citasCount--;
+                document.getElementById('statCitas').textContent = 124 + citasCount;
+                toastSystem.show('Cita cancelada correctamente', 'info');
+                
+                const lista = document.getElementById('listaCitas');
+                if(lista.children.length === 0 || (lista.children.length === 1 && lista.children[0].id === 'noCitas')) {
+                    document.getElementById('noCitas').style.display = 'block';
+                }
+                saveCitas();
+            }, 500);
+        }
+        
+        function seleccionarMascota(nombre) {
+            document.getElementById('demoPet').value = nombre;
+            toastSystem.show(`${nombre} seleccionado. ¿Qué necesitas agendar?`, 'info');
+            novaChat.addMessage(`Veo que seleccionaste a ${nombre}. ¿En qué puedo ayudarte con ${nombre === 'Max' ? 'él' : 'ella'} hoy?`, 'ai');
+        }
+
+        // Sistema de Escaneo Biométrico Mejorado
+        function simularEscaneo() {
+            const container = document.getElementById('scannerContainer');
+            const line = document.getElementById('scanLine');
+            const overlay = document.getElementById('faceOverlay');
+            const content = document.getElementById('scanContent');
+            const progress = document.getElementById('scanProgress');
+            const bar = document.getElementById('progressBar');
+            const status = document.getElementById('scanStatus');
+            const btn = document.getElementById('btnScan');
+            const result = document.getElementById('scanResult');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Escaneando...';
+            
+            container.classList.add('scanning');
+            line.classList.remove('d-none');
+            overlay.classList.remove('d-none');
+            content.style.opacity = '0.3';
+            progress.classList.remove('d-none');
+            
+            const steps = [
+                {pct: '25%', text: 'Detectando rostro...'},
+                {pct: '50%', text: 'Analizando puntos biométricos...'},
+                {pct: '75%', text: 'Comparando con base de datos...'},
+                {pct: '100%', text: 'Verificando identidad...'}
+            ];
+            
+            let step = 0;
+            const interval = setInterval(() => {
+                if(step < steps.length) {
+                    bar.style.width = steps[step].pct;
+                    status.textContent = steps[step].text;
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    completarEscaneo();
+                }
+            }, 700);
+            
+            function completarEscaneo() {
+                setTimeout(() => {
+                    container.classList.remove('scanning');
+                    line.classList.add('d-none');
+                    overlay.classList.add('d-none');
+                    content.style.opacity = '1';
+                    progress.classList.add('d-none');
+                    
+                    document.getElementById('cameraIcon').className = 'bi bi-person-check-fill text-success display-1 mb-3 d-block';
+                    document.getElementById('scanText').textContent = 'Usuario Validado';
+                    document.getElementById('scanText').className = 'text-success fw-bold';
+                    
+                    result.innerHTML = `
+                        <div class="alert alert-success border-0 rounded-4 mb-0">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-shield-check fs-4"></i>
+                                <div>
+                                    <strong>ACCESO CONCEDIDO</strong>
+                                    <div class="small">ID: #8492 • Confianza: 99.8%</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    btn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Verificación Completada';
+                    btn.classList.replace('btn-outline-primary', 'btn-success');
+                    btn.disabled = false;
+                    
+                    toastSystem.show('Autenticación biométrica completada con éxito', 'success', 4000);
+                    
+                    // Reset después de 5 segundos
+                    setTimeout(() => {
+                        resetEscaneo();
+                    }, 8000);
+                    
+                }, 500);
+            }
+        }
+        
+        function resetEscaneo() {
+            document.getElementById('cameraIcon').className = 'bi bi-person-circle text-white-50 display-1 mb-3 d-block';
+            document.getElementById('scanText').textContent = 'Sistema de reconocimiento listo';
+            document.getElementById('scanText').className = 'text-white-50 small mb-0';
+            document.getElementById('scanResult').innerHTML = '';
+            const btn = document.getElementById('btnScan');
+            btn.innerHTML = '<i class="bi bi-fingerprint me-2"></i>Iniciar Escaneo Biométrico';
+            btn.classList.replace('btn-success', 'btn-outline-primary');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // HEX Demo Assistant
+        const hexDemo = {
+            panel: document.getElementById('hexPanel'),
+            body: document.getElementById('hexBody'),
+            
+            toggle: function() {
+                const isHidden = this.panel.style.display === 'none' || !this.panel.style.display;
+                this.panel.style.display = isHidden ? 'flex' : 'none';
+            },
+            
+            explain: function(topic) {
+                const explanations = {
+                    citas: "🗓️ <strong>Agendamiento Express:</strong><br>Selecciona tu mascota, tipo de consulta y nivel de urgencia. La IA analizará automáticamente la disponibilidad de especialistas y te asignará el mejor horario.",
+                    nova: "🤖 <strong>Nova Brain:</strong><br>Asistente veterinario inteligente que puede responder preguntas sobre:<br>• Vacunas y calendario<br>• Síntomas básicos<br>• Información de servicios<br>• Emergencias",
+                    bio: "🔐 <strong>BioSeguridad:</strong><br>Sistema de reconocimiento facial simulado. En producción, utiliza algoritmos de deep learning para verificación de identidad con 99.9% de precisión.",
+                    demo: "ℹ️ <strong>Sobre este Demo:</strong><br>Este es un entorno de prueba. Los datos son simulados y no representan información real. Algunas funciones están limitadas."
+                };
+                
+                const div = document.createElement('div');
+                div.className = 'hex-msg';
+                div.innerHTML = explanations[topic];
+                this.body.appendChild(div);
+                this.body.scrollTop = this.body.scrollHeight;
+            }
+        };
+
+        // Funciones globales
+        function mostrarToast(message, type = 'info') {
+            toastSystem.show(message, type);
+        }
+        
+        function mostrarDescarga(filename) {
+            toastSystem.show(`Generando ${filename}...`, 'info', 2000);
+            setTimeout(() => {
+                toastSystem.show(`📄 ${filename} descargado correctamente`, 'success', 4000);
+            }, 2000);
+        }
+
+        // Inicialización Avanzada
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Cargar datos dinámicos del backend
+            try {
+                const response = await fetch('/api/public/demo/data');
+                const data = await response.json();
+                
+                // Poblar selectores de clínica (si existieran, o usarlos para la lógica)
+                console.log("Demo Data Loaded:", data);
+            } catch(e) { console.warn("No se pudieron cargar datos reales para la demo"); }
+
+            // Iniciar Sistema de Mascota
+            petSystem.init();
+
+            // Cargar citas previas de LocalStorage
+            const savedCitas = localStorage.getItem('demoCitas');
+            if(savedCitas) {
+                const citas = JSON.parse(savedCitas);
+                const lista = document.getElementById('listaCitas');
+                const noCitas = document.getElementById('noCitas');
+                if(citas.length > 0 && noCitas) noCitas.style.display = 'none';
+                
+                citas.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = 'cita-card animate__animated animate__fadeIn';
+                    card.id = c.id;
+                    card.innerHTML = c.html;
+                    lista.appendChild(card);
+                    citasCount++;
+                });
+                document.getElementById('statCitas').textContent = 124 + citasCount;
+            }
+
+            // Animación de entrada escalonada
+            const cards = document.querySelectorAll('.dashboard-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // Mensaje de bienvenida de HEX después de 3 segundos
+            setTimeout(() => {
+                toastSystem.show('💡 Consejo: Prueba a jugar con Nova-Pet o pregúntale a la IA por una receta.', 'info', 6000);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <link th:replace="~{fragments/header :: favIcon}">
+</head>
+
+<body>
+
+    <!-- ====================================================== -->
+    <!-- 1. HEADER PÚBLICO (Index, Buscar, Detalle, Registro)   -->
+    <!-- ====================================================== -->
+    <header th:fragment="header-publico">
+        <nav class="navbar navbar-expand-lg navbar-light bg-glass-white fixed-top">
+            <div class="container">
+                <!-- Brand premium: Estilo unificado con el Login -->
+                <a class="navbar-brand d-flex align-items-center gap-3" th:href="@{/}">
+                    <div class="brand-icon-premium">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <span class="brand-text-premium">ClínicaApp</span>
+                </a>
+
+                <!-- Botón toggler que faltaba para móvil -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navPublic" aria-controls="navPublic" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navPublic">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/buscar-clinicas}">Buscar Clínicas</a></li>
+                    </ul>
+                    <div class="navbar-nav ms-auto gap-2">
+                        <div sec:authorize="!isAuthenticated()" class="d-flex gap-2">
+                            <a class="btn btn-outline-primary rounded-pill px-4 fw-bold" th:href="@{/login}">Login</a>
+                            <a class="btn btn-primary rounded-pill px-4 fw-bold shadow-blue"
+                                th:href="@{/registro}">Registrarse</a>
+                        </div>
+                        <div sec:authorize="isAuthenticated()">
+                            <a class="btn btn-dark rounded-pill px-4 d-flex align-items-center gap-2"
+                                th:href="@{/oficina-virtual}">
+                                <i class="bi bi-person-workspace"></i> Mi Oficina
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-spacer"></div>
+        <script th:replace="~{:: activeLinkScript}"></script>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- 2. HEADER ADMINISTRADOR (Dashboard, Clínicas, Usuarios)-->
+    <!-- ====================================================== -->
+    <header th:fragment="header-admin">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-glass-admin fixed-top">
+            <div class="container">
+                <!-- Brand unificado: ClínicaApp -> Index -->
+                <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                    <div class="brand-icon bg-white text-admin"><i class="bi bi-shield-lock-fill"></i></div>
+                    <span class="brand-text text-white">Clínica<span class="text-warning">App</span></span>
+                </a>
+
+                <!-- Botón toggler -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navAdmin" aria-controls="navAdmin" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navAdmin">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/clinicas}">Clínicas</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/servicios}">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/usuarios}">Usuarios</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/admin/reportes}">Reportes</a></li>
+                    </ul>
+                    <form th:action="@{/logout}" method="post" class="ms-auto m-0">
+                        <button class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold" type="submit">Cerrar
+                            Sesión</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-spacer"></div>
+        <script th:replace="~{:: activeLinkScript}"></script>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- 3. HEADER RECEPCIÓN (Citas, Clientes, Visitas)         -->
+    <!-- ====================================================== -->
+    <header th:fragment="header-recepcion">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-glass-recep fixed-top">
+            <div class="container">
+                <!-- Brand unificado: ClínicaApp -> Index -->
+                <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                    <div class="brand-icon bg-white text-success"><i class="bi bi-calendar-check-fill"></i></div>
+                    <span class="brand-text text-white">Clínica<span class="text-success-light">App</span></span>
+                </a>
+
+                <!-- Botón toggler -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navRecepcion" aria-controls="navRecepcion" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navRecepcion">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/recepcion/dashboard}">Dashboard</a></li>
+                    </ul>
+                    <form th:action="@{/logout}" method="post" class="ms-auto m-0">
+                        <button class="btn btn-light btn-sm text-success fw-bold px-4 rounded-pill"
+                            type="submit">Salir</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-spacer"></div>
+        <script th:replace="~{:: activeLinkScript}"></script>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- 4. HEADER USUARIO (Dashboard, Mascotas, Pagos, Citas)  -->
+    <!-- ====================================================== -->
+    <header th:fragment="header-usuario">
+        <nav class="navbar navbar-expand-lg navbar-light bg-glass-white fixed-top border-bottom">
+            <div class="container">
+                <!-- Brand unificado: ClínicaApp -> Index -->
+                <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+                    <div class="brand-icon bg-primary text-white"><i class="bi bi-person-circle"></i></div>
+                    <span class="brand-text text-primary">Clínica<span class="text-dark">App</span></span>
+                </a>
+
+                <!-- Botón toggler -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navUsuario" aria-controls="navUsuario" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navUsuario">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/dashboard}">Mi Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/mis-mascotas}">Mis Mascotas</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/mis-citas}">Mis Citas</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{/usuario/pagos}">Mis Pagos</a></li>
+                    </ul>
+                    <div class="navbar-nav ms-auto align-items-center gap-3">
+                        <!-- CAMPANITA DE NOTIFICACIONES -->
+                        <div class="dropdown notification-dropdown">
+                            <a class="nav-link position-relative p-2" href="#" role="button" id="bellDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell-fill fs-5" style="color: #64748b;"></i>
+                                <span th:if="${notificacionesUnreadCount != null && notificacionesUnreadCount > 0}" 
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm pulse-badge"
+                                      th:text="${notificacionesUnreadCount}">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 p-0 overflow-hidden" aria-labelledby="bellDropdown" style="width: 320px; border-radius: 16px;">
+                                <li class="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 fw-bold"><i class="bi bi-megaphone-fill me-2"></i> Notificaciones</h6>
+                                    <span class="badge bg-white text-primary rounded-pill small" th:text="|${notificacionesUnreadCount != null ? notificacionesUnreadCount : 0} nuevas|">0 nuevas</span>
+                                </li>
+                                <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
+                                    <li th:if="${listaNotificaciones == null || #lists.isEmpty(listaNotificaciones)}" class="p-4 text-center text-muted">
+                                        <i class="bi bi-bell-slash fs-1 d-block mb-2 opacity-25"></i>
+                                        <small class="fw-bold">No tienes alertas nuevas</small>
+                                    </li>
+                                    <li th:each="n : ${listaNotificaciones}" class="border-bottom">
+                                        <a class="dropdown-item p-3 d-flex align-items-start gap-3" th:href="${n.link != null ? n.link : '#'}" 
+                                           th:classappend="${!n.leida ? 'notif-unread' : ''}"
+                                           th:data-id="${n.id}"
+                                           onclick="marcarLeida(this.getAttribute('data-id'))">
+                                            <div class="notif-icon-circle" th:classappend="${n.titulo.contains('Atención') || n.titulo.contains('Consulta') ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'}">
+                                                <i th:class="${n.titulo.contains('Atención') || n.titulo.contains('Consulta') ? 'bi bi-heart-pulse' : 'bi bi-info-circle'}"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold small text-dark" th:text="${n.titulo}">Título</div>
+                                                <div class="text-muted small lh-sm mt-1" th:text="${n.mensaje}">Mensaje</div>
+                                                <div class="text-primary-emphasis very-small mt-2 fw-semibold" th:text="${#temporals.format(n.fecha, 'dd/MM HH:mm')}">Hace poco</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </div>
+                                <li class="p-2 bg-light text-center border-top">
+                                    <button class="btn btn-link btn-sm text-decoration-none fw-bold text-primary" onclick="marcarTodasLeidas()">
+                                        <i class="bi bi-check2-all me-1"></i> Marcar todas como leídas
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a th:href="@{/usuario/perfil}" class="text-decoration-none text-dark fw-bold small"><i
+                                class="bi bi-gear-fill me-1"></i> Perfil</a>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button class="btn btn-outline-danger btn-sm rounded-pill px-4" type="submit">Salir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="nav-spacer"></div>
+        <script th:replace="~{:: activeLinkScript}"></script>
+    </header>
+
+    <head th:fragment="favIcon">
+        <link th:fragment="favIcon" rel="icon" type="image/svg+xml" 
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='30' fill='%230d6efd'/%3E%3Cpath d='M50 75s-25-15-25-35c0-12 10-18 15-10 2 3 10 3 10 3s8 0 10-3c5-8 15-2 15 10 0 20-25 35-25 35z' fill='white'/%3E%3Cpath d='M35 45h6l3-8 5 15 4-10 2 3h6' fill='none' stroke='%230d6efd' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    </head>
+
+    <!-- ====================================================== -->
+    <!-- SCRIPT DE LÓGICA ACTIVA (AUTOMÁTICO)                   -->
+    <!-- ====================================================== -->
+    <script th:fragment="activeLinkScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const linkPath = link.getAttribute('href');
+                if (linkPath === currentPath || (currentPath.length > 1 && currentPath.includes(linkPath) && linkPath !== '/')) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        async function marcarLeida(id) {
+            try {
+                await fetch(`/api/notificaciones/marcar-leida/${id}`, { method: 'POST' });
+            } catch (err) { console.error(err); }
+        }
+
+        async function marcarTodasLeidas() {
+            try {
+                const response = await fetch('/api/notificaciones/marcar-todas-leidas', { method: 'POST' });
+                if (response.ok) {
+                    window.location.reload();
+                }
+            } catch (err) { console.error(err); }
+        }
+    </script>
+
+    <!-- ====================================================== -->
+    <!-- ESTILOS CSS MASTER PREMIUM - V2 ULTRA REFINADO         -->
+    <!-- ====================================================== -->
+    <style th:fragment="headerStyles">
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --admin-primary: #6366f1;
+            --admin-dark: #0f0a1e;
+            --admin-glow: rgba(99, 102, 241, 0.5);
+            --recep-primary: #10b981;
+            --recep-dark: #022c22;
+            --recep-glow: rgba(16, 185, 129, 0.5);
+            --user-primary: #0ea5e9;
+            --user-glow: rgba(14, 165, 233, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Notifications Premium Styles */
+        .pulse-badge {
+            animation: pulse-animation 2s infinite;
+            padding: 0.35em 0.5em !important;
+            font-size: 0.65rem !important;
+            border: 2px solid white;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .notif-unread {
+            background-color: #f0f9ff !important;
+            border-left: 3px solid #0ea5e9;
+        }
+
+        .notif-icon-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .very-small {
+            font-size: 0.7rem;
+        }
+
+        .dropdown-item:active {
+            background-color: #f1f5f9;
+            color: inherit;
+        }
+
+        /* ============================================
+           NAVBAR BASE - ARQUITECTURA ULTRA REFINADA
+           ============================================ */
+        .navbar {
+            min-height: 84px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 0.75rem 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-spacer {
+            height: 84px;
+        }
+
+        /* Scroll effect mejorado */
+        .navbar.scrolled {
+            min-height: 68px;
+            padding: 0.5rem 0;
+        }
+
+        .bg-glass-white.scrolled {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .bg-glass-admin.scrolled {
+            background: linear-gradient(135deg, rgba(15, 10, 30, 0.98) 0%, rgba(30, 27, 75, 0.95) 100%) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .bg-glass-recep.scrolled {
+            background: linear-gradient(135deg, rgba(2, 44, 34, 0.98) 0%, rgba(6, 78, 59, 0.95) 100%) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 0 40px rgba(16, 185, 129, 0.15);
+        }
+
+        /* ============================================
+           GLASSMORPHISM V2 - TRES VARIANTES PREMIUM
+           ============================================ */
+
+        /* Brand Unificado (Estilo Login) */
+        .brand-icon-premium {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover .brand-icon-premium {
+            transform: rotate(-5deg) scale(1.1);
+            box-shadow: 0 6px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .brand-text-premium {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        /* Público/Usuario - Cristal Blanco Puro */
+        .bg-glass-white {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.95) 0%,
+                    rgba(248, 250, 252, 0.9) 100%);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Admin - Neón Índigo Profundo V2 */
+        .bg-glass-admin {
+            background: linear-gradient(135deg,
+                    rgba(15, 10, 30, 0.92) 0%,
+                    rgba(30, 27, 75, 0.88) 50%,
+                    rgba(49, 46, 129, 0.85) 100%);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        /* Recepción - Esmeralda Líquida V2 */
+        .bg-glass-recep {
+            background: linear-gradient(135deg,
+                    rgba(2, 44, 34, 0.92) 0%,
+                    rgba(6, 78, 59, 0.88) 50%,
+                    rgba(5, 150, 105, 0.85) 100%);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        /* ============================================
+           BRANDING CLINICAAPP - IDENTIDAD V2
+           ============================================ */
+        .navbar-brand {
+            position: relative;
+            padding: 0.6rem 1.2rem !important;
+            margin-left: -1.2rem;
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .navbar-brand::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .navbar-brand:hover::before {
+            opacity: 1;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+
+        /* Efecto shimmer mejorado */
+        .brand-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg,
+                    transparent 40%,
+                    rgba(255, 255, 255, 0.4) 50%,
+                    transparent 60%);
+            transform: translateX(-100%) rotate(45deg);
+            transition: transform 0.8s;
+            pointer-events: none;
+        }
+
+        .navbar-brand:hover .brand-icon::after {
+            transform: translateX(100%) rotate(45deg);
+        }
+
+        .navbar-brand:hover .brand-icon {
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Iconos específicos por rol V2 */
+        .bg-glass-white .brand-icon {
+            background: linear-gradient(135deg, var(--user-primary) 0%, #10b981 100%);
+            color: white;
+        }
+
+        .bg-glass-admin .brand-icon {
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            color: var(--admin-primary);
+            box-shadow: 0 4px 15px var(--admin-glow), 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .bg-glass-recep .brand-icon {
+            background: linear-gradient(135deg, #ffffff 0%, #d1fae5 100%);
+            color: var(--recep-primary);
+            box-shadow: 0 4px 15px var(--recep-glow), 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-text {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.03em;
+            position: relative;
+            background: linear-gradient(135deg, currentColor 0%, rgba(255, 255, 255, 0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Textos específicos V2 */
+        .bg-glass-white .brand-text {
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-glass-white .brand-text .text-primary {
+            background: linear-gradient(135deg, var(--user-primary) 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-admin {
+            color: var(--admin-primary);
+        }
+
+        .text-success-light {
+            background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ============================================
+           NAVLINKS - INTERACCIÓN ULTRA REFINADA
+           ============================================ */
+        .nav-link {
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem !important;
+            margin: 0 2px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.02em;
+        }
+
+        /* Indicador de estado sutil */
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, currentColor 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Underline animado V2 */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        /* Modo Oscuro (Admin/Recepción) V2 */
+        .navbar-dark .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .navbar-dark .nav-link::after {
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        }
+
+        .navbar-dark .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .navbar-dark .nav-link:hover::before {
+            opacity: 0.08;
+        }
+
+        .navbar-dark .nav-link:hover::after {
+            width: 50%;
+        }
+
+        .navbar-dark .nav-link.active {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+        }
+
+        .navbar-dark .nav-link.active::after {
+            width: 30%;
+            opacity: 0.6;
+        }
+
+        /* Admin glow específico V2 */
+        .bg-glass-admin .nav-link.active {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Recepción glow específico V2 */
+        .bg-glass-recep .nav-link.active {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modo Claro (Público/Usuario) V2 */
+        .navbar-light .nav-link {
+            color: #64748b !important;
+        }
+
+        .navbar-light .nav-link::after {
+            background: linear-gradient(90deg, transparent, var(--user-primary), transparent);
+        }
+
+        .navbar-light .nav-link:hover {
+            color: var(--user-primary) !important;
+            background: rgba(59, 130, 246, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .navbar-light .nav-link:hover::before {
+            opacity: 0.05;
+        }
+
+        .navbar-light .nav-link:hover::after {
+            width: 50%;
+        }
+
+        .navbar-light .nav-link.active {
+            color: var(--user-primary) !important;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%);
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+
+        .navbar-light .nav-link.active::after {
+            width: 30%;
+        }
+
+        /* ============================================
+           BOTONES - EFECTOS HOLOGRÁFICOS V2
+           ============================================ */
+        .btn {
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            border-radius: 50px;
+            padding: 0.65rem 1.6rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-width: 2px;
+            font-size: 0.9rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent);
+            transition: left 0.6s;
+            pointer-events: none;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Botón primario - Glow azul V2 */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--user-primary) 0%, #0284c7 100%);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+        }
+
+        /* Shadow blue específico V2 */
+        .shadow-blue {
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .shadow-blue:hover {
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5), 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Botón outline primario V2 */
+        .btn-outline-primary {
+            border-color: #e2e8f0;
+            color: #475569;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: var(--user-primary);
+            color: var(--user-primary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Botón dark - Admin V2 */
+        .btn-dark {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-dark:hover {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Botones Admin V2 */
+        .bg-glass-admin .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .bg-glass-admin .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        /* Botones Recepción V2 */
+        .bg-glass-recep .btn-light {
+            background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+            color: #059669;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            font-weight: 700;
+        }
+
+        .bg-glass-recep .btn-light:hover {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25), 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            color: #047857;
+        }
+
+        /* Botón outline danger V2 */
+        .btn-outline-danger {
+            border-color: #fecaca;
+            color: #dc2626;
+            background: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background: rgba(220, 38, 38, 0.05);
+            border-color: #dc2626;
+            color: #dc2626;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+        }
+
+        /* ============================================
+           TOGGLER - ANIMACIÓN MORPHING V2
+           ============================================ */
+        .navbar-toggler {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none !important;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        /* Icono custom animado V2 */
+        .navbar-toggler-icon {
+            width: 22px;
+            height: 2px;
+            background: currentColor;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 2px;
+            background: currentColor;
+            left: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+        }
+
+        .navbar-toggler-icon::before {
+            top: -7px;
+        }
+
+        .navbar-toggler-icon::after {
+            top: 7px;
+        }
+
+        /* Estado abierto - Transformación a X V2 */
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+            background: transparent;
+        }
+
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+
+        .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+            top: 0;
+            transform: rotate(-45deg);
+        }
+
+        /* Hover effects toggler V2 */
+        .navbar-light .navbar-toggler {
+            color: #475569;
+        }
+
+        .navbar-light .navbar-toggler:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .navbar-dark .navbar-toggler {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .navbar-dark .navbar-toggler:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================
+           RESPONSIVE - EXPERIENCIA MÓVIL PREMIUM V2
+           ============================================ */
+        @media (max-width: 991.98px) {
+            .navbar {
+                min-height: 76px;
+            }
+
+            .nav-spacer {
+                height: 76px;
+            }
+
+            .navbar-collapse {
+                margin-top: 0.75rem;
+                padding: 1.25rem;
+                border-radius: 20px;
+                animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                border: 1px solid var(--glass-border);
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px) scale(0.98);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            /* Fondos específicos móvil V2 */
+            .bg-glass-white .navbar-collapse {
+                background: rgba(255, 255, 255, 0.98);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(226, 232, 240, 0.8);
+            }
+
+            .bg-glass-admin .navbar-collapse {
+                background: linear-gradient(135deg, #0f0a1e 0%, #1e1b4b 100%);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 50px rgba(99, 102, 241, 0.2);
+                border: 1px solid rgba(99, 102, 241, 0.2);
+            }
+
+            .bg-glass-recep .navbar-collapse {
+                background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 50px rgba(16, 185, 129, 0.2);
+                border: 1px solid rgba(16, 185, 129, 0.2);
+            }
+
+            .nav-link {
+                padding: 0.9rem 1.1rem !important;
+                margin: 0.2rem 0;
+                font-size: 0.95rem;
+                border-radius: 12px;
+            }
+
+            .nav-link::after {
+                display: none;
+            }
+
+            .nav-link:hover {
+                transform: translateX(6px);
+            }
+
+            .ms-auto {
+                margin-top: 1.25rem;
+                padding-top: 1.25rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.06);
+            }
+
+            .navbar-dark .ms-auto {
+                border-top-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* ============================================
+           ANIMACIONES ADICIONALES V2
+           ============================================ */
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 15px var(--admin-glow);
+            }
+            50% {
+                box-shadow: 0 0 30px var(--admin-glow);
+            }
+        }
+
+        .bg-glass-admin .brand-icon {
+            animation: pulse-glow 4s infinite;
+        }
+
+        @keyframes pulse-glow-green {
+            0%, 100% {
+                box-shadow: 0 0 15px var(--recep-glow);
+            }
+            50% {
+                box-shadow: 0 0 30px var(--recep-glow);
+            }
+        }
+
+        .bg-glass-recep .brand-icon {
+            animation: pulse-glow-green 4s infinite;
+        }
+
+        /* Scrollbar personalizada para el menú V2 */
+        .navbar-collapse::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .navbar-collapse::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .navbar-collapse::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 3px;
+        }
+
+        .navbar-dark .navbar-collapse::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Efecto de entrada suave para el navbar */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar {
+            animation: fadeInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+
+</body>
+
+</html>

@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestión de Citas | ClínicaApp</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Iconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --radius-xl: 24px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Stats Cards Elite */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card-mini {
+            background: white;
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-mini:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card-mini .val {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+        }
+
+        .stat-card-mini .lab {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-mini i {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 3rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+
+        /* Toolbar refinements */
+        .sticky-toolbar {
+            position: sticky;
+            top: 75px;
+            z-index: 900;
+            background: #ffffff;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Filter Pills */
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0.5rem;
+            scrollbar-width: none;
+        }
+
+        .filter-pills::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            padding: 0.625rem 1.25rem;
+            border-radius: 50px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-pill.active {
+            background: var(--dark-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Cita Card Elite enhancements */
+        .cita-card {
+            border-left: 6px solid #cbd5e1;
+        }
+        .cita-card[data-estado="Confirmada"] { border-left-color: #667eea; }
+        .cita-card[data-estado="Pendiente"] { border-left-color: #f59e0b; }
+        .cita-card[data-estado="Completada"] { border-left-color: #10b981; }
+        .cita-card[data-estado="Cancelada"] { border-left-color: #ef4444; }
+
+        .today-ribbon {
+            background: #667eea;
+            color: white;
+            font-weight: 800;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            vertical-align: middle;
+            display: none;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: scale(1.1) rotate(10deg);
+            background: #128c7e;
+            color: white;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 2rem;
+        }
+
+        /* Navbar Móvil Optimizado */
+        .navbar {
+            background: var(--dark-gradient) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.875rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(to right, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60vw;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .btn-outline-light {
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Alertas Flotantes */
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .btn-close {
+            padding: 0.75rem;
+            margin: -0.5rem -0.5rem -0.5rem auto;
+        }
+
+        /* Header de Sección */
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h5 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+        }
+
+        .section-header i {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+        }
+
+        /* Cards de Citas (Vista Móvil Principal) */
+        .citas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .cita-card {
+            background: #ffffff;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .cita-card:nth-child(1) { animation-delay: 0.05s; }
+        .cita-card:nth-child(2) { animation-delay: 0.1s; }
+        .cita-card:nth-child(3) { animation-delay: 0.15s; }
+        .cita-card:nth-child(4) { animation-delay: 0.2s; }
+        .cita-card:nth-child(5) { animation-delay: 0.25s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cita-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Header de Card */
+        .cita-header {
+            padding: 1.25rem;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            background: #ffffff;
+        }
+
+        .cita-fecha {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cita-fecha i {
+            background: var(--info-gradient);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .cita-fecha-texto {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cita-fecha-texto .fecha {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .cita-fecha-texto .hora {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Badges */
+        .badge-estado {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .badge-pendiente {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .badge-confirmada {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .badge-completada {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .badge-cancelada {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        /* Body de Card */
+        .cita-body {
+            padding: 1.25rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.875rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-of-type {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .info-icon.paciente {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .info-icon.contacto {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .info-icon.servicio {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #9d174d;
+        }
+
+        .info-icon.pago {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        .info-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .info-value.nombre {
+            font-weight: 800;
+            color: #1e1b4b;
+            font-size: 1.1rem;
+        }
+
+        .contacto-detalles {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .contacto-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .contacto-item i {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        /* Badge de Pago */
+        .badge-pago {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-pago.pagado {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .badge-pago.pendiente {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        /* Acciones */
+        .cita-actions {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-action i {
+            font-size: 1.1rem;
+        }
+
+        .btn-confirmar {
+            background: white;
+            border-color: #10b981;
+            color: #059669;
+        }
+
+        .btn-confirmar:hover {
+            background: var(--success-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-atender {
+            background: white;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-atender:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancelar {
+            background: white;
+            border-color: #ef4444;
+            color: #dc2626;
+            flex: 0 0 auto;
+            min-width: 50px;
+            padding: 0.875rem;
+        }
+
+        .btn-cancelar:hover {
+            background: var(--danger-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-historial {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #475569;
+            flex: 0 0 auto;
+            min-width: 50px;
+            padding: 0.875rem;
+        }
+
+        .btn-historial:hover {
+            background: var(--info-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Estados Finales */
+        .estado-final {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 700;
+        }
+
+        .estado-final.completada {
+            color: #059669;
+            background: #f0fdf4;
+        }
+
+        .estado-final.cancelada {
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .estado-final i {
+            font-size: 1.5rem;
+        }
+
+        /* Estado Vacío */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .empty-state h6 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0 1rem;
+        }
+
+        /* VISTA DESKTOP (Table) - Solo visible en lg+ */
+        @media (min-width: 992px) {
+            .citas-container {
+                display: none;
+            }
+
+            .table-container {
+                display: block;
+                background: var(--glass-bg);
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-soft);
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+            }
+
+            .table {
+                margin: 0;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .table thead th {
+                background: #f8fafc;
+                color: #475569;
+                font-weight: 700;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 1.25rem 1.5rem;
+                border-bottom: 2px solid #e2e8f0;
+                white-space: nowrap;
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+            }
+
+            .table tbody tr:hover {
+                background: linear-gradient(to right, #f8fafc, #ffffff);
+            }
+
+            .table td {
+                padding: 1.5rem;
+                vertical-align: middle;
+                border-bottom: 1px solid #e2e8f0;
+                font-size: 0.95rem;
+            }
+
+            .btn-group-desktop {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .btn-group-desktop .btn {
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                border-radius: var(--radius-sm);
+                transition: all 0.3s ease;
+            }
+
+            .btn-group-desktop .btn-outline-success {
+                border-color: #10b981;
+                color: #059669;
+            }
+
+            .btn-group-desktop .btn-outline-success:hover {
+                background: var(--success-gradient);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+            .btn-group-desktop .btn-outline-primary {
+                border-color: #667eea;
+                color: #667eea;
+            }
+
+            .btn-group-desktop .btn-outline-primary:hover {
+                background: var(--primary-gradient);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+            .btn-group-desktop .btn-outline-danger {
+                border-color: #ef4444;
+                color: #dc2626;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                border-radius: 50%;
+            }
+
+            .btn-group-desktop .btn-outline-danger:hover {
+                background: var(--danger-gradient);
+                color: white;
+                transform: translateY(-2px) rotate(5deg);
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .table-container {
+                display: none;
+            }
+
+            .citas-container {
+                display: flex;
+            }
+        }
+
+        /* Ajustes específicos para móviles pequeños */
+        @media (max-width: 375px) {
+            .cita-header {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-action {
+                min-width: 100%;
+            }
+
+            .btn-cancelar,
+            .btn-historial {
+                flex: 1;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="bi bi-calendar-check"></i>
+                Gestión de Citas
+            </span>
+            <a href="/clinica/dashboard" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-arrow-left d-none d-sm-inline"></i>
+                Volver
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <!-- Alertas -->
+        <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:if="${param.success[0] == 'confirmada'}">¡Cita confirmada! Se notificará al cliente.</span>
+            <span th:if="${param.success[0] == 'completada'}">¡Cita completada! Registro guardado.</span>
+            <span th:if="${param.success[0] == 'cancelada'}">Cita cancelada correctamente.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Dashboard Quick Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card-mini border-bottom border-primary border-3">
+                <span class="lab">Citas Totales</span>
+                <span class="val" id="totalCount" th:text="${#lists.size(citas)}">0</span>
+                <i class="bi bi-calendar3-range"></i>
+            </div>
+            <div class="stat-card-mini border-bottom border-warning border-3">
+                <span class="lab">Pendientes</span>
+                <span class="val text-warning" id="pendingCount">0</span>
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-card-mini border-bottom border-info border-3">
+                <span class="lab">Confirmadas</span>
+                <span class="val text-info" id="confirmedCount">0</span>
+                <i class="bi bi-check2-all"></i>
+            </div>
+            <div class="stat-card-mini border-bottom border-success border-3">
+                <span class="lab">Para Hoy</span>
+                <span class="val text-success" id="todayCount">0</span>
+                <i class="bi bi-clock-history"></i>
+            </div>
+        </div>
+
+        <!-- Toolbar: Search & Filter -->
+        <div class="sticky-toolbar">
+            <div class="d-flex flex-column gap-3">
+                <div class="search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar por paciente o dueño...">
+                </div>
+                <div class="filter-pills">
+                    <div class="filter-pill active" data-filter="all">Todas</div>
+                    <div class="filter-pill" data-filter="hoy">Hoy</div>
+                    <div class="filter-pill" data-filter="confirmada">Confirmadas</div>
+                    <div class="filter-pill" data-filter="pendiente">Pendientes</div>
+                    <div class="filter-pill" data-filter="completada">Completadas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="section-header">
+            <h5>
+                <i class="bi bi-list-ul"></i>
+                Listado de Pacientes
+            </h5>
+        </div>
+
+        <!-- VISTA MÓVIL: Cards -->
+        <div class="citas-container" id="citasList">
+            <div th:each="cita : ${citas}" class="cita-card filterable-card" 
+                 th:attr="data-estado=${cita.estado}, data-fecha=${#strings.substring(cita.fechaHora, 0, 10)}, data-search=${#strings.toLowerCase(cita.nombreMascota + ' ' + cita.nombreUsuario)}">
+                <!-- Header -->
+                <div class="cita-header">
+                    <div class="cita-fecha">
+                        <i class="bi bi-calendar3"></i>
+                        <div class="cita-fecha-texto">
+                            <span class="fecha">
+                                <span th:text="${#strings.substring(cita.fechaHora, 0, 10)}">10/10/2024</span>
+                                <span class="today-ribbon">Hoy</span>
+                            </span>
+                            <span class="hora" th:text="${#strings.substring(cita.fechaHora, 11, 16)}">09:00</span>
+                        </div>
+                    </div>
+                    <span class="badge-estado"
+                          th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
+                                           (cita.estado == 'Confirmada' ? 'badge-confirmada' : 
+                                           (cita.estado == 'Completada' ? 'badge-completada' : 'badge-cancelada'))}"
+                          th:text="${cita.estado}">Pendiente</span>
+                </div>
+
+                <!-- Body -->
+                <div class="cita-body">
+                    <!-- Paciente -->
+                    <div class="info-row">
+                        <div class="info-icon paciente">
+                            <i class="bi bi-heart-pulse"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Paciente</div>
+                            <div class="info-value nombre" th:text="${cita.nombreMascota}">Firulais</div>
+                        </div>
+                        <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}" 
+                           class="btn-historal btn-historial" title="Ver Historial">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+
+                    <!-- Contacto -->
+                    <div class="info-row">
+                        <div class="info-icon contacto">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Propietario</div>
+                            <div class="info-value" th:text="${cita.nombreUsuario}">Juan Pérez</div>
+                            <div class="contacto-detalles">
+                                <div class="contacto-item">
+                                    <i class="bi bi-telephone"></i>
+                                    <span th:text="${cita.telefonoUsuario}">+56912345678</span>
+                                </div>
+                            </div>
+                        </div>
+                        <a th:href="'https://wa.me/' + ${#strings.replace(cita.telefonoUsuario, '+', '')} + '?text=Hola ' + ${cita.nombreUsuario} + ', le escribimos de la veterinaria por la cita de ' + ${cita.nombreMascota}" 
+                           target="_blank" class="btn-whatsapp" title="Escribir por WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+
+                    <!-- Servicio -->
+                    <div class="info-row">
+                        <div class="info-icon servicio">
+                            <i class="bi bi-clipboard-pulse"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Servicio</div>
+                            <div class="info-value" th:text="${cita.nombreServicio}">Consulta General</div>
+                        </div>
+                    </div>
+
+                    <!-- Pago -->
+                    <div class="info-row">
+                        <div class="info-icon pago">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Estado de Pago</div>
+                            <span class="badge-pago" 
+                                  th:classappend="${cita.estadoPago == 'PAGADO' ? 'pagado' : 'pendiente'}"
+                                  th:text="${cita.estadoPago}">
+                                <i class="bi bi-check-circle" th:if="${cita.estadoPago == 'PAGADO'}"></i>
+                                <i class="bi bi-clock" th:if="${cita.estadoPago != 'PAGADO'}"></i>
+                                PAGADO
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="cita-actions" th:if="${cita.estado != 'Completada' && cita.estado != 'Cancelada'}">
+                    <form th:if="${cita.estado == 'Pendiente'}"
+                          th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}" 
+                          method="post" style="flex: 1;">
+                        <button type="submit" class="btn-action btn-confirmar w-100">
+                            <i class="bi bi-check2-circle"></i>
+                            Confirmar
+                        </button>
+                    </form>
+
+                    <a th:if="${cita.estado == 'Confirmada'}"
+                       th:href="@{'/clinica/atender/' + ${cita.id}}"
+                       class="btn-action btn-atender">
+                        <i class="bi bi-clipboard-pulse"></i>
+                        Atender
+                    </a>
+
+                    <form th:action="@{'/clinica/citas/cancelar/' + ${cita.id}}" 
+                          method="post" style="flex: 0 0 auto;">
+                        <button type="submit" 
+                                class="btn-action btn-cancelar"
+                                onclick="return confirm('¿Cancelar esta cita?')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Estados Finales -->
+                <div class="estado-final completada" th:if="${cita.estado == 'Completada'}">
+                    <i class="bi bi-check-all"></i>
+                    <span>Atención Finalizada</span>
+                </div>
+                <div class="estado-final cancelada" th:if="${cita.estado == 'Cancelada'}">
+                    <i class="bi bi-x-circle"></i>
+                    <span>Cita Cancelada</span>
+                </div>
+            </div>
+
+            <!-- Estado Vacío -->
+            <div th:if="${#lists.isEmpty(citas)}" class="empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <h6>No hay citas agendadas</h6>
+                <p>Aún no tienes citas programadas para esta sede.</p>
+            </div>
+        </div>
+
+        <!-- VISTA DESKTOP: Tabla -->
+        <div class="table-container d-none d-lg-block">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Paciente</th>
+                            <th>Propietario</th>
+                            <th>Servicio</th>
+                            <th>Pago</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cita : ${citas}">
+                            <td>
+                                <div class="fw-bold" th:text="${cita.fechaHora}">10 Oct, 09:00</div>
+                            </td>
+                            <td>
+                                <span th:text="${cita.nombreMascota}"></span>
+                                <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}"
+                                   class="btn btn-link btn-sm p-0 ms-1" title="Ver Historial">
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <div th:text="${cita.nombreUsuario}"></div>
+                                <small class="text-muted">
+                                    <i class="bi bi-telephone"></i> <span th:text="${cita.telefonoUsuario}"></span>
+                                </small>
+                            </td>
+                            <td th:text="${cita.nombreServicio}">Consulta General</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${cita.estadoPago == 'PAGADO' ? 'bg-success' : 'bg-warning text-dark'}"
+                                      th:text="${cita.estadoPago}"></span>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
+                                                       (cita.estado == 'Confirmada' ? 'badge-confirmada' : 
+                                                       (cita.estado == 'Completada' ? 'badge-completada' : 'badge-cancelada'))}"
+                                      th:text="${cita.estado}"></span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group-desktop"
+                                     th:if="${cita.estado != 'Completada' && cita.estado != 'Cancelada'}">
+                                    <form th:if="${cita.estado == 'Pendiente'}"
+                                          th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}" method="post">
+                                        <button type="submit" class="btn btn-outline-success">
+                                            <i class="bi bi-check2-circle"></i> Confirmar
+                                        </button>
+                                    </form>
+                                    <a th:if="${cita.estado == 'Confirmada'}"
+                                       th:href="@{'/clinica/atender/' + ${cita.id}}"
+                                       class="btn btn-outline-primary">
+                                        <i class="bi bi-clipboard-pulse"></i> Atender
+                                    </a>
+                                    <form th:action="@{'/clinica/citas/cancelar/' + ${cita.id}}" method="post">
+                                        <button type="submit" class="btn btn-outline-danger"
+                                                onclick="return confirm('¿Cancelar esta cita?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <span th:if="${cita.estado == 'Completada'}" class="text-success fw-bold">
+                                    <i class="bi bi-check-all"></i> Finalizada
+                                </span>
+                                <span th:if="${cita.estado == 'Cancelada'}" class="text-danger">
+                                    <i class="bi bi-x-circle"></i> Cancelada
+                                </span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(citas)}">
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-calendar-x display-4 text-muted d-block mb-3"></i>
+                                <p class="text-muted">No tienes citas agendadas por el momento.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer mt-5 pb-4">
+            <p class="mb-1">&copy; 2026 ClínicaApp. Sistema de Gestión Veterinaria Avanzada.</p>
+            <small class="opacity-50">Panel de Control Clínico v2.5</small>
+        </div>
+    </div>
+
+    <!-- Scripts Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Lógica de Filtrado Inteligente -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const filterPills = document.querySelectorAll('.filter-pill');
+            const mobileCards = document.querySelectorAll('.filterable-card');
+            const tableRows = document.querySelectorAll('.table tbody tr:not(.empty-row)');
+            
+            // Datos para métricas
+            const hoy = new Date().toISOString().split('T')[0];
+            let counts = { pendiente: 0, confirmada: 0, hoy: 0 };
+
+            // Inicializar métricas y ribbons de "Hoy"
+            mobileCards.forEach(card => {
+                const estado = card.getAttribute('data-estado').toLowerCase();
+                const fecha = card.getAttribute('data-fecha');
+                
+                if (estado === 'pendiente') counts.pendiente++;
+                if (estado === 'confirmada') counts.confirmada++;
+                if (fecha === hoy) {
+                    counts.hoy++;
+                    const ribbon = card.querySelector('.today-ribbon');
+                    if(ribbon) ribbon.style.display = 'inline-block';
+                }
+            });
+
+            document.getElementById('pendingCount').textContent = counts.pendiente;
+            document.getElementById('confirmedCount').textContent = counts.confirmada;
+            document.getElementById('todayCount').textContent = counts.hoy;
+
+            function filterCitas() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeFilter = document.querySelector('.filter-pill.active').getAttribute('data-filter');
+
+                // Filtrar Cards (Móvil)
+                mobileCards.forEach(card => {
+                    const searchData = card.getAttribute('data-search');
+                    const estado = card.getAttribute('data-estado').toLowerCase();
+                    const fecha = card.getAttribute('data-fecha');
+
+                    const matchesSearch = searchData.includes(searchTerm);
+                    let matchesFilter = activeFilter === 'all';
+                    
+                    if (activeFilter === 'hoy') matchesFilter = (fecha === hoy);
+                    else if (activeFilter !== 'all') matchesFilter = (estado === activeFilter);
+
+                    card.style.display = (matchesSearch && matchesFilter) ? 'block' : 'none';
+                });
+
+                // Filtrar Tabla (Desktop)
+                tableRows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+                    // (Opcional: implementar filtro de estado en tabla si se requiere)
+                    row.style.display = matchesSearch ? '' : 'none';
+                });
+            }
+
+            // Listeners
+            searchInput.addEventListener('input', filterCitas);
+
+            filterPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    filterPills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    filterCitas();
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

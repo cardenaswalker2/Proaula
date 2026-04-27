@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Operaciones | Clínica App - Gestión Veterinaria Profesional</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+
+    <!-- Frameworks -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 40px -10px var(--primary);
+            --radius: 24px;
+            --radius-sm: 16px;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3, h4, h5, h6, .heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 30%, #fff1f2 60%, #fef3c7 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVEGACIÓN RÁPIDA ===== */
+        .quick-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quick-nav-item {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .quick-nav-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .quick-nav-item::before {
+            content: attr(data-label);
+            position: absolute;
+            right: 60px;
+            background: var(--dark);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .quick-nav-item:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-section {
+            position: relative;
+            padding: 6rem 0 4rem;
+            overflow: hidden;
+        }
+
+        .hero-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 0.625rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-top: 0.25rem;
+        }
+
+        /* ===== MÉTRICAS EN TIEMPO REAL ===== */
+        .metrics-bar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 1.5rem 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .metric-icon.blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
+        .metric-icon.green { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #059669; }
+        .metric-icon.orange { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #d97706; }
+        .metric-icon.purple { background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%); color: #7c3aed; }
+
+        .metric-content h4 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .metric-content p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        /* ===== PANELES DE ACCESO ===== */
+        .access-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-desc {
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .access-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .access-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .access-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-soft), 0 0 0 1px rgba(255,255,255,0.8) inset;
+        }
+
+        .access-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, #f97316 100%);
+            color: white;
+            padding: 0.375rem 0.875rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .card-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .icon-client { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
+        .icon-reception { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #059669; }
+        .icon-admin { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; }
+
+        .access-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .access-card p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+        }
+
+        .feature-list li i {
+            color: var(--secondary);
+            font-size: 1.125rem;
+        }
+
+        .btn-access {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-client { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 4px 14px -4px #3b82f6; }
+        .btn-reception { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 14px -4px #10b981; }
+        .btn-admin { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 4px 14px -4px #ef4444; }
+
+        /* ===== CALENDARIO DE ACTIVIDADES ===== */
+        .calendar-section {
+            margin-bottom: 4rem;
+        }
+
+        .calendar-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: white;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .event-date {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .event-date .day {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .event-date .month {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+        }
+
+        .event-content h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-content p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* ===== CENTRO DE NOTIFICACIONES ===== */
+        .notifications-section {
+            margin-bottom: 4rem;
+        }
+
+        .notifications-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info { background: #dbeafe; color: #2563eb; }
+        .notification-icon.success { background: #d1fae5; color: #059669; }
+        .notification-icon.warning { background: #fef3c7; color: #d97706; }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-content p {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            white-space: nowrap;
+        }
+
+        /* ===== SISTEMA DE TICKETS ===== */
+        .tickets-section {
+            margin-bottom: 4rem;
+        }
+
+        .ticket-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ticket-filter {
+            padding: 0.625rem 1.25rem;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: var(--gray-600);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-filter.active, .ticket-filter:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .ticket-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .ticket-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .ticket-item:hover {
+            box-shadow: var(--shadow-soft);
+            transform: translateY(-2px);
+        }
+
+        .ticket-priority {
+            width: 4px;
+            height: 50px;
+            border-radius: 2px;
+        }
+
+        .priority-high { background: var(--danger); }
+        .priority-medium { background: var(--accent); }
+        .priority-low { background: var(--secondary); }
+
+        .ticket-content {
+            flex: 1;
+        }
+
+        .ticket-content h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .ticket-status {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-open { background: #dbeafe; color: #1e40af; }
+        .status-progress { background: #fef3c7; color: #92400e; }
+        .status-closed { background: #d1fae5; color: #065f46; }
+
+        /* ===== RECURSOS Y DOCUMENTACIÓN ===== */
+        .resources-section {
+            margin-bottom: 4rem;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .resource-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-sm);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .resource-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        .resource-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .resource-card p {
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== TESTIMONIOS ===== */
+        .testimonials-section {
+            margin-bottom: 4rem;
+        }
+
+        .testimonials-slider {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: none;
+        }
+
+        .testimonials-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+        .testimonial-card {
+            min-width: 350px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .testimonial-stars {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-text {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .author-info h5 {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .author-info p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        /* ===== PARTNERS ===== */
+        .partners-section {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .partners-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            opacity: 0.6;
+        }
+
+        .partner-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            filter: grayscale(100%);
+            transition: all 0.3s ease;
+        }
+
+        .partner-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        /* ===== CHAT FLOTANTE ===== */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px -10px var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .chat-button.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
+        }
+
+        /* ===== FAQ MODERNO ===== */
+        .faq-section {
+            margin-bottom: 4rem;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .faq-grid { grid-template-columns: 1fr; }
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--gray-600);
+        }
+
+        .faq-item.active .faq-answer {
+            padding-bottom: 1.5rem;
+            max-height: 200px;
+        }
+
+        /* ===== SOPORTE PREMIUM ===== */
+        .support-section {
+            margin-bottom: 4rem;
+        }
+
+        .support-card {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            border-radius: var(--radius);
+            padding: 4rem;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .support-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .support-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .support-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .support-channels {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .support-channel {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 14px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .support-channel:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-4px);
+            color: white;
+        }
+
+        /* ===== ANIMACIONES ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 991px) {
+            .quick-nav { display: none; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-stats { gap: 2rem; }
+            .access-grid { grid-template-columns: 1fr; }
+            .metrics-bar { flex-direction: column; align-items: center; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section { padding: 4rem 0; }
+            .section-title { font-size: 1.75rem; }
+            .support-card { padding: 2rem; }
+            .testimonial-card { min-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Quick Navigation -->
+    <nav class="quick-nav">
+        <a href="#inicio" class="quick-nav-item" data-label="Inicio"><i class="bi bi-house-fill"></i></a>
+        <a href="#accesos" class="quick-nav-item" data-label="Accesos"><i class="bi bi-grid-fill"></i></a>
+        <a href="#calendario" class="quick-nav-item" data-label="Calendario"><i class="bi bi-calendar-fill"></i></a>
+        <a href="#notificaciones" class="quick-nav-item" data-label="Alertas"><i class="bi bi-bell-fill"></i></a>
+        <a href="#tickets" class="quick-nav-item" data-label="Tickets"><i class="bi bi-ticket-fill"></i></a>
+        <a href="#soporte" class="quick-nav-item" data-label="Soporte"><i class="bi bi-headset"></i></a>
+    </nav>
+
+    <div th:replace="~{fragments/header :: header-publico}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section id="inicio" class="hero-section">
+            <div class="hero-bg-pattern"></div>
+            <div class="hero-grid"></div>
+            <div class="hero-content text-center">
+                <div class="hero-badge">
+                    <i class="bi bi-award-fill"></i>
+                    Plataforma Profesional #1 en Gestión Veterinaria
+                </div>
+                <h1 class="hero-title">
+                    Centro de Operaciones<br>
+                    <span class="gradient-text">Clínica App</span>
+                </h1>
+                <p class="hero-subtitle col-lg-6 mx-auto">
+                    Sistema integral de gestión veterinaria con herramientas avanzadas para clientes, 
+                    recepcionistas y administradores. Todo en una plataforma unificada.
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">15K+</div>
+                        <div class="hero-stat-label">Mascotas Atendidas</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">98%</div>
+                        <div class="hero-stat-label">Satisfacción</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">24/7</div>
+                        <div class="hero-stat-label">Soporte Online</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">50+</div>
+                        <div class="hero-stat-label">Clínicas Asociadas</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metrics Bar -->
+        <div class="metrics-bar animate-in">
+            <div class="metric-item">
+                <div class="metric-icon blue"><i class="bi bi-calendar-check-fill"></i></div>
+                <div class="metric-content">
+                    <h4>1,247</h4>
+                    <p>Citas Hoy</p>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-icon green"><i class="bi bi-heart-pulse-fill"></i></div>
+                <div class="metric-content">
+                    <h4>89</h4>
+                    <p>Consultas Activas</p>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-icon orange"><i class="bi bi-clock-fill"></i></div>
+                <div class="metric-content">
+                    <h4>12m</h4>
+                    <p>Tiempo Espera Prom.</p>
+                </div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-icon purple"><i class="bi bi-star-fill"></i></div>
+                <div class="metric-content">
+                    <h4>4.9</h4>
+                    <p>Calificación Promedio</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Access Panels -->
+        <section id="accesos" class="access-section">
+            <div class="section-header animate-in">
+                <h2 class="section-title">Paneles de Control</h2>
+                <p class="section-desc">Accede al sistema según tu rol y responsabilidades</p>
+            </div>
+
+            <div class="access-grid">
+                <!-- Client Panel -->
+                <div class="access-card animate-in delay-1" sec:authorize="hasRole('USER')">
+                    <span class="card-badge">Popular</span>
+                    <div class="card-icon-wrapper icon-client">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h3>Portal de Clientes</h3>
+                    <p>Gestiona el bienestar de tus mascotas con herramientas intuitivas y seguimiento completo.</p>
+                    <ul class="feature-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Agendar citas 24/7</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Historial médico digital</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Recordatorios automáticos</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Pagos en línea seguros</li>
+                    </ul>
+                    <a th:href="@{/usuario/dashboard}" class="btn-access btn-client">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                        Acceder al Portal
+                    </a>
+                </div>
+
+                <!-- Reception Panel -->
+                <div class="access-card animate-in delay-2" sec:authorize="hasRole('RECEPCIONISTA')">
+                    <div class="card-icon-wrapper icon-reception">
+                        <i class="bi bi-clipboard2-pulse-fill"></i>
+                    </div>
+                    <h3>Panel de Recepción</h3>
+                    <p>Optimiza la atención al cliente y la gestión de citas con herramientas profesionales.</p>
+                    <ul class="feature-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Gestión de agenda en tiempo real</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Registro de pacientes</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Confirmaciones automáticas</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Reportes diarios</li>
+                    </ul>
+                    <a th:href="@{/recepcion/dashboard}" class="btn-access btn-reception">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                        Ir al Panel
+                    </a>
+                </div>
+
+                <!-- Admin Panel -->
+                <div class="access-card animate-in delay-3" sec:authorize="hasRole('ADMIN')">
+                    <div class="card-icon-wrapper icon-admin">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <h3>Administración</h3>
+                    <p>Control total del sistema con analytics avanzados y gestión de múltiples ubicaciones.</p>
+                    <ul class="feature-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Analytics y reportes</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Gestión de usuarios y roles</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Configuración de clínicas</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Facturación y finanzas</li>
+                    </ul>
+                    <a th:href="@{/admin/dashboard}" class="btn-access btn-admin">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                        Panel de Control
+                    </a>
+                </div>
+
+                <!-- Guest CTA -->
+                <div class="col-12 animate-in delay-1" sec:authorize="!isAuthenticated()">
+                    <div class="guest-alert text-center p-5">
+                        <i class="bi bi-person-workspace"></i>
+                        <h3 class="mb-3">¿Aún no eres parte de Clínica App?</h3>
+                        <p class="text-muted mb-4 col-lg-6 mx-auto">
+                            Únete a miles de dueños de mascotas y profesionales veterinarios que ya confían en nuestra plataforma.
+                        </p>
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <a th:href="@{/login}" class="btn btn-dark btn-lg px-4">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                            </a>
+                            <a th:href="@{/registro}" class="btn btn-outline-dark btn-lg px-4">
+                                <i class="bi bi-person-plus me-2"></i>Crear Cuenta Gratis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar & Notifications Grid -->
+        <div class="row g-4 mb-5">
+            <!-- Calendar -->
+            <div class="col-lg-8 animate-in" id="calendario">
+                <div class="calendar-card h-100">
+                    <div class="calendar-header">
+                        <h3><i class="bi bi-calendar-week me-2 text-primary"></i>Próximos Eventos</h3>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-pill">Ver Calendario Completo</a>
+                    </div>
+                    <div class="event-list">
+                        <div class="event-item">
+                            <div class="event-date">
+                                <div class="day">15</div>
+                                <div class="month">ENE</div>
+                            </div>
+                            <div class="event-content">
+                                <h4>Jornada de Vacunación Gratuita</h4>
+                                <p><i class="bi bi-geo-alt me-1"></i> Clínica Central - 9:00 AM a 2:00 PM</p>
+                            </div>
+                            <span class="badge bg-primary">Próximo</span>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">
+                                <div class="day">18</div>
+                                <div class="month">ENE</div>
+                            </div>
+                            <div class="event-content">
+                                <h4>Webinar: Nutrición Avanzada para Perros</h4>
+                                <p><i class="bi bi-laptop me-1"></i> Online - 7:00 PM</p>
+                            </div>
+                            <span class="badge bg-info">Virtual</span>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">
+                                <div class="day">22</div>
+                                <div class="month">ENE</div>
+                            </div>
+                            <div class="event-content">
+                                <h4>Capacitación: Nuevo Sistema de Gestión</h4>
+                                <p><i class="bi bi-building me-1"></i> Sala de Conferencias - 10:00 AM</p>
+                            </div>
+                            <span class="badge bg-warning text-dark">Capacitación</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="col-lg-4 animate-in delay-1" id="notificaciones">
+                <div class="notifications-card h-100">
+                    <div class="calendar-header">
+                        <h3><i class="bi bi-bell-fill me-2 text-warning"></i>Notificaciones</h3>
+                        <span class="badge bg-danger">3</span>
+                    </div>
+                    <div class="notification-list">
+                        <div class="notification-item">
+                            <div class="notification-icon success"><i class="bi bi-check-lg"></i></div>
+                            <div class="notification-content">
+                                <h4>Cita Confirmada</h4>
+                                <p>Tu cita para mañana a las 10:00 AM ha sido confirmada</p>
+                            </div>
+                            <span class="notification-time">2m</span>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon info"><i class="bi bi-info-lg"></i></div>
+                            <div class="notification-content">
+                                <h4>Recordatorio de Vacuna</h4>
+                                <p>Rocky necesita su refuerzo de rabia este mes</p>
+                            </div>
+                            <span class="notification-time">1h</span>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon warning"><i class="bi bi-exclamation-lg"></i></div>
+                            <div class="notification-content">
+                                <h4>Promoción Especial</h4>
+                                <p>20% de descuento en esterilización esta semana</p>
+                            </div>
+                            <span class="notification-time">3h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets System -->
+        <section id="tickets" class="tickets-section animate-in">
+            <div class="calendar-card">
+                <div class="calendar-header mb-4">
+                    <div>
+                        <h3><i class="bi bi-ticket-perforated me-2 text-primary"></i>Sistema de Tickets</h3>
+                        <p class="text-muted mb-0">Gestiona tus solicitudes y seguimientos</p>
+                    </div>
+                    <button class="btn btn-primary rounded-pill">
+                        <i class="bi bi-plus-lg me-2"></i>Nuevo Ticket
+                    </button>
+                </div>
+                
+                <div class="ticket-filters">
+                    <button class="ticket-filter active">Todos</button>
+                    <button class="ticket-filter">Abiertos</button>
+                    <button class="ticket-filter">En Progreso</button>
+                    <button class="ticket-filter">Resueltos</button>
+                    <button class="ticket-filter">Urgentes</button>
+                </div>
+
+                <div class="ticket-list">
+                    <div class="ticket-item">
+                        <div class="ticket-priority priority-high"></div>
+                        <div class="ticket-content">
+                            <h4>Problema con pago de factura #4521</h4>
+                            <div class="ticket-meta">
+                                <span><i class="bi bi-person me-1"></i> Carlos Mendoza</span>
+                                <span><i class="bi bi-clock me-1"></i> Hace 2 horas</span>
+                                <span><i class="bi bi-tag me-1"></i> Facturación</span>
+                            </div>
+                        </div>
+                        <span class="ticket-status status-open">Abierto</span>
+                    </div>
+                    <div class="ticket-item">
+                        <div class="ticket-priority priority-medium"></div>
+                        <div class="ticket-content">
+                            <h4>Solicitud de historial médico completo</h4>
+                            <div class="ticket-meta">
+                                <span><i class="bi bi-person me-1"></i> Ana Rodríguez</span>
+                                <span><i class="bi bi-clock me-1"></i> Hace 5 horas</span>
+                                <span><i class="bi bi-tag me-1"></i> Documentación</span>
+                            </div>
+                        </div>
+                        <span class="ticket-status status-progress">En Progreso</span>
+                    </div>
+                    <div class="ticket-item">
+                        <div class="ticket-priority priority-low"></div>
+                        <div class="ticket-content">
+                            <h4>Consulta sobre horarios de fin de semana</h4>
+                            <div class="ticket-meta">
+                                <span><i class="bi bi-person me-1"></i> Luis Torres</span>
+                                <span><i class="bi bi-clock me-1"></i> Ayer</span>
+                                <span><i class="bi bi-tag me-1"></i> Información</span>
+                            </div>
+                        </div>
+                        <span class="ticket-status status-closed">Resuelto</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources -->
+        <section class="resources-section animate-in">
+            <div class="section-header">
+                <h2 class="section-title">Centro de Recursos</h2>
+                <p class="section-desc">Documentación, guías y material de apoyo</p>
+            </div>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb;">
+                        <i class="bi bi-book-fill"></i>
+                    </div>
+                    <h4>Manual de Usuario</h4>
+                    <p>Guía completa paso a paso para usar todas las funciones.</p>
+                    <a href="#" class="btn btn-outline-primary rounded-pill btn-sm">Descargar PDF</a>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #d97706;">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>
+                    <h4>Tutoriales en Video</h4>
+                    <p>Aprende visualmente con nuestros tutoriales interactivos.</p>
+                    <a href="#" class="btn btn-outline-warning rounded-pill btn-sm">Ver Playlist</a>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #db2777;">
+                        <i class="bi bi-question-circle-fill"></i>
+                    </div>
+                    <h4>Preguntas Frecuentes</h4>
+                    <p>Respuestas rápidas a las dudas más comunes de usuarios.</p>
+                    <a href="#faq" class="btn btn-outline-danger rounded-pill btn-sm">Ver FAQ</a>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #059669;">
+                        <i class="bi bi-chat-dots-fill"></i>
+                    </div>
+                    <h4>Comunidad</h4>
+                    <p>Únete a nuestra comunidad de usuarios y veterinarios.</p>
+                    <a href="#" class="btn btn-outline-success rounded-pill btn-sm">Unirse</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials-section animate-in">
+            <div class="section-header">
+                <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+                <p class="section-desc">Experiencias reales de quienes ya usan Clínica App</p>
+            </div>
+            <div class="testimonials-slider">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="testimonial-text">"Increíble plataforma. Puedo agendar citas para mis 3 perros en segundos y el historial médico siempre está actualizado."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MR</div>
+                        <div class="author-info">
+                            <h5>María Rodríguez</h5>
+                            <p>Dueña de mascotas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="testimonial-text">"Como recepcionista, ha duplicado mi eficiencia. La gestión de citas es intuitiva y los clientes están más satisfechos."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JL</div>
+                        <div class="author-info">
+                            <h5>Juan López</h5>
+                            <p>Recepcionista - Clínica VetCare</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+                    <p class="testimonial-text">"El panel de administración me da control total sobre 5 clínicas. Los reportes financieros son excepcionales."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">DC</div>
+                        <div class="author-info">
+                            <h5>Dr. Carlos Mendez</h5>
+                            <p>Director - Grupo Veterinario</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partners -->
+        <section class="partners-section animate-in">
+            <p class="text-uppercase text-muted fw-bold mb-4" style="letter-spacing: 2px;">Confían en nosotros</p>
+            <div class="partners-grid">
+                <div class="partner-logo"><i class="bi bi-hospital me-2"></i>VetCare Pro</div>
+                <div class="partner-logo"><i class="bi bi-shield-check me-2"></i>PetSecure</div>
+                <div class="partner-logo"><i class="bi bi-heart-pulse me-2"></i>AnimalHealth</div>
+                <div class="partner-logo"><i class="bi bi-building me-2"></i>Clínica Central</div>
+                <div class="partner-logo"><i class="bi bi-award me-2"></i>VetExcellence</div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" class="faq-section animate-in">
+            <div class="section-header">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                <p class="section-desc">Todo lo que necesitas saber sobre Clínica App</p>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-calendar-check me-2 text-primary"></i>¿Cómo agendo una cita?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Ingresa a tu portal, selecciona "Nueva Cita", elige tu mascota, el servicio y la fecha disponible. Recibirás confirmación inmediata por email y WhatsApp.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-credit-card me-2 text-success"></i>¿Qué métodos de pago aceptan?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Aceptamos tarjetas de crédito/débito, transferencias bancarias, PayPal y pagos en efectivo en clínica. Todos los pagos online son 100% seguros.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-file-medical me-2 text-info"></i>¿Cómo accedo al historial?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        En tu panel de cliente, selecciona la mascota y haz clic en "Historial Médico". Podrás ver diagnósticos, tratamientos, vacunas y descargar PDFs.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-shield-check me-2 text-warning"></i>¿Es segura mi información?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutamente. Usamos encriptación SSL de 256 bits, cumplimos con HIPAA y GDPR. Tus datos nunca son compartidos con terceros.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-phone me-2 text-purple"></i>¿Hay app móvil?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Sí, disponible para iOS y Android. Descárgala desde App Store o Google Play para gestionar todo desde tu celular.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                        <span><i class="bi bi-headset me-2 text-danger"></i>¿Cómo contacto soporte?</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Tenemos soporte 24/7 vía chat en vivo, WhatsApp, email o teléfono. Tiempo promedio de respuesta: menos de 5 minutos.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Premium Support -->
+        <section id="soporte" class="support-section animate-in">
+            <div class="support-card">
+                <div class="support-content">
+                    <i class="bi bi-headset" style="font-size: 4rem; margin-bottom: 1rem; display: block;"></i>
+                    <h2>¿Necesitas ayuda personalizada?</h2>
+                    <p class="col-lg-6 mx-auto">Nuestro equipo de especialistas está disponible 24/7 para resolver cualquier duda o incidente.</p>
+                    
+                    <div class="support-channels">
+                        <a href="#" class="support-channel">
+                            <i class="bi bi-whatsapp fs-4"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">WhatsApp</div>
+                                <small>Respuesta inmediata</small>
+                            </div>
+                        </a>
+                        <a href="#" class="support-channel">
+                            <i class="bi bi-chat-dots fs-4"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">Chat en Vivo</div>
+                                <small>Soporte técnico</small>
+                            </div>
+                        </a>
+                        <a href="#" class="support-channel">
+                            <i class="bi bi-envelope fs-4"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">Email</div>
+                                <small>soporte@clinicaapp.com</small>
+                            </div>
+                        </a>
+                        <a href="#" class="support-channel">
+                            <i class="bi bi-telephone fs-4"></i>
+                            <div class="text-start">
+                                <div class="fw-bold">Teléfono</div>
+                                <small>+57 300 572 2844</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button class="chat-button pulse" onclick="alert('Chat en vivo se conectaría aquí')">
+            <i class="bi bi-chat-fill"></i>
+        </button>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Ticket filters
+        document.querySelectorAll('.ticket-filter').forEach(filter => {
+            filter.addEventListener('click', function() {
+                document.querySelectorAll('.ticket-filter').forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Finaliza tu pago seguro en Clínica App. Procesado por Stripe.">
+    <title>Checkout Seguro | Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Header Minimalista */
+        .checkout-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #10b981;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Layout Principal */
+        .checkout-container {
+            padding: 2rem 0 4rem;
+        }
+
+        /* Card de Pago */
+        .payment-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+        }
+
+        .payment-header {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .payment-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .payment-body {
+            padding: 1.5rem;
+        }
+
+        /* Stripe Element Container */
+        #payment-element {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Botón de Pago */
+        .btn-pay {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            height: 56px;
+        }
+
+        .btn-pay:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-pay:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mensajes */
+        .payment-message {
+            margin-top: 1rem;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-message.show {
+            display: flex;
+        }
+
+        .payment-message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 3px solid #ef4444;
+        }
+
+        .payment-message.success {
+            background: #f0fdf4;
+            color: #166534;
+            border-left: 3px solid #22c55e;
+        }
+
+        /* Card de Resumen */
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-header {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .summary-body {
+            padding: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .summary-value {
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .summary-concept {
+            max-width: 200px;
+        }
+
+        .summary-concept h6 {
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-concept small {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .summary-total {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        /* Badges de Seguridad */
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        .security-badge i {
+            color: #10b981;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .summary-card {
+                position: relative;
+                top: 0;
+                margin-bottom: 2rem;
+            }
+
+            .checkout-container {
+                padding: 1.5rem 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .payment-header, .payment-body,
+            .summary-header, .summary-body {
+                padding: 1rem;
+            }
+
+            .secure-badge span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Minimalista -->
+    <header class="checkout-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a th:href="@{/}" class="brand-link">
+                    <div class="brand-icon">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <span>ClínicaApp</span>
+                </a>
+                <div class="secure-badge">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Pago 100% Seguro</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-container">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                
+                <!-- Columna Derecha: Resumen (Primero en móvil) -->
+                <div class="col-lg-5 order-lg-2">
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <h4 class="summary-title">
+                                <i class="bi bi-receipt me-2 text-primary"></i>
+                                Resumen de la Cita
+                            </h4>
+                        </div>
+                        <div class="summary-body">
+                            <div class="summary-item">
+                                <div class="summary-concept">
+                                    <h6>Servicio Veterinario</h6>
+                                    <small th:text="${descripcionPago}">Consulta general</small>
+                                </div>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Subtotal</span>
+                                <span class="summary-value" th:text="${#numbers.formatCurrency(monto)}">$0.00</span>
+                            </div>
+
+                            <div class="summary-item">
+                                <span class="summary-label">Tarifa de servicio</span>
+                                <span class="summary-value text-success">Gratis</span>
+                            </div>
+
+                            <div class="summary-total">
+                                <span class="total-label">Total a pagar</span>
+                                <span class="total-amount" th:text="${#numbers.formatCurrency(monto)}">$0.00</span>
+                            </div>
+
+                            <!-- Garantía -->
+                            <div class="mt-3 p-3 bg-blue-50 rounded-3" style="background: #eff6ff;">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-shield-check text-primary mt-1"></i>
+                                    <div>
+                                        <small class="fw-semibold text-primary d-block">Garantía de satisfacción</small>
+                                        <small class="text-muted">Si la clínica no confirma tu cita, te devolvemos el 100% del dinero.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Izquierda: Formulario de Pago -->
+                <div class="col-lg-6 order-lg-1">
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <h4 class="payment-title">
+                                <i class="bi bi-credit-card-fill text-primary"></i>
+                                Método de Pago
+                            </h4>
+                        </div>
+                        <div class="payment-body">
+                            <form id="payment-form">
+                                <!-- Stripe Payment Element -->
+                                <div id="payment-element"></div>
+                                
+                                <!-- Botón de Pago -->
+                                <button type="submit" id="submit" class="btn-pay">
+                                    <div class="spinner" id="spinner" style="display: none;"></div>
+                                    <span id="button-text">
+                                        Pagar <span th:text="${#numbers.formatCurrency(monto)}">$0.00</span>
+                                    </span>
+                                </button>
+
+                                <!-- Mensajes -->
+                                <div id="payment-message" class="payment-message"></div>
+                            </form>
+
+                            <!-- Badges de Seguridad -->
+                            <div class="security-badges">
+                                <div class="security-badge">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>SSL Seguro</span>
+                                </div>
+                                <div class="security-badge">
+                                    <i class="bi bi-shield-check"></i>
+                                    <span>Stripe</span>
+                                </div>
+                                <div class="security-badge">
+                                    <i class="bi bi-patch-check-fill"></i>
+                                    <span>PCI DSS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info adicional -->
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Tu pago se procesará de forma segura. No almacenamos datos de tu tarjeta.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Minimal -->
+    <footer class="py-4 text-center text-muted" style="border-top: 1px solid #e2e8f0; background: white;">
+        <div class="container">
+            <small>© 2025 ClínicaApp · <a th:href="@{/}" class="text-decoration-none">Cancelar y volver</a></small>
+        </div>
+    </footer>
+
+    <script th:inline="javascript">
+        const stripePublicKey = /*[[${stripePublicKey}]]*/ 'tu_clave_publica_de_stripe';
+        const clientSecret = /*[[${clientSecret}]]*/ 'el_client_secret_del_payment_intent';
+
+        const stripe = Stripe(stripePublicKey);
+        let elements;
+
+        initialize();
+
+        document.querySelector("#payment-form").addEventListener("submit", handleSubmit);
+
+        async function initialize() {
+            elements = stripe.elements({ 
+                clientSecret,
+                appearance: {
+                    theme: 'stripe',
+                    variables: {
+                        colorPrimary: '#0d6efd',
+                        colorBackground: '#ffffff',
+                        colorText: '#1e293b',
+                        colorDanger: '#ef4444',
+                        borderRadius: '8px',
+                        spacingUnit: '4px',
+                    }
+                }
+            });
+
+            const paymentElement = elements.create("payment", {
+                layout: "tabs",
+            });
+            
+            paymentElement.mount("#payment-element");
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            setLoading(true);
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + "/pago-exitoso",
+                },
+            });
+
+            if (error) {
+                if (error.type === "card_error" || error.type === "validation_error") {
+                    showMessage(error.message, 'error');
+                } else {
+                    showMessage("Ocurrió un error inesperado. Por favor intenta de nuevo.", 'error');
+                }
+                setLoading(false);
+            }
+        }
+
+        function showMessage(messageText, type) {
+            const messageContainer = document.querySelector("#payment-message");
+            messageContainer.className = `payment-message ${type} show`;
+            messageContainer.innerHTML = `
+                <i class="bi bi-${type === 'error' ? 'exclamation-circle' : 'check-circle'}-fill"></i>
+                <span>${messageText}</span>
+            `;
+        }
+
+        function setLoading(isLoading) {
+            const spinner = document.querySelector("#spinner");
+            const buttonText = document.querySelector("#button-text");
+            const submitButton = document.querySelector("#submit");
+
+            if (isLoading) {
+                spinner.style.display = "block";
+                buttonText.style.display = "none";
+                submitButton.disabled = true;
+            } else {
+                spinner.style.display = "none";
+                buttonText.style.display = "inline";
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

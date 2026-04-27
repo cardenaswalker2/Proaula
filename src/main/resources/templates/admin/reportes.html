@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reportes Financieros | Admin</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --info-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --pink-gradient: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 25%, #c7d2fe 50%, #e0e7ff 75%, #fae8ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 3rem;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-header h2 i {
+            background: var(--primary-gradient);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin: 0.5rem 0 0 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            color: #475569;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .btn-action.primary {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .btn-action.primary:hover {
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 576px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 992px) {
+            .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .kpi-card {
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.6s ease forwards;
+            opacity: 0;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .kpi-card.indigo { background: var(--glass-bg); }
+        .kpi-card.indigo::before { background: var(--primary-gradient); }
+        .kpi-card.green { background: var(--glass-bg); }
+        .kpi-card.green::before { background: var(--success-gradient); }
+        .kpi-card.blue { background: var(--glass-bg); }
+        .kpi-card.blue::before { background: var(--info-gradient); }
+        .kpi-card.amber { background: var(--glass-bg); }
+        .kpi-card.amber::before { background: var(--warning-gradient); }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .kpi-card.indigo .kpi-icon { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca; }
+        .kpi-card.green .kpi-icon { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #059669; }
+        .kpi-card.blue .kpi-icon { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0284c7; }
+        .kpi-card.amber .kpi-icon { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        @media (min-width: 768px) {
+            .kpi-value { font-size: 2rem; }
+        }
+
+        .kpi-footer {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .kpi-card.indigo .kpi-footer { color: #6366f1; }
+        .kpi-card.green .kpi-footer { color: #10b981; }
+        .kpi-card.blue .kpi-footer { color: #0ea5e9; }
+        .kpi-card.amber .kpi-footer { color: #f59e0b; }
+
+        /* Chart Cards */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .charts-grid { grid-template-columns: 1fr 1fr; }
+            .charts-grid .full-width { grid-column: 1 / -1; }
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease both;
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .chart-card:nth-child(1) { animation-delay: 0.3s; }
+        .chart-card:nth-child(2) { animation-delay: 0.4s; }
+        .chart-card:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chart-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-bottom: 2px solid rgba(226, 232, 240, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-header h5 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chart-header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .chart-header-icon.indigo { background: var(--primary-gradient); }
+        .chart-header-icon.green { background: var(--success-gradient); }
+        .chart-header-icon.blue { background: var(--info-gradient); }
+        .chart-header-icon.pink { background: var(--pink-gradient); }
+
+        .chart-header .badge-info {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #4338ca;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.4rem 0.75rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-body {
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container { height: 320px; }
+            .chart-container.tall { height: 380px; }
+        }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Print */
+        @media print {
+            .page-header, .btn-action, .navbar, .nav-spacer { display: none !important; }
+            .kpi-card, .chart-card { break-inside: avoid; box-shadow: none; border: 2px solid #e2e8f0; }
+            body { background: white; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.5); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #c7d2fe, #ddd6fe); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2>
+                        <i class="bi bi-bar-chart-line"></i>
+                        Centro de Reportes
+                    </h2>
+                    <p>Análisis financiero, métricas de crecimiento y rendimiento de servicios.</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a th:href="@{/admin/reportes/descargar/resumen-mensual}" class="btn-action primary" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Descargar PDF
+                    </a>
+                    <button class="btn-action" onclick="window.print()">
+                        <i class="bi bi-printer"></i>
+                        Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card indigo">
+                <div class="kpi-icon"><i class="bi bi-cash-stack"></i></div>
+                <div class="kpi-label">Ingresos Totales</div>
+                <h2 class="kpi-value" th:text="'$' + ${#numbers.formatDecimal(ingresosTotales, 1, 'COMMA', 2, 'POINT')}">$0.00</h2>
+                <div class="kpi-footer">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Acumulado histórico</span>
+                </div>
+            </div>
+
+            <div class="kpi-card green">
+                <div class="kpi-icon"><i class="bi bi-calendar-check"></i></div>
+                <div class="kpi-label">Citas Completadas</div>
+                <h2 class="kpi-value" th:text="${citasCompletadas}">0</h2>
+                <div class="kpi-footer">
+                    <i class="bi bi-check-circle"></i>
+                    <span>Finalizadas y pagadas</span>
+                </div>
+            </div>
+
+            <div class="kpi-card blue">
+                <div class="kpi-icon"><i class="bi bi-people"></i></div>
+                <div class="kpi-label">Nuevos Clientes (Mes)</div>
+                <h2 class="kpi-value" th:text="${nuevosClientesMes}">0</h2>
+                <div class="kpi-footer">
+                    <i class="bi bi-person-plus"></i>
+                    <span>Registros este mes</span>
+                </div>
+            </div>
+
+            <div class="kpi-card amber">
+                <div class="kpi-icon"><i class="bi bi-receipt"></i></div>
+                <div class="kpi-label">Ticket Promedio</div>
+                <h2 class="kpi-value" th:text="'$' + ${#numbers.formatDecimal(ticketPromedio, 1, 'COMMA', 2, 'POINT')}">$0.00</h2>
+                <div class="kpi-footer">
+                    <i class="bi bi-tag"></i>
+                    <span>Valor medio por cita</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+
+            <!-- Chart 1: Ingresos por Mes (Line/Bar) - Full Width -->
+            <div class="chart-card full-width">
+                <div class="chart-header">
+                    <h5>
+                        <span class="chart-header-icon indigo"><i class="bi bi-graph-up-arrow"></i></span>
+                        Nuevos Usuarios por Mes
+                    </h5>
+                    <span class="badge-info">Año Actual</span>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-container tall">
+                        <canvas id="chartUsuarios"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2: Citas por Estado (Doughnut) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5>
+                        <span class="chart-header-icon green"><i class="bi bi-pie-chart"></i></span>
+                        Citas por Estado
+                    </h5>
+                    <span class="badge-info">Global</span>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-container">
+                        <canvas id="chartCitas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 3: Servicios Populares (Horizontal Bar) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5>
+                        <span class="chart-header-icon pink"><i class="bi bi-trophy"></i></span>
+                        Servicios Más Populares
+                    </h5>
+                    <span class="badge-info">Top</span>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-container">
+                        <canvas id="chartServicios"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="report-footer">
+        <small>© 2024 ClínicaApp — Reporte generado automáticamente · Datos en tiempo real</small>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        const fontFamily = "'Plus Jakarta Sans', sans-serif";
+
+        // ========== DATOS DEL SERVIDOR ==========
+        const labelsCitas = /*[[${labelsCitas}]]*/ '[]';
+        const dataCitas = /*[[${dataCitas}]]*/ '[]';
+        const labelsUsuarios = /*[[${labelsUsuarios}]]*/ '[]';
+        const dataUsuarios = /*[[${dataUsuarios}]]*/ '[]';
+        const labelsServicios = /*[[${labelsServicios}]]*/ '[]';
+        const dataServicios = /*[[${dataServicios}]]*/ '[]';
+
+        // Parsear JSONs
+        const parsedLabelsCitas = JSON.parse(labelsCitas);
+        const parsedDataCitas = JSON.parse(dataCitas);
+        const parsedLabelsUsuarios = JSON.parse(labelsUsuarios);
+        const parsedDataUsuarios = JSON.parse(dataUsuarios);
+        const parsedLabelsServicios = JSON.parse(labelsServicios);
+        const parsedDataServicios = JSON.parse(dataServicios);
+
+        // ========== CHART 1: Usuarios por Mes (Area Chart) ==========
+        const ctxUsuarios = document.getElementById('chartUsuarios').getContext('2d');
+        const gradientUsuarios = ctxUsuarios.createLinearGradient(0, 0, 0, 380);
+        gradientUsuarios.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+        gradientUsuarios.addColorStop(1, 'rgba(99, 102, 241, 0.02)');
+
+        new Chart(ctxUsuarios, {
+            type: 'line',
+            data: {
+                labels: parsedLabelsUsuarios,
+                datasets: [{
+                    label: 'Nuevos Usuarios',
+                    data: parsedDataUsuarios,
+                    borderColor: '#6366f1',
+                    backgroundColor: gradientUsuarios,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#6366f1',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 3,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#6366f1',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            font: { family: fontFamily, size: 13, weight: '600' },
+                            color: '#475569',
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: fontFamily, size: 14, weight: '700' },
+                        bodyFont: { family: fontFamily, size: 13 },
+                        padding: 14,
+                        cornerRadius: 12,
+                        displayColors: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false },
+                        ticks: {
+                            font: { family: fontFamily, size: 12 },
+                            color: '#94a3b8',
+                            stepSize: 1,
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: fontFamily, size: 11, weight: '600' },
+                            color: '#64748b',
+                            maxRotation: 45,
+                        }
+                    }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+
+        // ========== CHART 2: Citas por Estado (Doughnut) ==========
+        const ctxCitas = document.getElementById('chartCitas').getContext('2d');
+        new Chart(ctxCitas, {
+            type: 'doughnut',
+            data: {
+                labels: parsedLabelsCitas,
+                datasets: [{
+                    data: parsedDataCitas,
+                    backgroundColor: [
+                        '#94a3b8',  // Pendiente de Pago
+                        '#fbbf24',  // Pendiente
+                        '#10b981',  // Confirmada
+                        '#0ea5e9',  // Completada
+                        '#ef4444',  // Cancelada
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#ffffff',
+                    hoverOffset: 12,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: fontFamily, size: 12, weight: '600' },
+                            color: '#475569',
+                            padding: 16,
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded',
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: fontFamily, size: 14, weight: '700' },
+                        bodyFont: { family: fontFamily, size: 13 },
+                        padding: 14,
+                        cornerRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                            }
+                        }
+                    }
+                },
+                animation: { animateRotate: true, duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+
+        // ========== CHART 3: Servicios Populares (Horizontal Bar) ==========
+        const ctxServicios = document.getElementById('chartServicios').getContext('2d');
+        const gradientServicios = ctxServicios.createLinearGradient(0, 0, 400, 0);
+        gradientServicios.addColorStop(0, 'rgba(236, 72, 153, 0.8)');
+        gradientServicios.addColorStop(1, 'rgba(244, 114, 182, 0.4)');
+
+        new Chart(ctxServicios, {
+            type: 'bar',
+            data: {
+                labels: parsedLabelsServicios,
+                datasets: [{
+                    label: 'Citas agendadas',
+                    data: parsedDataServicios,
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.75)',
+                        'rgba(236, 72, 153, 0.75)',
+                        'rgba(14, 165, 233, 0.75)',
+                        'rgba(16, 185, 129, 0.75)',
+                        'rgba(245, 158, 11, 0.75)',
+                        'rgba(139, 92, 246, 0.75)',
+                    ],
+                    borderColor: [
+                        '#6366f1',
+                        '#ec4899',
+                        '#0ea5e9',
+                        '#10b981',
+                        '#f59e0b',
+                        '#8b5cf6',
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: fontFamily, size: 14, weight: '700' },
+                        bodyFont: { family: fontFamily, size: 13 },
+                        padding: 14,
+                        cornerRadius: 12,
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(226, 232, 240, 0.5)', drawBorder: false },
+                        ticks: {
+                            font: { family: fontFamily, size: 12 },
+                            color: '#94a3b8',
+                            stepSize: 1,
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: fontFamily, size: 12, weight: '600' },
+                            color: '#334155',
+                        }
+                    }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <div th:fragment="lisa-recepcion">
+        <style>
+            :root {
+                --lisa-primary: #1e40af;
+                --lisa-success: #10b981;
+                --lisa-info: #0ea5e9;
+                --lisa-bg: #ffffff;
+            }
+
+            /* CONTENEDOR LISA */
+            .lisa-wrapper {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                /* Cambiada a la derecha para no tapar el menú móvil si hubiera uno a la izquierda */
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .lisa-avatar {
+                width: 75px;
+                height: 75px;
+                background: white;
+                border: 4px solid var(--lisa-primary);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 10px 25px rgba(30, 64, 175, 0.2);
+                transition: 0.3s;
+                position: relative;
+            }
+
+            .lisa-avatar:hover {
+                transform: scale(1.1);
+                border-color: var(--lisa-info);
+            }
+
+            .lisa-avatar i {
+                font-size: 2.2rem;
+                color: var(--lisa-primary);
+            }
+
+            .lisa-online {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                width: 15px;
+                height: 15px;
+                background: var(--lisa-success);
+                border: 3px solid white;
+                border-radius: 50%;
+            }
+
+            .lisa-bubble {
+                background: var(--lisa-primary);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 12px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+                animation: lisa-float 3s infinite ease-in-out;
+            }
+
+            /* PANEL LISA */
+            .lisa-panel {
+                position: fixed;
+                bottom: 120px;
+                right: 30px;
+                width: 380px;
+                max-height: 600px;
+                background: white;
+                border-radius: 25px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                border: 1px solid #e2e8f0;
+                z-index: 10000;
+                animation: lisa-slide 0.3s ease-out;
+            }
+
+            @keyframes lisa-slide {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .lisa-header {
+                padding: 20px;
+                background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+                color: white;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .lisa-body {
+                padding: 20px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                background: #f8fafc;
+            }
+
+            .lisa-msg {
+                background: white;
+                padding: 12px;
+                border-radius: 15px;
+                font-size: 0.9rem;
+                color: #334155;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                border-left: 4px solid var(--lisa-info);
+            }
+
+            /* BOTONES DE ACCIÓN */
+            .lisa-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 15px;
+                background: white;
+            }
+
+            .lisa-btn {
+                background: #f1f5f9;
+                border: 1px solid #e2e8f0;
+                padding: 10px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #475569;
+                cursor: pointer;
+                transition: 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .lisa-btn:hover {
+                background: #e0f2fe;
+                border-color: var(--lisa-info);
+                color: var(--lisa-primary);
+            }
+
+            .lisa-btn-emergency {
+                grid-column: span 2;
+                background: #fef2f2;
+                border-color: #fecaca;
+                color: #dc2626;
+            }
+
+            .lisa-btn-emergency:hover {
+                background: #dc2626;
+                color: white;
+            }
+
+            @keyframes lisa-float {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-5px);
+                }
+            }
+        </style>
+
+        <div class="lisa-wrapper">
+            <div class="lisa-bubble" id="lisaBubble" onclick="lisaBot.toggle()">
+                Logística activa 📋
+            </div>
+            <div class="lisa-avatar" onclick="lisaBot.toggle()">
+                <i class="bi bi-person-badge"></i>
+                <div class="lisa-online"></div>
+            </div>
+        </div>
+
+        <div class="lisa-panel" id="lisaPanel">
+            <div class="lisa-header">
+                <i class="bi bi-headset fs-3"></i>
+                <div>
+                    <h6 class="m-0 fw-bold">Asistente LISA</h6>
+                    <small class="opacity-75">Soporte de Recepción y Flujo</small>
+                </div>
+                <button class="btn-close btn-close-white ms-auto" onclick="lisaBot.toggle()"></button>
+            </div>
+
+            <div class="lisa-body" id="lisaChat">
+                <div class="lisa-msg">
+                    Hola. Soy <strong>LISA</strong>. Estoy monitoreando la sala de espera. ¿En qué puedo apoyarte con la
+                    logística hoy?
+                </div>
+            </div>
+
+            <div class="lisa-grid">
+                <button class="lisa-btn" onclick="lisaBot.checkFlow()">
+                    <i class="bi bi-activity"></i> Resumen de Flujo
+                </button>
+                <button class="lisa-btn" onclick="lisaBot.getTip('checkin')">
+                    <i class="bi bi-clipboard-check"></i> Guía Check-in
+                </button>
+                <button class="lisa-btn" onclick="lisaBot.getTip('pagos')">
+                    <i class="bi bi-cash-stack"></i> Ayuda Pagos
+                </button>
+                <button class="lisa-btn" onclick="lisaBot.getTip('espera')">
+                    <i class="bi bi-hourglass-split"></i> Tiempos Espera
+                </button>
+                <button class="lisa-btn lisa-btn-emergency" onclick="lisaBot.emergency()">
+                    <i class="bi bi-exclamation-triangle-fill"></i> PROTOCOLO EMERGENCIA
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const lisaBot = {
+                panel: document.getElementById('lisaPanel'),
+                bubble: document.getElementById('lisaBubble'),
+                chat: document.getElementById('lisaChat'),
+                synth: window.speechSynthesis,
+
+                toggle: function () {
+                    const isHidden = this.panel.style.display === 'none' || !this.panel.style.display;
+                    this.panel.style.display = isHidden ? 'flex' : 'none';
+                    if (isHidden) this.speak("Sistemas de recepción listos. ¿Cómo va el flujo de pacientes?");
+                },
+
+                checkFlow: function () {
+                    const totalCitas = document.querySelectorAll('.cita-card').length;
+                    const enEspera = Array.from(document.querySelectorAll('.badge-estado')).filter(el => el.innerText.includes('En Espera')).length;
+
+                    let report = `Actualmente tenemos ${totalCitas} citas en el tablero. Hay ${enEspera} pacientes en sala de espera ahora mismo.`;
+                    this.addMsg(report);
+                    this.speak(report);
+                },
+
+                getTip: function (topic) {
+                    let text = "";
+                    if (topic === 'checkin') text = "Recuerda: Al registrar entrada, verifica que el teléfono del dueño esté actualizado para enviarle el aviso de 'Atención Finalizada' por SMS.";
+                    if (topic === 'pagos') text = "Si el estado es 'Pendiente', solicita el pago antes de pasar al paciente a consulta para agilizar la salida.";
+                    if (topic === 'espera') text = "El tiempo promedio de espera hoy es de 15 minutos. Informa a los dueños para mantener la calma en sala.";
+
+                    this.addMsg(text);
+                    this.speak(text);
+                },
+
+                emergency: function () {
+                    const msg = "¡ATENCIÓN! Si llega un paciente crítico: 1. No pidas datos de entrada aún. 2. Notifica por interno al veterinario de turno inmediatamente. 3. Despeja el acceso a consulta.";
+                    this.addMsg(msg, "#dc2626");
+                    this.speak(msg);
+                },
+
+                addMsg: function (txt, color = "#0ea5e9") {
+                    const div = document.createElement('div');
+                    div.className = 'lisa-msg';
+                    div.style.borderLeftColor = color;
+                    div.innerHTML = txt;
+                    this.chat.appendChild(div);
+                    this.chat.scrollTop = this.chat.scrollHeight;
+                },
+
+                speak: function (t) {
+                    this.synth.cancel();
+                    const u = new SpeechSynthesisUtterance(t);
+                    u.lang = 'es-ES'; u.rate = 1.1; u.pitch = 1.1; // Voz más amable y clara
+                    this.synth.speak(u);
+                }
+            };
+        </script>
+    </div>
+
+</body>
+
+</html>

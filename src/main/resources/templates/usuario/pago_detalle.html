@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pago - Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-light: #e0f2fe;
+            --success: #059669;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #334155;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.9);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+        }
+
+        /* Recibo card */
+        .receipt-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .receipt-header {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .success-badge {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+        }
+
+        .receipt-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .receipt-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid var(--border);
+        }
+
+        .receipt-body {
+            padding: 2rem;
+        }
+
+        /* Monto destacado */
+        .amount-section {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .amount-label {
+            font-size: 0.875rem;
+            color: var(--success);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success);
+            line-height: 1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .amount-currency {
+            font-size: 1.25rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Detalles grid */
+        .details-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-icon {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .detail-value.mono {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Acciones */
+        .receipt-actions {
+            padding: 1.5rem 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-action {
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+            color: white;
+        }
+
+        .btn-secondary-custom {
+            background: var(--bg);
+            color: #334155;
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary-custom:hover {
+            background: var(--border);
+            color: #0f172a;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .amount-value {
+                font-size: 2rem;
+            }
+            
+            .receipt-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+    
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="page-title"><i class="bi bi-receipt"></i> Detalle del Pago</h1>
+                    <p class="page-subtitle">Información completa de tu transacción</p>
+                </div>
+                <a th:href="@{/usuario/pagos}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Volver a pagos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="container pb-5">
+        <div class="receipt-card">
+            <!-- Header del recibo -->
+            <div class="receipt-header">
+                <div class="success-badge">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <h2 class="receipt-title">¡Pago Exitoso!</h2>
+                <div class="receipt-id" th:text="'ID: ' + ${pago.paymentIntentId}">ID: pi_xxx</div>
+            </div>
+
+            <div class="receipt-body">
+                <!-- Monto -->
+                <div class="amount-section">
+                    <div class="amount-label">Monto Pagado</div>
+                    <div>
+                        <span class="amount-currency">$</span>
+                        <span class="amount-value" th:text="${#numbers.formatDecimal(pago.monto, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                        <span class="amount-currency">PEN</span>
+                    </div>
+                </div>
+
+                <!-- Detalles -->
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">Fecha de Transacción</div>
+                            <div class="detail-value" th:text="${pago.fecha != null} ? ${#temporals.format(pago.fecha, 'dd ''de'' MMMM, yyyy - HH:mm')} : 'N/A'">
+                                01 de enero, 2024 - 14:30
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-hospital"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">Clínica</div>
+                            <div class="detail-value" th:text="${nombreClinica != null} ? ${nombreClinica} : 'N/A'">
+                                Clínica Veterinaria
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-clipboard-pulse"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">Servicio</div>
+                            <div class="detail-value" th:text="${nombreServicio != null} ? ${nombreServicio} : 'N/A'">
+                                Consulta General
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">Mascota Atendida</div>
+                            <div class="detail-value" th:text="${nombreMascota != null} ? ${nombreMascota} : 'N/A'">
+                                Firulais
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-upc-scan"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">ID de Transacción</div>
+                            <div class="detail-value mono" th:text="${pago.paymentIntentId}">
+                                pi_3Oxxx...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="bi bi-hash"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">ID de Cita</div>
+                            <div class="detail-value mono" th:text="${pago.citaId}">
+                                123456
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="receipt-actions">
+                <a th:href="@{'/usuario/historial/' + ${pago.mascotaId} + '/pdf'}" class="btn-action btn-secondary-custom">
+                    <i class="bi bi-file-earmark-pdf"></i> Descargar Historial PDF
+                </a>
+                <a th:href="@{/usuario/citas/{id}(id=${pago.citaId})}" class="btn-action btn-primary-custom">
+                    <i class="bi bi-calendar-check"></i> Ver Detalle de Cita
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+</html>

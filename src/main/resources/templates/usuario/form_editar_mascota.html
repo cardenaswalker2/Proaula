@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" th:content="${mascotaDTO.id == null ? 'Registra a tu nueva mascota en Clínica App' : 'Edita los datos de ' + mascotaDTO.nombre}">
+    <title th:text="${mascotaDTO.id == null ? 'Nueva Mascota | Clínica App' : 'Editar ' + mascotaDTO.nombre + ' | Clínica App'}">Mascota</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .pet-container {
+            padding: 2rem 0;
+        }
+
+        /* Header */
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(13, 110, 253, 0.3);
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        /* Card */
+        .pet-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+        }
+
+        .pet-card-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .pet-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .pet-card-body {
+            padding: 2rem;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .required::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 0.25rem;
+        }
+
+        .input-group-custom {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .form-control-custom,
+        .form-select-custom {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-select-custom {
+            padding-left: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+        }
+
+        .form-control-custom:focus,
+        .form-select-custom:focus {
+            outline: none;
+            border-color: #0d6efd;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-control-custom::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Especie Selector */
+        .especie-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .especie-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .especie-radio {
+            display: none;
+        }
+
+        .especie-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .especie-label:hover {
+            border-color: #0d6efd;
+            background: #eff6ff;
+        }
+
+        .especie-radio:checked + .especie-label {
+            border-color: #0d6efd;
+            background: #eff6ff;
+            color: #0d6efd;
+        }
+
+        .especie-icon {
+            font-size: 2rem;
+        }
+
+        .especie-text {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Raza Container */
+        .raza-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .raza-container.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-cancel {
+            padding: 0.875rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+            background: #eff6ff;
+        }
+
+        /* Helper Text */
+        .helper-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pet-card-body {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .especie-options {
+                flex-direction: column;
+            }
+
+            .especie-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <main class="pet-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9">
+                    
+                    <!-- Header -->
+                    <div class="form-header">
+                        <div class="form-icon">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <h1 class="form-title" th:text="${mascotaDTO.id == null ? 'Registra a tu nuevo compañero' : 'Editar datos de ' + mascotaDTO.nombre}">Título</h1>
+                        <p class="form-subtitle">Completa la información para mantener su historial clínico organizado</p>
+                    </div>
+
+                    <!-- Form Card -->
+                    <div class="pet-card">
+                        <div class="pet-card-header">
+                            <h5 class="pet-card-title">
+                                <i class="bi bi-clipboard-pulse text-primary"></i>
+                                Información General
+                            </h5>
+                        </div>
+                        <div class="pet-card-body">
+                            <form th:action="@{/usuario/mascotas/guardar}" th:object="${mascotaDTO}" method="post" id="mascotaForm" enctype="multipart/form-data">
+                                <input type="hidden" th:field="*{id}" />
+
+                                <!-- Foto de la Mascota -->
+                                <div class="row mb-4 text-center">
+                                    <div class="col-12">
+                                        <div class="position-relative d-inline-block">
+                                            <img th:if="${mascotaDTO.fotoUrl != null}" th:src="${mascotaDTO.fotoUrl}" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" id="fotoPreview">
+                                            <div th:if="${mascotaDTO.fotoUrl == null}" class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" id="fotoPlaceholder">
+                                                <i class="bi bi-camera text-secondary fs-1"></i>
+                                            </div>
+                                            <label for="fotoFile" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2" style="cursor: pointer; transform: translate(20%, 20%); box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </label>
+                                            <input type="file" id="fotoFile" name="fotoFile" class="d-none" accept="image/*" onchange="previewImage(this)">
+                                        </div>
+                                        <div class="mt-2 text-muted small fw-semibold">Sube una foto de tu mascota</div>
+                                    </div>
+                                </div>
+
+                                <!-- Datos Básicos -->
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="nombre" class="form-label required">Nombre</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-tag input-icon"></i>
+                                            <input type="text" 
+                                                   class="form-control-custom" 
+                                                   id="nombre" 
+                                                   th:field="*{nombre}" 
+                                                   placeholder="Ej: Luna, Max, Bella..."
+                                                   required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="fechaNacimiento" class="form-label required">Fecha de Nacimiento</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-calendar-heart input-icon"></i>
+                                            <input type="date" 
+                                                   class="form-control-custom" 
+                                                   id="fechaNacimiento" 
+                                                   th:field="*{fechaNacimiento}" 
+                                                   required>
+                                        </div>
+                                        <div class="helper-text">
+                                            <i class="bi bi-info-circle"></i>
+                                            Nos ayuda a calcular su edad y necesidades
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider">Tipo de Mascota</div>
+
+                                <!-- Especie Selector Visual -->
+                                <div class="form-group">
+                                    <label class="form-label required">¿Qué especie es?</label>
+                                    <div class="especie-options">
+                                        <div class="especie-option">
+                                            <input type="radio" 
+                                                   name="especie" 
+                                                   id="especiePerro" 
+                                                   value="PERRO" 
+                                                   class="especie-radio"
+                                                   th:checked="${mascotaDTO.especie == T(com.clinicaapp.model.enums.Especie).PERRO}"
+                                                   onchange="toggleRaza('perro')">
+                                            <label for="especiePerro" class="especie-label">
+                                                <i class="bi bi-emoji-smile especie-icon"></i>
+                                                <span class="especie-text">Perro</span>
+                                            </label>
+                                        </div>
+                                        <div class="especie-option">
+                                            <input type="radio" 
+                                                   name="especie" 
+                                                   id="especieGato" 
+                                                   value="GATO" 
+                                                   class="especie-radio"
+                                                   th:checked="${mascotaDTO.especie == T(com.clinicaapp.model.enums.Especie).GATO}"
+                                                   onchange="toggleRaza('gato')">
+                                            <label for="especieGato" class="especie-label">
+                                                <i class="bi bi-emoji-heart-eyes especie-icon"></i>
+                                                <span class="especie-text">Gato</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Raza Perro -->
+                                <div id="razaPerroContainer" class="raza-container">
+                                    <div class="form-group mb-0">
+                                        <label for="razaPerro" class="form-label">Raza de Perro</label>
+                                        <select class="form-select-custom mb-2" id="razaPerro" th:field="*{razaPerro}">
+                                            <option value="">Selecciona una raza...</option>
+                                            <option th:each="r : ${razasPerro}" th:value="${r}" th:text="${r}">Raza</option>
+                                        </select>
+                                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" onclick="toggleCustomBreed()"><i class="bi bi-plus-circle"></i> ¿No encuentras la raza? Agrégala manualmente</button>
+                                    </div>
+                                </div>
+
+                                <!-- Raza Gato -->
+                                <div id="razaGatoContainer" class="raza-container">
+                                    <div class="form-group mb-0">
+                                        <label for="razaGato" class="form-label">Raza de Gato</label>
+                                        <select class="form-select-custom mb-2" id="razaGato" th:field="*{razaGato}">
+                                            <option value="">Selecciona una raza...</option>
+                                            <option th:each="r : ${razasGato}" th:value="${r}" th:text="${r}">Raza</option>
+                                        </select>
+                                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none fw-semibold" onclick="toggleCustomBreed()"><i class="bi bi-plus-circle"></i> ¿No encuentras la raza? Agrégala manualmente</button>
+                                    </div>
+                                </div>
+
+                                <!-- Raza Personalizada -->
+                                <div id="customBreedContainer" class="raza-container mt-3" th:classappend="${mascotaDTO.razaPersonalizada != null && !mascotaDTO.razaPersonalizada.empty ? 'show' : ''}" th:style="${mascotaDTO.razaPersonalizada != null && !mascotaDTO.razaPersonalizada.empty ? 'display:block;' : 'display:none;'}">
+                                    <div class="form-group mb-0">
+                                        <label for="razaPersonalizada" class="form-label">Raza Personalizada</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-pencil input-icon"></i>
+                                            <input type="text" class="form-control-custom" id="razaPersonalizada" th:field="*{razaPersonalizada}" placeholder="Ej: Mestizo, Criollo, etc.">
+                                        </div>
+                                        <div class="helper-text text-primary mt-1"><i class="bi bi-info-circle"></i> Esta raza será la que se mostrará en el perfil.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="form-actions">
+                                    <a th:href="@{/usuario/mis-mascotas}" class="btn-cancel">
+                                        <i class="bi bi-arrow-left"></i>
+                                        Cancelar
+                                    </a>
+                                    <button type="submit" class="btn-submit">
+                                        <i class="bi bi-check-lg"></i>
+                                        <span th:text="${mascotaDTO.id == null ? 'Guardar Mascota' : 'Actualizar Datos'}">Guardar</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tips -->
+                    <div class="text-center mt-4 text-muted" style="font-size: 0.9rem;">
+                        <i class="bi bi-shield-check me-1"></i>
+                        La información de tu mascota está protegida y solo será visible para ti y las clínicas que visites
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
+            crossorigin="anonymous"></script>
+
+    <script>
+        function toggleRaza(tipo) {
+            // Ocultar todos
+            document.getElementById('razaPerroContainer').classList.remove('show');
+            document.getElementById('razaGatoContainer').classList.remove('show');
+            
+            // Mostrar el seleccionado
+            if (tipo === 'perro') {
+                document.getElementById('razaPerroContainer').classList.add('show');
+            } else if (tipo === 'gato') {
+                document.getElementById('razaGatoContainer').classList.add('show');
+            }
+        }
+
+        // Inicializar según valor actual al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Lógica de razas
+            const especie = document.querySelector('input[name="especie"]:checked');
+            if (especie) {
+                const tipo = especie.value.toLowerCase();
+                if (tipo === 'perro') toggleRaza('perro');
+                else if (tipo === 'gato') toggleRaza('gato');
+            }
+
+            // 2. Restringir fecha de nacimiento a hoy como máximo
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('fechaNacimiento');
+            if(dateInput) dateInput.setAttribute('max', today);
+        });
+
+        function toggleCustomBreed() {
+            const container = document.getElementById('customBreedContainer');
+            if (container.style.display === 'none' || !container.classList.contains('show')) {
+                container.style.display = 'block';
+                container.classList.add('show');
+            } else {
+                container.style.display = 'none';
+                container.classList.remove('show');
+                document.getElementById('razaPersonalizada').value = '';
+            }
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var preview = document.getElementById('fotoPreview');
+                    var placeholder = document.getElementById('fotoPlaceholder');
+                    
+                    if (preview) {
+                        preview.src = e.target.result;
+                    } else if (placeholder) {
+                        var img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.id = 'fotoPreview';
+                        img.className = 'rounded-circle';
+                        img.style.cssText = 'width: 120px; height: 120px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);';
+                        
+                        placeholder.parentNode.insertBefore(img, placeholder);
+                        placeholder.style.display = 'none';
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+</html>

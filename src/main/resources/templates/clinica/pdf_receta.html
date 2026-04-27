@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Receta Médica Veterinaria</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Inter', 'Arial', sans-serif; 
+            color: #1e293b; 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        
+        /* Header Premium con degradado médico */
+        .header { 
+            text-align: center; 
+            padding-bottom: 25px; 
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #10b981, #0ea5e9);
+            border-radius: 2px;
+        }
+        
+        .clinic-name { 
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 12px; 
+            color: #64748b;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .header p span {
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        /* Título de Receta destacado */
+        h2 {
+            text-align: center; 
+            font-size: 22px; 
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: '✚';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #10b981;
+            font-size: 16px;
+        }
+        
+        /* Secciones de información */
+        .info-section { 
+            margin-bottom: 28px; 
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .section-title { 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #64748b; 
+            margin-bottom: 12px; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #0ea5e9, #10b981);
+            border-radius: 2px;
+        }
+        
+        /* Grid de información */
+        .grid { 
+            display: table; 
+            width: 100%; 
+        }
+        
+        .grid-row { 
+            display: table-row; 
+        }
+        
+        .grid-cell { 
+            display: table-cell; 
+            padding: 8px 0; 
+            font-size: 13px;
+            width: 50%;
+        }
+        
+        .label { 
+            font-weight: 700; 
+            color: #0f172a;
+            margin-right: 8px;
+        }
+        
+        /* Caja de contenido médico */
+        .content-box { 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 18px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            line-height: 1.8;
+            color: #334155;
+            border-left: 4px solid #cbd5e1;
+            font-weight: 500;
+        }
+        
+        /* Receta destacada - Sección crítica */
+        .info-section:has(.content-box[style*="e74c3c"]) .section-title::before {
+            background: linear-gradient(180deg, #ef4444, #dc2626);
+        }
+        
+        .content-box[style*="e74c3c"] {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+            border-left: 4px solid #ef4444 !important;
+            color: #7f1d1d;
+            font-weight: 600;
+        }
+        
+        /* Indicaciones especiales */
+        .info-section:last-of-type .content-box {
+            background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+            border-left-color: #f59e0b;
+        }
+        
+        /* Firma profesional */
+        .signature { 
+            margin-top: 60px; 
+            text-align: right; 
+            float: right;
+            clear: both;
+        }
+        
+        .signature-line {
+            border-top: 2px solid #1e293b;
+            width: 250px;
+            margin-bottom: 8px;
+            padding-top: 8px;
+        }
+        
+        .signature-text {
+            font-size: 11px;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Footer profesional */
+        .footer { 
+            margin-top: 100px; 
+            text-align: center; 
+            font-size: 9px; 
+            color: #94a3b8; 
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            clear: both;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Logo watermark opcional */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 120px;
+            color: rgba(14, 165, 233, 0.03);
+            font-weight: 800;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Responsive para impresión */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            
+            .info-section {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+            }
+            
+            .watermark {
+                display: none;
+            }
+        }
+        
+        /* Utilidades tipográficas */
+        .text-primary { color: #0ea5e9; }
+        .text-success { color: #10b981; }
+        .text-danger { color: #ef4444; }
+        .fw-bold { font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="watermark">RX</div>
+
+    <div class="header">
+        <h1 class="clinic-name" th:text="${clinica.nombre}">NOMBRE CLÍNICA</h1>
+        <p>
+            <span th:text="${clinica.direccion}">Dirección</span> &bull; 
+            Tel: <span th:text="${clinica.telefono}">Teléfono</span>
+        </p>
+    </div>
+
+    <h2>Receta Médica Veterinaria</h2>
+
+    <div class="info-section">
+        <div class="section-title">Constantes Clínicas</div>
+        <div class="grid">
+            <div class="grid-row">
+                <div class="grid-cell">
+                    <span class="label">Peso:</span> 
+                    <span th:text="${visita.peso != null ? visita.peso + ' kg' : '--'}"></span>
+                </div>
+                <div class="grid-cell">
+                    <span class="label">Temperatura:</span> 
+                    <span th:text="${visita.temperatura != null ? visita.temperatura + ' °C' : '--'}"></span>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell">
+                    <span class="label">Fc. Cardíaca:</span> 
+                    <span th:text="${visita.frecuenciaCardiaca != null ? visita.frecuenciaCardiaca + ' bpm' : '--'}"></span>
+                </div>
+                <div class="grid-cell">
+                    <span class="label">Fc. Respiratoria:</span> 
+                    <span th:text="${visita.frecuenciaRespiratoria != null ? visita.frecuenciaRespiratoria + ' rpm' : '--'}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="grid">
+            <div class="grid-row">
+                <div class="grid-cell">
+                    <span class="label">Fecha Atención:</span> 
+                    <span th:text="${#temporals.format(visita.fechaVisita, 'dd/MM/yyyy HH:mm')}"></span>
+                </div>
+                <div class="grid-cell">
+                    <span class="label">Dueño:</span> 
+                    <span th:text="${dueno.nombre + ' ' + (dueno.apellido != null ? dueno.apellido : '')}"></span>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-cell">
+                    <span class="label">Paciente:</span> 
+                    <span th:text="${mascota.nombre}"></span>
+                </div>
+                <div class="grid-cell">
+                    <span class="label">Especie/Raza:</span> 
+                    <span th:text="${mascota.especie + ' - ' + mascota.raza}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="section-title">Diagnóstico Clínico</div>
+        <div class="content-box" th:text="${visita.diagnostico}"></div>
+    </div>
+
+    <div class="info-section">
+        <div class="section-title">Tratamiento y Procedimientos</div>
+        <div class="content-box" th:text="${visita.tratamiento}"></div>
+    </div>
+
+    <div class="info-section">
+        <div class="section-title">Medicamentos Recetados</div>
+        <div class="content-box" style="border-left: 3px solid #e74c3c;">
+            <p th:text="${visita.medicamentosRecetados != null ? visita.medicamentosRecetados : 'Sin prescripción de fármacos.'}"></p>
+        </div>
+    </div>
+
+    <div class="info-section" th:if="${visita.notasAdicionales != null}">
+        <div class="section-title">Indicaciones Especiales</div>
+        <div class="content-box" th:text="${visita.notasAdicionales}"></div>
+    </div>
+
+    <div class="info-section" th:if="${visita.fechaProximaCita != null}" style="border: 2px solid #0ea5e9;">
+        <div class="section-title text-primary">Próxima Revisión Programada</div>
+        <div class="content-box" style="background: #f0f9ff; color: #0369a1; font-weight: 700; text-align: center; border-left: none;">
+            📅 <span th:text="${#temporals.format(visita.fechaProximaCita, 'EEEE d ''de'' MMMM ''de'' yyyy ''a las'' HH:mm', new java.util.Locale('es', 'ES'))}"></span>
+        </div>
+    </div>
+
+    <div class="signature">
+        <div class="signature-line"></div>
+        <div class="signature-text">Sello y Firma del Médico Veterinario</div>
+    </div>
+
+    <div class="footer">
+        Documento generado por ClínicaApp &mdash; Software de Gestión Veterinaria Profesional
+    </div>
+
+</body>
+</html>

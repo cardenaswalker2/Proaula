@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Historial de ' + ${mascota.nombre}">Historial Clínico</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-light: #e0f2fe;
+            --secondary: #64748b;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #f0f9ff 0%, var(--bg) 100%);
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 3rem 0 5rem;
+            margin-bottom: -3rem;
+            position: relative;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--bg), transparent);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        /* Tarjeta de mascota */
+        .pet-profile-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pet-profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .pet-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            border: 4px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .pet-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .pet-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .pet-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .pet-meta-item i {
+            color: var(--primary-light);
+        }
+
+        /* Botones de acción */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, var(--success) 0%, #10b981 100%);
+            color: white;
+        }
+
+        /* Timeline mejorado */
+        .timeline-section {
+            margin-top: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .visit-count {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* Timeline */
+        .timeline {
+            list-style: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary) 0%, var(--border) 100%);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 80px;
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 56px;
+            height: 56px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+            z-index: 1;
+        }
+
+        .timeline-icon.completed {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .timeline-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .timeline-content:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .visit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .clinic-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visit-date {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visit-body {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .visit-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .visit-field-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .visit-field-value {
+            font-size: 0.95rem;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .diagnosis-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: 0 12px 12px 0;
+            margin: 0.5rem 0;
+        }
+
+        .treatment-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .medications-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .medication-tag {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .medication-tag i {
+            color: var(--success);
+            font-size: 0.75rem;
+        }
+
+        /* Estado vacío */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 2px dashed var(--border);
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 3.5rem;
+            color: var(--secondary);
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal mejorado */
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .form-control {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Alertas */
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert-success-custom {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .alert-danger-custom {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+            
+            .timeline-item {
+                padding-left: 60px;
+            }
+            
+            .timeline-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.25rem;
+            }
+            
+            .timeline::before {
+                left: 22px;
+            }
+            
+            .pet-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+    
+
+    <!-- Header de página -->
+    <div class="page-header">
+        <div class="container header-content">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="page-title"><i class="bi bi-clipboard2-pulse me-3"></i>Historial Clínico</h1>
+                    <p class="page-subtitle">Registro completo de atenciones médicas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container pb-5">
+        <!-- Alertas -->
+        <div th:if="${param.emailEnviado}" class="alert alert-custom alert-success-custom mb-4">
+            <i class="bi bi-check-circle-fill fs-4"></i>
+            <div>
+                <strong>¡Correo enviado!</strong>
+                <p class="mb-0">El historial ha sido enviado a <span th:text="${param.email}">tu correo</span></p>
+            </div>
+        </div>
+        
+        <div th:if="${param.errorEmail}" class="alert alert-custom alert-danger-custom mb-4">
+            <i class="bi bi-x-circle-fill fs-4"></i>
+            <div>
+                <strong>Error al enviar</strong>
+                <p class="mb-0">Hubo un problema al enviar el correo. Por favor, inténtalo de nuevo.</p>
+            </div>
+        </div>
+
+        <!-- Perfil de mascota -->
+        <div class="pet-profile-card mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center gap-4">
+                        <div class="pet-avatar">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <div>
+                            <h2 class="pet-name" th:text="${mascota.nombre}">Firulais</h2>
+                            <p class="text-muted mb-0" th:text="${mascota.especie.toString().substring(0,1) + mascota.especie.toString().substring(1).toLowerCase()} + ' • ' + ${mascota.getRaza()}">Perro • Golden Retriever</p>
+                            
+                            <div class="pet-meta">
+                                <div class="pet-meta-item">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span th:text="'Nacimiento: ' + ${#temporals.format(mascota.fechaNacimiento, 'dd ''de'' MMMM, yyyy')}">01 de enero, 2020</span>
+                                </div>
+                                <div class="pet-meta-item">
+                                    <i class="bi bi-activity"></i>
+                                    <span th:text="${visitasDTO != null} ? ${visitasDTO.size()} + ' visitas registradas' : 'Sin visitas'">5 visitas registradas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mt-4 mt-md-0">
+                    <div class="action-bar justify-content-md-end">
+                        <button type="button" class="btn-action btn-primary-custom" data-bs-toggle="modal" data-bs-target="#emailModal">
+                            <i class="bi bi-envelope-fill"></i>
+                            <span>Enviar</span>
+                        </button>
+                        <a th:href="@{/usuario/historial/{id}/pdf(id=${mascota.id})}" class="btn-action btn-success-custom">
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                            <span>PDF</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- 🩺 RADAR DE SALUD PREVENTIVA (NOVA AI) — NUEVO -->
+        <!-- ========================================================== -->
+        <div class="radar-container mb-5" th:if="${prediccion != null}">
+            <div class="section-header">
+                <div class="section-icon bg-nova">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <h3 class="section-title">Radar de Salud Preventiva Nova AI</h3>
+                    <p class="text-muted mb-0" th:text="${prediccion.analisisGeneral}">Análisis de riesgos basado en IA</p>
+                </div>
+            </div>
+
+            <style>
+                .bg-nova {
+                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+                }
+                .radar-card {
+                    background: white;
+                    border-radius: 20px;
+                    padding: 24px;
+                    border: 1px solid #e2e8f0;
+                    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+                    transition: transform 0.3s;
+                }
+                .radar-card:hover { transform: translateY(-5px); }
+                .risk-progress {
+                    height: 8px;
+                    border-radius: 4px;
+                    background-color: #f1f5f9;
+                }
+                .risk-tag {
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                }
+                .nova-bubble {
+                    background: #f8fafc;
+                    border-left: 4px solid #4f46e5;
+                    padding: 16px;
+                    border-radius: 0 12px 12px 0;
+                    font-style: italic;
+                    color: #475569;
+                    position: relative;
+                }
+                .nova-bubble::before {
+                    content: '🤖';
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    opacity: 0.2;
+                    font-size: 1.5rem;
+                }
+            </style>
+
+            <div class="row g-4 mt-1">
+                <div th:each="riesgo : ${prediccion.riesgos}" class="col-md-6 col-lg-4">
+                    <div class="radar-card h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div th:class="'p-2 rounded-3 bg-opacity-10 bg-' + ${riesgo.colorClass}">
+                                    <i th:class="'bi ' + ${riesgo.iconClass} + ' text-' + ${riesgo.colorClass}"></i>
+                                </div>
+                                <span class="fw-bold text-dark" th:text="${riesgo.categoria}">Articular</span>
+                            </div>
+                            <span th:class="'risk-tag bg-opacity-10 bg-' + ${riesgo.colorClass} + ' text-' + ${riesgo.colorClass}" 
+                                  th:text="${riesgo.nivelRiesgo}">Alto</span>
+                        </div>
+                        
+                        <p class="small text-muted mb-3" th:text="${riesgo.descripcion}">Descripción del riesgo detectado por la IA.</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-semibold">Nivel de Alerta</span>
+                                <span class="small fw-bold" th:text="${riesgo.porcentaje} + '%'">85%</span>
+                            </div>
+                            <div class="progress risk-progress">
+                                <div th:class="'progress-bar bg-' + ${riesgo.colorClass}" 
+                                     role="progressbar" th:style="'width: ' + ${riesgo.porcentaje} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-3 border-top">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-lightbulb text-warning"></i>
+                                <span class="small fw-bold">Acción Recomendada:</span>
+                            </div>
+                            <p class="small mb-0 text-dark" th:text="${riesgo.accionRecomendada}">Qué hacer para prevenir.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="nova-bubble">
+                    <strong>Nova AI dice:</strong> 
+                    <span th:text="${prediccion.recomendacionNova}">Recomendación general...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline de visitas -->
+        <div class="timeline-section" th:if="${visitasDTO != null and !visitasDTO.isEmpty()}">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h3 class="section-title">Línea de Tiempo de Visitas</h3>
+                <span class="visit-count" th:text="${visitasDTO.size()} + ' registros'">5 registros</span>
+            </div>
+
+            <ul class="timeline">
+                <li th:each="dto, iterStat : ${visitasDTO}" class="timeline-item">
+                    <div class="timeline-icon" th:class="${iterStat.first} ? 'timeline-icon completed' : 'timeline-icon'">
+                        <i class="bi bi-clipboard2-pulse"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="visit-header">
+                            <div class="clinic-name">
+                                <i class="bi bi-hospital"></i>
+                                <span th:text="${dto.nombreClinica}">Clínica Veterinaria</span>
+                            </div>
+                            <div class="visit-date">
+                                <i class="bi bi-calendar-check"></i>
+                                <span th:text="${#temporals.format(dto.visita.fechaVisita, 'dd MMM, yyyy')}">15 Ene, 2024</span>
+                                <a th:if="${dto.visita.citaId != null}" 
+                                   th:href="@{/usuario/citas/{id}/receta(id=${dto.visita.citaId})}" 
+                                   class="btn btn-sm btn-outline-danger ms-2" target="_blank">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="visit-body">
+                            <!-- Diagnóstico -->
+                            <div class="visit-field">
+                                <span class="visit-field-label"><i class="bi bi-stethoscope me-1"></i>Diagnóstico</span>
+                                <div class="diagnosis-box">
+                                    <span class="visit-field-value" th:text="${dto.visita.diagnostico}">Chequeo general</span>
+                                </div>
+                            </div>
+
+                            <!-- Tratamiento -->
+                            <div class="visit-field">
+                                <span class="visit-field-label"><i class="bi bi-bandaid me-1"></i>Tratamiento</span>
+                                <div class="treatment-box">
+                                    <span class="visit-field-value" th:text="${dto.visita.tratamiento}">Vacunación anual</span>
+                                </div>
+                            </div>
+
+                            <!-- Medicamentos -->
+                            <div class="visit-field" th:if="${dto.visita.medicamentosRecetados != null and !dto.visita.medicamentosRecetados.isEmpty()}">
+                                <span class="visit-field-label"><i class="bi bi-capsule me-1"></i>Medicamentos Recetados</span>
+                                <div class="medications-list">
+                                    <span th:each="med : ${dto.visita.medicamentosRecetados}" class="medication-tag">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span th:text="${med}">Medicamento</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Notas -->
+                            <div class="visit-field" th:if="${!#strings.isEmpty(dto.visita.notasAdicionales)}">
+                                <span class="visit-field-label"><i class="bi bi-journal-text me-1"></i>Notas Adicionales</span>
+                                <span class="visit-field-value text-muted" th:text="${dto.visita.notasAdicionales}">Notas del veterinario</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Estado vacío -->
+        <div th:if="${visitasDTO == null or visitasDTO.isEmpty()}" class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-file-earmark-medical"></i>
+            </div>
+            <h3 class="empty-title">Historial Clínico Vacío</h3>
+            <p class="empty-text">Esta mascota aún no tiene visitas registradas. ¡Es hora de agendar su primera cita!</p>
+            <a th:href="@{/usuario/citas/nueva}" class="btn btn-primary btn-lg px-4">
+                <i class="bi bi-calendar-plus me-2"></i>Agendar Primera Cita
+            </a>
+        </div>
+    </main>
+
+    
+
+    <!-- Modal Email -->
+    <div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-envelope-paper me-2"></i>Enviar Historial por Correo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/usuario/historial/{id}/enviar-email(id=${mascota.id})}" method="post">
+                    <div class="modal-body">
+                        <p class="text-muted mb-3">El historial completo de <strong th:text="${mascota.nombre}"></strong> se enviará como PDF adjunto.</p>
+                        <div class="mb-3">
+                            <label for="emailDestino" class="form-label fw-semibold">Correo electrónico destino</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-secondary"></i></span>
+                                <input type="email" class="form-control border-start-0 ps-0" id="emailDestino" name="emailDestino" 
+                                       sec:authentication="name" required placeholder="ejemplo@correo.com">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-send me-2"></i>Enviar Ahora
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+</html>

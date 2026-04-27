@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de la Cita - Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-light: #e0f2fe;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #334155;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.9);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+        }
+
+        /* Main card */
+        .detail-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-body-custom {
+            padding: 2rem;
+        }
+
+        /* Info grid */
+        .info-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* Status section */
+        .status-section {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            height: 100%;
+        }
+
+        .status-title {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .badge-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pendiente-pago { background: #f1f5f9; color: var(--secondary); }
+        .badge-pendiente { background: #fef3c7; color: var(--warning); }
+        .badge-confirmada { background: #d1fae5; color: var(--success); }
+        .badge-completada { background: #cffafe; color: var(--info); }
+        .badge-cancelada { background: #fee2e2; color: var(--danger); }
+        .badge-pagado { background: #d1fae5; color: var(--success); }
+        .badge-pendiente-pago-estado { background: #fef3c7; color: var(--warning); }
+
+        /* Actions section */
+        .actions-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .actions-title {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .actions-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-pay {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-pay:hover {
+            background: #047857;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-pdf {
+            background: var(--bg);
+            color: #334155;
+            border: 2px solid var(--border);
+        }
+
+        .btn-pdf:hover {
+            background: var(--border);
+            color: #0f172a;
+        }
+
+        /* Divider */
+        .divider {
+            width: 1px;
+            background: var(--border);
+            margin: 0 1.5rem;
+        }
+
+        @media (max-width: 767px) {
+            .divider {
+                width: 100%;
+                height: 1px;
+                margin: 1.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header-usuario}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+    
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="page-title"><i class="bi bi-calendar-check"></i> Detalle de la Cita</h1>
+                    <p class="page-subtitle">Información completa de tu cita programada</p>
+                </div>
+                <a th:href="@{/usuario/mis-citas}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Volver a Mis Citas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="container pb-5">
+        <!-- Card principal -->
+        <div class="detail-card">
+            <div class="card-header-custom">
+                <div class="service-title">
+                    <div class="service-icon">
+                        <i class="bi bi-clipboard-pulse"></i>
+                    </div>
+                    <span th:text="${cita.nombreServicio}">Consulta General</span>
+                </div>
+            </div>
+            
+            <div class="card-body-custom">
+                <div class="row">
+                    <!-- Info principal -->
+                    <div class="col-lg-8">
+                        <div class="info-section">
+                            <div class="section-label">Información de la Cita</div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-hospital"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <div class="info-label">Clínica</div>
+                                        <div class="info-value" th:text="${cita.nombreClinica}">Clínica Veterinaria</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-heart-pulse-fill"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <div class="info-label">Mascota</div>
+                                        <div class="info-value" th:text="${cita.nombreMascota}">Firulais</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <div class="info-label">Fecha y Hora</div>
+                                        <div class="info-value" th:text="${cita.fechaHora}">10 de marzo, 2026 - 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estados -->
+                    <div class="col-lg-4">
+                        <div class="status-section">
+                            <div class="status-title">Estado General</div>
+                            
+                            <div class="status-item">
+                                <span class="status-label">Estado Cita</span>
+                                <span class="badge-custom" th:classappend="${#strings.contains(cita.estado, 'Pago') ? 'badge-pendiente-pago' : 
+                                                                            #strings.equals(cita.estado, 'Pendiente') ? 'badge-pendiente' : 
+                                                                            #strings.equals(cita.estado, 'Confirmada') ? 'badge-confirmada' : 
+                                                                            #strings.equals(cita.estado, 'Completada') ? 'badge-completada' : 'badge-cancelada'}" 
+                                      th:text="${cita.estado}">Pendiente</span>
+                            </div>
+                            
+                            <div class="status-item">
+                                <span class="status-label">Estado Pago</span>
+                                <span class="badge-custom" th:classappend="${#strings.equals(cita.estadoPago, 'PAGADO') ? 'badge-pagado' : 'badge-pendiente-pago-estado'}" 
+                                      th:text="${cita.estadoPago}">PENDIENTE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions-card">
+            <div class="actions-title">Acciones Disponibles</div>
+            <div class="actions-grid">
+                <a th:if="${#strings.equals(cita.estado, 'Pendiente de Pago')}" 
+                   th:href="@{/usuario/checkout/{id}(id=${cita.id})}" 
+                   class="btn-action btn-pay">
+                    <i class="bi bi-credit-card-fill"></i> Pagar Ahora
+                </a>
+                
+                <a th:href="@{/usuario/historial/{id}/pdf(id=${cita.mascotaId})}" 
+                   class="btn-action btn-pdf">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Historial PDF
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer-usuario}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div th:replace="~{fragments/asistente_voz :: mic-button}"></div>
+</body>
+</html>

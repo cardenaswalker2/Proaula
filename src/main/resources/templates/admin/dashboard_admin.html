@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Consola de Administración | ClínicaApp</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div th:replace="~{fragments/asistente_admin_hex :: hex-admin}"></div>
+
+    
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e1b4b;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --shadow-soft: 0 8px 32px rgba(99, 102, 241, 0.1);
+            --shadow-hover: 0 20px 60px rgba(99, 102, 241, 0.15);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 25%, #c7d2fe 50%, #e0e7ff 75%, #fae8ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 2rem;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Navbar - usa fragmento compartido header-admin */
+        /* Se eliminaron estilos inline del navbar para usar el fragmento unificado */
+
+
+
+        /* Contenedor Principal */
+        .admin-container {
+            padding: 1.5rem 1rem;
+        }
+
+        /* KPI Cards con Glassmorphism y Gradientes */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        .kpi-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
+        }
+
+        .kpi-card:nth-child(1) {
+            animation-delay: 0.1s;
+            --card-color-1: #6366f1;
+            --card-color-2: #8b5cf6;
+        }
+
+        .kpi-card:nth-child(2) {
+            animation-delay: 0.2s;
+            --card-color-1: #10b981;
+            --card-color-2: #34d399;
+        }
+
+        .kpi-card:nth-child(3) {
+            animation-delay: 0.3s;
+            --card-color-1: #0ea5e9;
+            --card-color-2: #22d3ee;
+        }
+
+        .kpi-card:nth-child(4) {
+            animation-delay: 0.4s;
+            --card-color-1: #f59e0b;
+            --card-color-2: #fbbf24;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .trend-chip {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+        }
+
+        .trend-up { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .trend-down { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+        .trend-neutral { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+
+        .kpi-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            color: #6366f1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.4) 100%);
+        }
+
+        .kpi-card:nth-child(2) .kpi-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
+            color: #10b981;
+        }
+
+        .kpi-card:nth-child(3) .kpi-icon {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+            color: #0ea5e9;
+        }
+
+        .kpi-card:nth-child(4) .kpi-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+            color: #f59e0b;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .kpi-value {
+                font-size: 2.25rem;
+            }
+        }
+
+        /* Activity Monitor (New) */
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .activity-item {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .activity-item:hover {
+            background: white;
+            transform: scale(1.01);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .activity-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .activity-content {
+            flex-grow: 1;
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .chart-container {
+            height: 350px;
+            position: relative;
+        }
+
+        /* Sección de Gestión */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: linear-gradient(180deg, #6366f1, #ec4899);
+            border-radius: 2px;
+        }
+
+        .section-title i {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Cards de Usuarios (Vista Móvil) */
+        .users-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #6366f1, #ec4899);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateX(4px);
+        }
+
+        .user-card:hover::before {
+            opacity: 1;
+        }
+
+        .user-header {
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .user-info h6 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .user-info small {
+            color: #64748b;
+            font-size: 0.875rem;
+            word-break: break-all;
+            font-weight: 500;
+        }
+
+        .badge-role {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #4338ca;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .user-body {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-badge.active {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.suspended {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-user-action {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-user-action::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-user-action:hover::before {
+            opacity: 1;
+        }
+
+        .btn-user-action.suspend {
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .btn-user-action.suspend:hover {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-user-action.activate {
+            border-color: #bbf7d0;
+            color: #16a34a;
+        }
+
+        .btn-user-action.activate:hover {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-user-action.key {
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        .btn-user-action.key:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Panel de Configuración */
+        .config-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .config-panel::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .config-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+            border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            position: relative;
+        }
+
+        .config-header h6 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .config-header i {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .config-list {
+            padding: 0.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: #334155;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+        }
+
+        .config-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(8px);
+            color: #1e293b;
+            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .config-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .config-item:hover .config-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .config-item:nth-child(1) .config-icon {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #4338ca;
+        }
+
+        .config-item:nth-child(2) .config-icon {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #059669;
+        }
+
+        .config-item:nth-child(3) .config-icon {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #b45309;
+        }
+
+        .config-item:nth-child(4) .config-icon {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0369a1;
+        }
+
+        .config-item:nth-child(5) .config-icon {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #be185d;
+        }
+
+        .config-arrow {
+            margin-left: auto;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .config-item:hover .config-arrow {
+            transform: translateX(4px);
+            color: #6366f1;
+        }
+
+        /* Alerta de Seguridad Mejorada */
+        .security-alert {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 2px solid #fcd34d;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .security-alert h6 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .security-alert h6 i {
+            font-size: 1.25rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .security-alert p {
+            color: #b45309;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Alerta de Pendientes Mejorada */
+        .alert-warning-custom {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: none;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-warning-custom::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, #f97316, #fbbf24);
+        }
+
+        /* Footer */
+        .admin-footer {
+            margin-top: 3rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Vista Desktop (Tabla) */
+        @media (min-width: 992px) {
+            .users-container {
+                display: none;
+            }
+
+            .table-container-desktop {
+                display: block;
+                background: var(--glass-bg);
+                backdrop-filter: blur(10px);
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-soft);
+                border: 1px solid var(--glass-border);
+                overflow: hidden;
+            }
+
+            .table-header {
+                padding: 1.5rem;
+                background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+                border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .table-header h5 {
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: #1e293b;
+                margin: 0;
+            }
+
+            .search-box {
+                width: 300px;
+            }
+
+            .search-box .form-control {
+                border: 2px solid #e2e8f0;
+                border-radius: 50px 0 0 50px;
+                border-right: none;
+                padding-left: 1.5rem;
+            }
+
+            .search-box .btn {
+                border: 2px solid #e2e8f0;
+                border-radius: 0 50px 50px 0;
+                border-left: none;
+                background: white;
+                color: #64748b;
+            }
+
+            .table {
+                margin: 0;
+            }
+
+            .table thead th {
+                background: rgba(248, 250, 252, 0.8);
+                color: #475569;
+                font-weight: 700;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 1.25rem;
+                border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+            }
+
+            .table tbody tr:hover {
+                background: rgba(99, 102, 241, 0.03);
+                transform: scale(1.01);
+            }
+
+            .table td {
+                padding: 1.25rem;
+                vertical-align: middle;
+                color: #334155;
+                font-weight: 500;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .table-container-desktop {
+                display: none;
+            }
+
+            .users-container {
+                display: flex;
+            }
+        }
+
+        /* Scrollbar Personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(226, 232, 240, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #c7d2fe, #ddd6fe);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        /* Animaciones adicionales */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .config-panel,
+        .security-alert {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .config-panel {
+            animation-delay: 0.5s;
+        }
+
+        .security-alert {
+            animation-delay: 0.6s;
+        }
+
+        /* Efecto de brillo en hover para cards */
+        .kpi-card::after,
+        .user-card::after,
+        .config-panel::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .kpi-card:hover::after,
+        .user-card:hover::after,
+        .config-panel:hover::after {
+            opacity: 0.1;
+            transform: scale(1);
+        }
+
+        /* Responsive mejoras */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 2.5rem 0 3.5rem;
+            }
+            
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .autocomplete-wrapper {
+                flex-direction: column;
+            }
+            
+            .btn-ver-todas {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .main-card, .summary-card {
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar Admin Unificado -->
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <div class="container admin-container">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="trend-chip" th:classappend="${tendenciaIngresos >= 0 ? 'trend-up' : 'trend-down'}">
+                    <i class="bi" th:classappend="${tendenciaIngresos >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
+                    <span th:text="${(tendenciaIngresos >= 0 ? '+' : '') + tendenciaIngresos + '%'}">+0%</span>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="kpi-label">Ingresos Globales</div>
+                <div class="kpi-value" th:text="${'$' + #numbers.formatDecimal(totalIngresos, 1, 'COMMA', 2, 'POINT')}">
+                    $0.00</div>
+                <div class="kpi-footer text-primary-emphasis">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Vs mes anterior</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="trend-chip" th:classappend="${tendenciaCitas >= 0 ? 'trend-up' : 'trend-down'}">
+                    <i class="bi" th:classappend="${tendenciaCitas >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
+                    <span th:text="${(tendenciaCitas >= 0 ? '+' : '') + tendenciaCitas + '%'}">+0%</span>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="kpi-label">Citas del Mes</div>
+                <div class="kpi-value" th:text="${totalCitas}">0</div>
+                <div class="kpi-footer text-success">
+                    <i class="bi bi-activity"></i>
+                    <span>Rendimiento citas</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-病院"></i>
+                </div>
+                <div class="kpi-label">Sedes Activas</div>
+                <div class="kpi-value" th:text="${totalClinicas}">0</div>
+                <div class="kpi-footer text-info">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    <span>Suscripciones activas</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="kpi-label">Usuarios Globales</div>
+                <div class="kpi-value" th:text="${totalUsuarios}">0</div>
+                <div class="kpi-footer text-warning">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Cuentas verificadas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Analytics Chart -->
+        <div class="chart-card" data-aos="fade-up">
+            <h5 class="section-title mb-4">
+                <i class="bi bi-bar-chart-fill"></i>
+                Crecimiento de la Plataforma
+            </h5>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Alerta de Pendientes (movida fuera del grid para mejor visualización) -->
+        <div th:if="${totalPendientes > 0}" class="alert alert-warning-custom border-0 shadow-sm d-flex align-items-center mb-4 p-4">
+            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #fbbf24); flex-shrink: 0;">
+                <i class="bi bi-exclamation-diamond-fill text-white fs-4"></i>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="fw-bold text-dark mb-1">¡Atención Requerida!</h6>
+                <span class="text-muted">Tienes <span class="badge bg-warning text-dark fw-bold px-2 py-1" th:text="${totalPendientes}">0</span> solicitudes de clínicas esperando tu aprobación.</span>
+            </div>
+            <a th:href="@{/admin/solicitudes}" class="btn btn-warning fw-bold rounded-pill px-4 py-2 shadow-sm">
+                Revisar ahora <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Gestión de Usuarios -->
+            <div class="col-lg-8">
+                <h5 class="section-title">
+                    <i class="bi bi-person-gear"></i>
+                    Control de Acceso
+                </h5>
+
+                <!-- Monitor de Operaciones Globales (Actividad en Tiempo Real) -->
+                <div class="users-container">
+                    <div th:each="cita : ${citasRecientes}" class="activity-item" data-aos="fade-right">
+                        <div class="activity-dot" 
+                             th:style="'color: ' + (cita.estado == 'COMPLETADA' ? '#10b981' : (cita.estado == 'CANCELADA' ? '#ef4444' : '#6366f1'))">
+                        </div>
+                        <i class="bi fs-4" 
+                           th:classappend="${cita.estado == 'COMPLETADA' ? 'bi-check-circle-fill text-success' : (cita.estado == 'CANCELADA' ? 'bi-x-circle-fill text-danger' : 'bi-clock-history text-primary')}"></i>
+                        <div class="activity-content">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold text-dark" th:text="${cita.nombreUsuario ?: 'Cliente Desconocido'}">Cliente</span>
+                                <span class="activity-time" th:text="${cita.fechaHora != null ? (cita.fechaHora.contains(',') ? cita.fechaHora.split(',')[1].trim() : cita.fechaHora) : '--:--'}">12:00</span>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85rem;">
+                                <span th:text="${cita.nombreClinica ?: 'Sede no asignada'}">Sede</span> • 
+                                <span class="badge bg-light text-dark border-0 shadow-none px-0" th:text="${cita.estado ?: 'S/E'}">Estado</span>
+                            </div>
+                        </div>
+                        <div class="ms-auto fw-bold text-primary" th:text="${cita.costo != null ? '$' + #numbers.formatDecimal(cita.costo, 1, 'COMMA', 2, 'POINT') : '$0.00'}">$0.00</div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(citasRecientes)}" class="text-center py-4 text-muted">
+                        <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
+                        No hay actividad reciente registrada.
+                    </div>
+                </div>
+
+                <!-- Vista Desktop: Tabla -->
+                <div class="table-container-desktop d-none d-lg-block">
+                    <div class="table-header">
+                        <h5>Cuentas del Sistema</h5>
+                        <div class="input-group input-group-sm search-box">
+                            <input type="text" class="form-control" placeholder="Buscar por email o nombre...">
+                            <button class="btn btn-outline-secondary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre / Email</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th class="text-end">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${usuarios}">
+                                    <td>
+                                        <div class="fw-bold" th:text="${user.nombre}">Nombre</div>
+                                        <small class="text-muted" th:text="${user.email}">email@ejemplo.com</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border"
+                                            th:text="${user.role}">CLIENTE</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.activo}"
+                                            class="badge bg-success-subtle text-success">Activo</span>
+                                        <span th:unless="${user.activo}"
+                                            class="badge bg-danger-subtle text-danger">Suspendido</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form th:action="@{'/admin/usuarios/toggle-status/' + ${user.id}}" method="post"
+                                            style="display:inline;">
+                                            <button th:if="${user.activo}" class="btn btn-sm btn-outline-danger"
+                                                title="Suspender">
+                                                <i class="bi bi-person-x"></i>
+                                            </button>
+                                            <button th:unless="${user.activo}" class="btn btn-sm btn-outline-success"
+                                                title="Activar">
+                                                <i class="bi bi-person-check"></i>
+                                            </button>
+                                        </form>
+                                        <button class="btn btn-sm btn-light border ms-1">
+                                            <i class="bi bi-key"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Configuración -->
+            <div class="col-lg-4">
+                <div class="config-panel">
+                    <div class="config-header">
+                        <h6>
+                            <i class="bi bi-gear-fill"></i>
+                            Ajustes Maestros
+                        </h6>
+                    </div>
+                    <div class="config-list">
+                        <a th:href="@{/admin/servicios}" class="config-item">
+                            <div class="config-icon">
+                                <i class="bi bi-list-check"></i>
+                            </div>
+                            <span>Catálogo Global de Servicios</span>
+                            <i class="bi bi-chevron-right config-arrow"></i>
+                        </a>
+                        <a th:href="@{/admin/reportes}" class="config-item">
+                            <div class="config-icon">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                            </div>
+                            <span>Reporte Contable Anual</span>
+                            <i class="bi bi-chevron-right config-arrow"></i>
+                        </a>
+                        <a th:href="@{/admin/configuracion/stripe}" class="config-item">
+                            <div class="config-icon">
+                                <i class="bi bi-percent"></i>
+                            </div>
+                            <span>Configurar Comisión Stripe</span>
+                            <i class="bi bi-chevron-right config-arrow"></i>
+                        </a>
+                        <a th:href="@{/admin/configuracion/email}" class="config-item">
+                            <div class="config-icon">
+                                <i class="bi bi-envelope-paper"></i>
+                            </div>
+                            <span>Plantillas de Email</span>
+                            <i class="bi bi-chevron-right config-arrow"></i>
+                        </a>
+                        <a th:href="@{/admin/solicitudes}" class="config-item">
+                            <div class="config-icon">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span>Aprobar Nuevas Clínicas</span>
+                                <small class="text-muted" style="font-size: 0.75rem; font-weight: 500;">Solicitudes pendientes de revisión</small>
+                            </div>
+                            <i class="bi bi-chevron-right config-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="security-alert">
+                    <h6>
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Zona de Seguridad
+                    </h6>
+                    <p>Como administrador global, tus cambios afectan a todas las sedes y usuarios del país.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <small>© 2024 ClínicaApp - Dashboard Maestro Evolucionado v2.0</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        // --- CONFIGURACIÓN DE CHART.JS ---
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        const labels = /*[[${labelsGrafico}]]*/ [];
+        const dataCitas = /*[[${dataCitas}]]*/ [];
+        const dataIngresos = /*[[${dataIngresos}]]*/ [];
+
+        const gradientCitas = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientCitas.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+        gradientCitas.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Número de Citas',
+                        data: dataCitas,
+                        borderColor: '#6366f1',
+                        backgroundColor: gradientCitas,
+                        borderWidth: 4,
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y',
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    },
+                    {
+                        label: 'Ingresos ($)',
+                        data: dataIngresos,
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: false,
+                        yAxisID: 'y1',
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { 
+                        position: 'top', 
+                        align: 'end',
+                        labels: { 
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
+                            usePointStyle: true,
+                            boxWidth: 8
+                        } 
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 27, 75, 0.9)',
+                        padding: 15,
+                        titleFont: { size: 14, weight: '800' },
+                        bodyFont: { size: 13 },
+                        cornerRadius: 12
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: 'rgba(0,0,0,0.03)' },
+                        ticks: { font: { weight: '600' } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { display: false },
+                        ticks: { 
+                            callback: value => '$' + value,
+                            font: { weight: '600' }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { weight: '700' } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Inicia sesión en Clínica App - La plataforma líder de veterinarias en Cartagena. Agenda citas, gestiona tu mascota y más.">
+    <title>Iniciar Sesión | Clínica App</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <div th:replace="~{fragments/asistente_login_guido :: guido-login}"></div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --primary-dark: #0284c7;
+            --google-red: #ea4335;
+            --github-black: #24292e;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Layout Principal */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Panel Izquierdo - Imagen */
+        .login-hero {
+            flex: 1.2;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.85), rgba(16, 185, 129, 0.9)),
+                url('https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .hero-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-feature i {
+            font-size: 1.25rem;
+        }
+
+        /* Panel Derecho - Formulario */
+        .login-form-panel {
+            flex: 0.8;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 440px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .brand-link:hover {
+            transform: scale(1.05);
+            color: var(--primary-dark);
+        }
+
+        .brand-icon-premium {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            transition: var(--transition);
+        }
+
+        .greeting {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .greeting-sub {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        /* Alertas Mejoradas */
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .alert-danger-custom {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-success-custom {
+            background: #f0fdf4;
+            color: #166534;
+            border-left: 4px solid #22c55e;
+        }
+
+        /* Botones Sociales */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-social:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-google {
+            background: var(--google-red);
+        }
+
+        .btn-google:hover {
+            background: #d33b28;
+        }
+
+        .btn-github {
+            background: var(--github-black);
+        }
+
+        .btn-github:hover {
+            background: #1a1f23;
+        }
+
+        .btn-social i {
+            font-size: 1.25rem;
+        }
+
+        /* Divider */
+        .divider-custom {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .divider-custom::before,
+        .divider-custom::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group-custom {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.25rem;
+            z-index: 10;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f9fafb;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-color);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 6px;
+            border: 2px solid #d1d5db;
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-check-label {
+            color: #4b5563;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .forgot-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .forgot-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Botón Principal */
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Footer del Formulario */
+        .form-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .register-text {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .register-link {
+            color: var(--primary-color);
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .register-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .login-hero {
+                display: none;
+
+            }
+
+
+
+            .login-form-panel {
+                flex: 1;
+                padding: 1.5rem;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .greeting {
+                font-size: 1.5rem;
+            }
+
+            .hero-features {
+                display: none;
+            }
+        }
+
+        /* Loading State */
+        .btn-login.loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .btn-login.loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-facial {
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            margin-top: 0.5rem;
+        }
+
+        .btn-facial:hover {
+            background: #3730a3;
+        }
+
+        /* Contenedor de la cámara */
+        #cameraOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        #videoContainer {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+        }
+
+        #video {
+            width: 400px;
+            height: 300px;
+            background: #000;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-wrapper">
+        <!-- Panel Izquierdo - Hero -->
+        <div class="login-hero">
+            <div class="hero-content">
+                <div class="hero-logo">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <h1 class="hero-title">El amor por ellos nos une</h1>
+                <p class="hero-subtitle">
+                    Bienvenido de vuelta a la plataforma líder en cuidado veterinario en Cartagena.
+                    Tu mascota te espera para su próxima aventura saludable.
+                </p>
+
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Seguro y Confiable</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span>Rápido y Fácil</span>
+                    </div>
+                    <div class="hero-feature">
+                        <i class="bi bi-heart"></i>
+                        <span>Hecho con Amor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Derecho - Formulario -->
+        <div class="login-form-panel">
+            <div class="form-container">
+                <!-- Header -->
+                <div class="form-header">
+                    <a th:href="@{/}" class="brand-link">
+                        <div class="brand-icon-premium">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="brand-text-premium" style="font-size: 1.75rem; font-weight: 800; color: var(--primary-color);">ClínicaApp</span>
+                    </a>
+
+                    <h2 id="greeting" class="greeting">Bienvenido</h2>
+                    <p class="greeting-sub">Inicia sesión para continuar</p>
+                </div>
+
+                <!-- Alertas -->
+                <div th:if="${param.error}" class="alert alert-custom alert-danger-custom" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>Usuario o contraseña inválidos</span>
+                </div>
+
+                <div th:if="${param.logout}" class="alert alert-custom alert-success-custom" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Has cerrado sesión exitosamente</span>
+                </div>
+
+                <div th:if="${param.registroExitoso}" class="alert alert-custom alert-success-custom" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>¡Registro exitoso! Ya puedes iniciar sesión</span>
+                </div>
+
+                <!-- Login Social -->
+                <div class="social-login">
+                    <a href="/oauth2/authorization/google" class="btn-social btn-google">
+                        <i class="bi bi-google"></i>
+                        Continuar con Google
+                    </a>
+
+                    <button type="button" id="btnFacial" class="btn-social btn-facial">
+                        <i class="bi bi-person-bounding-box"></i> Ingresar con Rostro
+                    </button>
+
+                    <a href="/publico/demo" class="btn-social mt-2"
+                        style="background: linear-gradient(135deg, #6366f1, #a855f7); border: none; color: white; text-decoration: none;">
+                        <i class="bi bi-rocket-takeoff"></i>
+                        <strong>Explorar Sin registrar"Usuario"</strong>
+                    </a>
+
+                </div>
+
+                <div class="divider-custom">o ingresa con tu email</div>
+
+                <!-- Formulario -->
+                <form th:action="@{/login}" method="post" id="loginForm">
+                    <div class="form-group">
+                        <div class="input-group-custom">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" id="username" name="username" class="form-control-custom"
+                                placeholder="Correo electrónico" required autofocus autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group-custom">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" id="password" name="password" class="form-control-custom"
+                                placeholder="Contraseña" required autocomplete="current-password">
+                            <button type="button" class="toggle-password" id="togglePassword"
+                                aria-label="Mostrar contraseña">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me">
+                            <label class="form-check-label" for="rememberMe">Recordarme</label>
+                        </div>
+                        <a th:href="@{/forgot-password}" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="submitBtn">
+                        <span>Ingresar</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="form-footer">
+                    <p class="register-text">
+                        ¿Aún no tienes cuenta?
+                        <a th:href="@{/registro}" class="register-link">Regístrate gratis</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="cameraOverlay">
+        <div class="text-center mb-3">
+            <h3 id="facialStatus">Cargando IA...</h3>
+            <p>Asegúrate de estar en un lugar iluminado</p>
+        </div>
+        <div id="videoContainer">
+            <video id="video" autoplay muted></video>
+        </div>
+        <button class="btn btn-light mt-4" onclick="cerrarCamara()">Cancelar</button>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Saludo dinámico según hora
+            const greeting = document.getElementById('greeting');
+            const hour = new Date().getHours();
+            let greetingText = 'Bienvenido';
+
+            if (hour >= 5 && hour < 12) {
+                greetingText = 'Buenos días';
+            } else if (hour >= 12 && hour < 18) {
+                greetingText = 'Buenas tardes';
+            } else if (hour >= 18 || hour < 5) {
+                greetingText = 'Buenas noches';
+            }
+
+            greeting.textContent = greetingText;
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = togglePassword.querySelector('i');
+
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                if (type === 'text') {
+                    eyeIcon.classList.remove('bi-eye-slash');
+                    eyeIcon.classList.add('bi-eye');
+                    togglePassword.setAttribute('aria-label', 'Ocultar contraseña');
+                } else {
+                    eyeIcon.classList.remove('bi-eye');
+                    eyeIcon.classList.add('bi-eye-slash');
+                    togglePassword.setAttribute('aria-label', 'Mostrar contraseña');
+                }
+            });
+
+            // Loading state en submit
+            const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('span');
+            const btnIcon = submitBtn.querySelector('i');
+
+            loginForm.addEventListener('submit', function () {
+                submitBtn.classList.add('loading');
+                btnText.style.display = 'none';
+                btnIcon.style.display = 'none';
+                submitBtn.disabled = true;
+            });
+
+            // Animación de entrada para alertas
+            const alerts = document.querySelectorAll('.alert-custom');
+            alerts.forEach((alert, index) => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                alert.style.transition = 'all 0.4s ease';
+
+                setTimeout(() => {
+                    alert.style.opacity = '1';
+                    alert.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // --- VARIABLES GLOBALES ---
+        const btnFacial = document.getElementById('btnFacial');
+        const overlay = document.getElementById('cameraOverlay');
+        const video = document.getElementById('video');
+        const statusText = document.getElementById('facialStatus');
+        let modelosCargados = false;
+
+        // 1. Cargar modelos de IA (Solo una vez)
+        async function cargarModelos() {
+            if (modelosCargados) return;
+            try {
+                statusText.innerText = "Cargando Motores de Seguridad...";
+                const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+
+                // USAR SSD MOBILENET para máxima precisión en lugar de TinyFace
+                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+
+                modelosCargados = true;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // 2. Evento clic del botón
+        btnFacial.addEventListener('click', async () => {
+            overlay.style.display = 'flex';
+
+            // Primero cargamos modelos, luego cámara
+            await cargarModelos();
+            statusText.innerText = "Iniciando cámara...";
+
+            const constraints = {
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: "user"
+                }
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    video.srcObject = stream;
+                    // Esperamos a que el video esté reproduciéndose realmente
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        statusText.innerText = "Buscando rostro... Mantente frente a la cámara";
+                        detectarRostro();
+                    };
+                })
+                .catch(err => {
+                    console.error("Error cámara:", err);
+                    alert("No se pudo acceder a la cámara. Asegúrate de dar permisos en el candado de la URL.");
+                    cerrarCamara();
+                });
+        });
+
+        // 3. Proceso de detección continua
+        async function detectarRostro() {
+            const interval = setInterval(async () => {
+                // USAMOS SSD MOBILENET (Es más lento pero 10 veces más preciso que TinyFace)
+                // Solo enviamos si la confianza de que es un rostro es superior al 90%
+                const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.9 }))
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (detection) {
+                    // Comprobamos que el rostro no esté de lado (detección de puntos clave)
+                    const landmarks = detection.landmarks;
+                    const nose = landmarks.getNose();
+                    const leftEye = landmarks.getLeftEye();
+                    const rightEye = landmarks.getRightEye();
+
+                    // Lógica simple: si los ojos y la nariz están alineados, procesamos
+                    statusText.innerText = "¡Verificando identidad con alta precisión...";
+                    clearInterval(interval);
+
+                    enviarAlBackend(Array.from(detection.descriptor));
+                }
+            }, 500);
+        }
+
+        // 4. Comunicación con tu controlador de Spring Boot
+        function enviarAlBackend(descriptor) {
+            fetch('/auth/login-facial', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(descriptor)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data); // Mira esto en F12
+                    if (data.status === 'success') {
+                        statusText.innerText = "¡Bienvenido! Entrando...";
+                        // ESTA ES LA LÍNEA QUE MANDA AL USUARIO AL DASHBOARD
+                        window.location.replace(data.redirect);
+                    } else {
+                        statusText.innerText = "Error: " + data.mensaje;
+                        setTimeout(cerrarCamara, 2000);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error en la petición:", err);
+                    statusText.innerText = "Error de conexión";
+                });
+        }
+
+        // 5. Apagar cámara y limpiar
+        function cerrarCamara() {
+            const stream = video.srcObject;
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            video.srcObject = null;
+            overlay.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clínicas - Admin</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1e1b4b; /* Indigo muy profundo */
+            --primary-light: #4338ca;
+            --accent: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-premium: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-new {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            color: var(--primary);
+        }
+
+        /* Metrics Bar Modern */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            box-shadow: var(--shadow-premium);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover { transform: translateY(-5px); }
+
+        .metric-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .metric-info h5 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        .metric-info p {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* View Toggle */
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .btn-group-toggle {
+            background: #e2e8f0;
+            padding: 0.35rem;
+            border-radius: 12px;
+            display: inline-flex;
+        }
+
+        .btn-toggle {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-toggle.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Clinic Cards (Grid) */
+        .clinic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .clinic-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            box-shadow: var(--shadow-premium);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .clinic-card:hover { transform: translateY(-10px); }
+
+        .card-banner {
+            height: 160px;
+            background: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9);
+        }
+
+        .card-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+
+        .status-aprobada { background: rgba(16, 185, 129, 0.9); color: white; }
+        .status-pendiente { background: rgba(245, 158, 11, 0.9); color: white; }
+        .status-rechazada { background: rgba(239, 68, 68, 0.9); color: white; }
+
+        .card-body-content {
+            padding: 1.5rem;
+            padding-top: 2.5rem;
+            position: relative;
+        }
+
+        .card-logo-container {
+            width: 64px;
+            height: 64px;
+            background: white;
+            border-radius: 18px;
+            position: absolute;
+            top: -32px;
+            left: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-meta {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-actions-row {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-card-action {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+            font-size: 1.25rem;
+        }
+
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-search:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+        }
+
+        .btn-clear {
+            background: white;
+            color: var(--secondary);
+            border: 2px solid var(--border);
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-clear:hover {
+            border-color: #cbd5e1;
+            color: var(--text-main);
+        }
+
+        /* Main Card */
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            background: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table */
+        .table-container {
+            padding: 0;
+        }
+
+        .table-custom {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .table-custom thead th {
+            background: #f8fafc;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .table-custom tbody td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .table-custom tbody tr {
+            transition: all 0.2s;
+        }
+
+        .table-custom tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Clinic Info Cell */
+        .clinic-cell {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .clinic-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .clinic-info h6 {
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .clinic-info p {
+            color: var(--secondary);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        /* Contact Cell */
+        .contact-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .contact-item i {
+            color: var(--secondary);
+            font-size: 1rem;
+        }
+
+        .contact-item.phone {
+            color: #334155;
+        }
+
+        .contact-item.email a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-item.email a:hover {
+            text-decoration: underline;
+        }
+
+        /* Action Buttons */
+        .actions-cell {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .btn-table-action {
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            color: #78350f;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            color: #7f1d1d;
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pagination */
+        .pagination-wrapper {
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination {
+            gap: 0.375rem;
+        }
+
+        .page-link {
+            border: none;
+            padding: 0.625rem 1rem;
+            border-radius: 10px;
+            color: var(--secondary);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .page-link:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page-item.disabled .page-link {
+            background: transparent;
+            color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .actions-cell {
+                flex-direction: column;
+            }
+
+            .btn-table-action {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .clinic-cell {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        .table-custom tbody tr {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .main-card,
+        .search-card {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header-admin}"></div>
+    <link th:replace="~{fragments/header :: headerStyles}">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">
+                        <i class="bi bi-hospital"></i>
+                        Gestión de Clínicas
+                    </h1>
+                    <p class="page-subtitle">Administra las clínicas registradas en la plataforma</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a th:href="@{/admin/clinicas/nueva}" class="btn-new">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        Añadir Clínica
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container pb-5">
+        <!-- Metrics Bar -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #e0e7ff; color: #4338ca;">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div class="metric-info">
+                    <p>Red Global</p>
+                    <h5 th:text="${totalGlobal}">0</h5>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #d1fae5; color: #059669;">
+                    <i class="bi bi-patch-check"></i>
+                </div>
+                <div class="metric-info">
+                    <p>Sedes Activas</p>
+                    <h5 th:text="${totalActivas}">0</h5>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #fef3c7; color: #d97706;">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="metric-info">
+                    <p>Por Aprobar</p>
+                    <h5 th:text="${totalPendientes}">0</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Toggle & Search -->
+        <div class="view-controls">
+            <div class="btn-group-toggle">
+                <button class="btn-toggle active" id="btnGridView" onclick="toggleView('grid')">
+                    <i class="bi bi-grid-fill"></i> Cuadrícula
+                </button>
+                <button class="btn-toggle" id="btnListView" onclick="toggleView('list')">
+                    <i class="bi bi-list-task"></i> Lista
+                </button>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center flex-grow-1 max-width-600">
+                <form th:action="@{/admin/clinicas}" method="get" class="flex-grow-1">
+                    <div class="search-wrapper m-0">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" name="keyword" class="search-input py-2" placeholder="Buscar por nombre o dirección..." th:value="${keyword}">
+                    </div>
+                </form>
+                <a th:if="${keyword != null and !keyword.isEmpty()}" th:href="@{/admin/clinicas}" class="btn btn-light border-0 py-2">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container for Grid and List -->
+        <div id="clinicasContainer">
+            
+            <!-- GRID VIEW (Default) -->
+            <div id="gridView" class="clinic-grid">
+                <div th:each="clinica : ${clinicasPage.content}" class="clinic-card">
+                    <div class="card-banner">
+                        <img th:if="${clinica.imagenUrl}" th:src="${clinica.imagenUrl}" class="card-img">
+                        <div th:unless="${clinica.imagenUrl}" style="width: 100%; height: 100%; background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);"></div>
+                        <span class="card-status" 
+                              th:classappend="${#strings.toString(clinica.estado) == 'APROBADA' ? 'status-aprobada' : (#strings.toString(clinica.estado) == 'PENDIENTE' ? 'status-pendiente' : 'status-rechazada')}"
+                              th:text="${clinica.estado}">APROBADA</span>
+                    </div>
+                    <div class="card-body-content">
+                        <div class="card-logo-container">
+                            <img th:if="${clinica.imagenUrl}" th:src="${clinica.imagenUrl}" style="width: 100%; height: 100%; border-radius: 12px; object-fit: cover;">
+                            <i th:unless="${clinica.imagenUrl}" class="bi bi-hospital"></i>
+                        </div>
+                        <h4 class="card-title" th:text="${clinica.nombre}">Nombre</h4>
+                        <div class="card-meta">
+                            <i class="bi bi-geo-alt-fill text-accent"></i>
+                            <span th:text="${clinica.direccion}">Dirección</span>
+                        </div>
+                        <div class="card-meta">
+                            <i class="bi bi-clock-fill"></i>
+                            <span th:text="${clinica.horaApertura + ' - ' + clinica.horaCierre}">08:00 - 18:00</span>
+                        </div>
+                        <div class="card-actions-row">
+                            <a th:href="@{/admin/clinicas/editar/{id}(id=${clinica.id})}" class="btn-card-action btn-edit">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <form th:action="@{/admin/clinicas/eliminar/{id}(id=${clinica.id})}" method="post" class="flex-grow-1">
+                                <button type="submit" class="btn-card-action btn-delete w-100" onclick="return confirm('¿Eliminar sede corporativa?');">
+                                    <i class="bi bi-trash3-fill"></i> 
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIST VIEW (Hidden by default) -->
+            <div id="listView" class="main-card d-none">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Clínica / Estado</th>
+                                <th>Contacto</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="clinica : ${clinicasPage.content}">
+                                <td>
+                                    <div class="clinic-cell">
+                                        <div class="clinic-avatar">
+                                            <i class="bi bi-hospital"></i>
+                                        </div>
+                                        <div class="clinic-info">
+                                            <h6 th:text="${clinica.nombre}">Nombre</h6>
+                                            <span class="badge" th:classappend="${#strings.toString(clinica.estado) == 'APROBADA' ? 'bg-success' : 'bg-warning'}" th:text="${clinica.estado}">Estado</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small class="d-block"><i class="bi bi-telephone"></i> <span th:text="${clinica.telefono}"></span></small>
+                                    <small class="d-block text-muted" th:text="${clinica.email}"></small>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/admin/clinicas/editar/{id}(id=${clinica.id})}" class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${clinicasPage.isEmpty()}" class="empty-state">
+                <i class="bi bi-hospital-fill"></i>
+                <h3>No hay sedes registradas</h3>
+                <p>Comienza el crecimiento agregando tu primera clínica autorizada.</p>
+                <a th:href="@{/admin/clinicas/nueva}" class="btn-new mt-3">Añadir Ahora</a>
+            </div>
+        </div>
+
+            <!-- Pagination -->
+            <div th:if="${clinicasPage.totalPages > 1}" class="pagination-wrapper">
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center mb-0">
+                        <!-- Previous -->
+                        <li class="page-item" th:classappend="${clinicasPage.isFirst()} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/clinicas(page=${clinicasPage.number - 1}, keyword=${keyword})}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- First page + ellipsis -->
+                        <li class="page-item" th:if="${pageNumbers[0] > 0}">
+                            <a class="page-link" th:href="@{/admin/clinicas(page=0, keyword=${keyword})}">1</a>
+                        </li>
+                        <li class="page-item disabled" th:if="${pageNumbers[0] > 1}">
+                            <span class="page-link">...</span>
+                        </li>
+
+                        <!-- Page numbers -->
+                        <li th:each="pageNumber : ${pageNumbers}" class="page-item"
+                            th:classappend="${pageNumber == clinicasPage.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin/clinicas(page=${pageNumber}, keyword=${keyword})}"
+                                th:text="${pageNumber + 1}">1</a>
+                        </li>
+
+                        <!-- Last page + ellipsis -->
+                        <li class="page-item disabled"
+                            th:if="${pageNumbers[pageNumbers.size() - 1] < clinicasPage.totalPages - 2}">
+                            <span class="page-link">...</span>
+                        </li>
+                        <li class="page-item"
+                            th:if="${pageNumbers[pageNumbers.size() - 1] < clinicasPage.totalPages - 1}">
+                            <a class="page-link"
+                                th:href="@{/admin/clinicas(page=${clinicasPage.totalPages - 1}, keyword=${keyword})}"
+                                th:text="${clinicasPage.totalPages}">10</a>
+                        </li>
+
+                        <!-- Next -->
+                        <li class="page-item" th:classappend="${clinicasPage.isLast()} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/clinicas(page=${clinicasPage.number + 1}, keyword=${keyword})}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

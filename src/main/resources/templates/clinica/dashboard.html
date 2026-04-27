@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | ClínicaApp</title>
+    <link th:replace="~{fragments/header :: favIcon}">
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Iconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Cargar el fragmento de MIRA -->
+    <div th:replace="~{fragments/asistente_sede_mira :: mira-sede}"></div>
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.3);
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        /* Navbar Premium */
+        .navbar {
+            background: var(--dark-gradient) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.75rem;
+        }
+
+        .btn-outline-danger {
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-outline-danger:hover {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Alertas Animadas */
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        .alert-success::before {
+            background: #10b981;
+        }
+
+        .alert-primary {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .alert-primary::before {
+            background: #3b82f6;
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Sala de Espera - Destacado Especial */
+        .waiting-room-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+            border: 2px solid #3b82f6;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-soft);
+            animation: pulse-border 2s infinite;
+            overflow: hidden;
+        }
+
+        @keyframes pulse-border {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-soft);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2), var(--shadow-soft);
+            }
+        }
+
+        .waiting-room-card .card-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            border: none;
+            padding: 1.5rem 2rem;
+        }
+
+        .waiting-room-card .card-header h5 {
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .waiting-room-card .card-header i {
+            animation: megaphone-shake 1.5s ease-in-out infinite;
+        }
+
+        @keyframes megaphone-shake {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            10% {
+                transform: rotate(-10deg);
+            }
+
+            20% {
+                transform: rotate(10deg);
+            }
+
+            30% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .waiting-room-card .list-group-item {
+            background: transparent;
+            border-color: rgba(59, 130, 246, 0.1);
+            padding: 1.5rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .waiting-room-card .list-group-item:hover {
+            background: rgba(59, 130, 246, 0.03);
+            transform: translateX(5px);
+        }
+
+        .waiting-room-card h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .waiting-room-card .badge {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .btn-call {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-call:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .btn-call i {
+            animation: door-open 1s ease-in-out infinite;
+        }
+
+        @keyframes door-open {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(3px);
+            }
+        }
+
+        /* Stat Cards Premium */
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white;
+        }
+
+        .bg-gradient-primary::before {
+            display: none;
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+            color: white;
+        }
+
+        .bg-gradient-success::before {
+            display: none;
+        }
+
+        .stat-card .card-body {
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card h6 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-card h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card i {
+            font-size: 4rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .stat-card .btn-link {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0;
+        }
+
+        .stat-card .btn-link:hover {
+            color: white;
+            gap: 1rem;
+        }
+
+        /* Panel Administrativo */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(to right, #ffffff, #f8fafc) !important;
+            border-bottom: 2px solid #f1f5f9;
+            padding: 1.5rem 2rem !important;
+        }
+
+        .card-header h6 {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-link {
+            text-decoration: none;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 0.95rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sidebar-link:hover {
+            background: white;
+            color: #667eea;
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #c7d2fe;
+        }
+
+        .sidebar-link i {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-link:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Info de Sede */
+        .rounded-4 {
+            border-radius: var(--radius-xl) !important;
+        }
+
+        .card-body label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-body .border {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            border-radius: var(--radius-md);
+            padding: 1rem !important;
+            font-weight: 500;
+            color: #334155;
+            transition: all 0.3s ease;
+        }
+
+        .card-body .border:hover {
+            background: white !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Tip Card */
+        .alert.bg-white {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+            border: 2px solid #e0f2fe !important;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem 2rem;
+        }
+
+        .bg-info-subtle {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%) !important;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+        }
+
+        .bg-info-subtle i {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .alert h6 {
+            color: #0369a1;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .alert p {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 2px solid #e2e8f0 !important;
+            padding-top: 3rem !important;
+            margin-top: 4rem !important;
+        }
+
+        footer p {
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stat-card h1 {
+                font-size: 2.5rem;
+            }
+
+            .waiting-room-card .list-group-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .btn-call {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .sidebar-link:hover {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/clinica/dashboard">
+                <i class="bi bi-shield-plus me-2 text-info"></i>ClínicaApp <small class="fw-light">Sede</small>
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <span class="text-white-50 me-3 d-none d-md-inline small"
+                    th:text="${clinica.email}">email@clinica.com</span>
+                <a class="btn btn-outline-danger btn-sm rounded-pill" href="/logout">
+                    <i class="bi bi-box-arrow-right"></i> Salir
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <!-- Alertas de éxito -->
+        <div th:if="${param.perfilActualizado}"
+            class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> ¡Los datos de la sede han sido actualizados!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${param.success == 'atendida'}"
+            class="alert alert-primary alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+            <i class="bi bi-clipboard2-check-fill me-2"></i> Atención médica registrada. La cita se ha completado.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- NOTIFICACIÓN: SALA DE ESPERA (Pacientes enviados por recepción) -->
+        <div class="row mb-4" th:if="${not #lists.isEmpty(salaDeEspera)}">
+            <div class="col-12">
+                <div class="card waiting-room-card shadow-sm">
+                    <div class="card-header bg-primary text-white py-3 border-0">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-megaphone-fill me-2"></i> PACIENTES EN SALA DE ESPERA
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div th:each="p : ${salaDeEspera}"
+                                class="list-group-item d-flex justify-content-between align-items-center p-4 bg-transparent">
+                                <div>
+                                    <h5 class="mb-1 fw-bold text-primary">
+                                        <i class="bi bi-pigeon-fill me-2"></i> <span
+                                            th:text="${p.nombreMascota}">Mascota</span>
+                                    </h5>
+                                    <p class="mb-0 text-muted small">
+                                        Propietario: <strong th:text="${p.nombreUsuario}">Nombre</strong> |
+                                        Servicio: <span class="badge bg-secondary"
+                                            th:text="${p.nombreServicio}">Servicio</span>
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <a th:href="@{'/clinica/atender/' + ${p.id}}" class="btn btn-primary btn-call px-4">
+                                        <i class="bi bi-door-open-fill me-1"></i> LLAMAR A CONSULTORIO
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Normal -->
+        <div class="row g-4 mb-4">
+            <!-- GRÁFICOS DE RENDIMIENTO (BI) -->
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0 rounded-4 mb-4" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);">
+                    <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-graph-up-arrow me-2 text-primary"></i> Tendencia de Ingresos Semanal</h5>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">Últimos 7 días</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 300px;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 rounded-4" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);">
+                            <div class="card-header bg-transparent border-0 py-3 text-center">
+                                <h6 class="mb-0 fw-bold">Distribución de Citas</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 220px;">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0 rounded-4" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);">
+                            <div class="card-header bg-transparent border-0 py-3 text-center">
+                                <h6 class="mb-0 fw-bold">Servicios Populares</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 220px;">
+                                    <canvas id="servicesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Izquierda: Estadísticas (KPIs) y Menú -->
+            <div class="col-md-4">
+                <!-- Card de Citas -->
+                <div class="card stat-card bg-gradient-primary text-white mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-white-50 small text-uppercase fw-bold">Citas Totales</h6>
+                                <h1 class="display-5 fw-bold mb-0" th:text="${totalCitas}">0</h1>
+                            </div>
+                            <i class="bi bi-calendar2-check display-5 opacity-50"></i>
+                        </div>
+                        <a href="/clinica/citas"
+                            class="btn btn-link text-white text-decoration-none p-0 mt-3 small fw-bold">
+                            Ver Agenda Completa <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- NUEVA Card de Ingresos (Ahora dentro de la columna lateral) -->
+                <div class="card stat-card bg-gradient-success text-white mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="text-white-50 small text-uppercase fw-bold">Ingresos Recaudados</h6>
+                                <h1 class="display-5 fw-bold mb-0"
+                                    th:text="'$' + ${#numbers.formatDecimal(totalIngresos, 1, 'COMMA', 2, 'POINT')}">
+                                    $0.00</h1>
+                            </div>
+                            <i class="bi bi-cash-stack display-5 opacity-50"></i>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{/clinica/reporte-ventas}"
+                                class="text-white text-decoration-none fw-bold small">
+                                Ver detalle de pagos <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Administrativo CORREGIDO -->
+                <div class="card shadow-sm border-0 mb-4 rounded-4">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h6 class="m-0 fw-bold text-dark">Panel Administrativo</h6>
+                    </div>
+                    <div class="card-body pt-0">
+                        <a href="/clinica/citas" class="sidebar-link">
+                            <i class="bi bi-clipboard2-pulse text-primary"></i> Control de Pacientes
+                        </a>
+                        <a href="/clinica/mis-servicios" class="sidebar-link">
+                            <i class="bi bi-tags text-success"></i> Mis Precios y Servicios
+                        </a>
+
+                        <!-- ESTA ES LA LÍNEA QUE TE FALTA, AGREGALA AQUÍ: -->
+                        <a href="/clinica/horario" class="sidebar-link">
+                            <i class="bi bi-clock-history text-warning"></i> Horario de Atención
+                        </a>
+
+                        <a href="/clinica/perfil" class="sidebar-link">
+                            <i class="bi bi-geo-alt text-danger"></i> Editar Datos de Sede
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Información de la Sede -->
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0 mb-4 rounded-4 overflow-hidden">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-0">
+                        <h5 class="mb-0 fw-bold text-secondary"><i class="bi bi-info-circle me-2"></i> Información de mi
+                            Sede</h5>
+                    </div>
+                    <div class="card-body bg-white">
+                        <div class="row g-4">
+                            <div class="col-sm-6">
+                                <label class="text-muted small d-block mb-1">Dirección Registrada</label>
+                                <div class="p-2 border rounded bg-light small" th:text="${clinica.direccion}">
+                                    Cargando...</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="text-muted small d-block mb-1">Teléfono Público</label>
+                                <div class="p-2 border rounded bg-light small" th:text="${clinica.telefono}">Cargando...
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-muted small d-block mb-1">Descripción para Clientes</label>
+                                <div class="p-3 border rounded bg-light" style="min-height: 80px;">
+                                    <p class="mb-0 small" th:text="${clinica.descripcion}">Sin descripción.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert bg-white border-0 shadow-sm d-flex align-items-center p-4 rounded-4" role="alert">
+                    <div class="bg-info-subtle p-3 rounded-circle me-3">
+                        <i class="bi bi-lightbulb text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Tip para Veterinarios:</h6>
+                        <p class="mb-0 small text-muted">Cuando la recepción haga el check-in de un paciente, te
+                            aparecerá una caja azul arriba para que lo llames al consultorio de inmediato.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 pt-4 text-center text-muted border-top mb-5">
+            <p class="small">Sistema de Gestión Clínica © 2024</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        // --- 1. DATOS DEL SERVIDOR ---
+        const labelsEstados = JSON.parse(/*[[${labelsEstadosJson}]]*/ '[]');
+        const dataEstados = JSON.parse(/*[[${dataEstadosJson}]]*/ '[]');
+        const labelsIngresos = JSON.parse(/*[[${labelsIngresosJson}]]*/ '[]');
+        const dataIngresos = JSON.parse(/*[[${dataIngresosJson}]]*/ '[]');
+        const labelsTopServicios = JSON.parse(/*[[${labelsTopServiciosJson}]]*/ '[]');
+        const dataTopServicios = JSON.parse(/*[[${dataTopServiciosJson}]]*/ '[]');
+
+        const primaryColor = '#667eea';
+        const successColor = '#10b981';
+        const warningColor = '#f59e0b';
+        const dangerColor = '#ef4444';
+        const infoColor = '#3b82f6';
+
+        // --- 2. CONFIGURACIÓN DE GRÁFICOS ---
+        
+        // Gráfico de Ingresos (Línea)
+        const ctxRev = document.getElementById('revenueChart').getContext('2d');
+        const grad = ctxRev.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
+        grad.addColorStop(1, 'rgba(102, 126, 234, 0.0)');
+
+        new Chart(ctxRev, {
+            type: 'line',
+            data: {
+                labels: labelsIngresos,
+                datasets: [{
+                    label: 'Ingresos ($)',
+                    data: dataIngresos,
+                    borderColor: primaryColor,
+                    backgroundColor: grad,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: primaryColor,
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Gráfico de Estados (Doughnut)
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: labelsEstados,
+                datasets: [{
+                    data: dataEstados,
+                    backgroundColor: [infoColor, warningColor, primaryColor, successColor, dangerColor],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+                cutout: '70%'
+            }
+        });
+
+        // Gráfico de Servicios (Barra Horizontal)
+        new Chart(document.getElementById('servicesChart'), {
+            type: 'bar',
+            data: {
+                labels: labelsTopServicios,
+                datasets: [{
+                    data: dataTopServicios,
+                    backgroundColor: 'rgba(118, 75, 162, 0.7)',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { stepSize: 1 } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // --- 3. ANIMACIONES DE KPI ---
+        function animateCounter(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            if(!obj) return;
+            
+            // Si el valor inicial y final son iguales, no animar
+            if (start === end) {
+                obj.innerText = id.toLowerCase().includes('ingreso') ? '$' + end.toLocaleString() : end;
+                return;
+            }
+
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? Math.ceil(range / (duration / 16)) : Math.floor(range / (duration / 16));
+            if (increment === 0) increment = end > start ? 1 : -1;
+            
+            let timer = setInterval(function() {
+                current += increment;
+                
+                // Asegurarse de no pasarse del valor final
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+
+                if (id.toLowerCase().includes('ingreso')) {
+                    obj.innerText = '$' + Math.floor(current).toLocaleString();
+                } else {
+                    obj.innerText = Math.floor(current);
+                }
+            }, 16); // ~60fps
+        }
+
+        // Ejecutar animaciones al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            const totalCitas = parseInt(/*[[${totalCitas}]]*/ '0');
+            const totalIngresos = parseInt(/*[[${totalIngresos}]]*/ '0');
+            
+            // Reemplazar los valores estáticos por IDs para la animación
+            document.querySelector('.stat-card.bg-gradient-primary h1').id = 'kpi-citas';
+            document.querySelector('.stat-card.bg-gradient-success h1').id = 'kpi-ingresos';
+            
+            animateCounter('kpi-citas', 0, totalCitas, 1000);
+            animateCounter('kpi-ingresos', 0, totalIngresos, 1000);
+        });
+    </script>
+</body>
+
+</html>

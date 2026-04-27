@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Historial Clínico</title>
+        <style>
+        @page { 
+            margin: 60px 50px 80px 50px; 
+            size: A4;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+            font-size: 11px; 
+            line-height: 1.5;
+            color: #334155; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header Fijo */
+        .header { 
+            position: fixed; 
+            top: -40px; 
+            left: 0; 
+            right: 0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #1e40af;
+        }
+        
+        .header-brand { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        
+        .logo-box { 
+            width: 42px; 
+            height: 42px; 
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(30, 64, 175, 0.3);
+        }
+        
+        .brand-text { 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .brand-name { 
+            font-weight: 800; 
+            color: #1e40af; 
+            font-size: 18px; 
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        
+        .brand-subtitle { 
+            font-size: 9px; 
+            color: #64748b; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+        
+        .header-meta { 
+            text-align: right; 
+            font-size: 9px; 
+            color: #64748b; 
+            line-height: 1.6;
+        }
+        
+        .header-meta strong {
+            color: #1e40af;
+            font-size: 10px;
+        }
+        
+        /* Footer Fijo */
+        .footer { 
+            position: fixed; 
+            bottom: -60px; 
+            left: 0; 
+            right: 0; 
+            text-align: center; 
+            font-size: 9px; 
+            color: #94a3b8;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-left {
+            text-align: left;
+        }
+        
+        .footer-center {
+            font-weight: 600;
+            color: #64748b;
+        }
+        
+        .footer-right {
+            text-align: right;
+        }
+        
+        .page-number:after { 
+            content: counter(page); 
+        }
+        
+        /* Títulos */
+        h1 { 
+            color: #0f172a; 
+            font-size: 24px; 
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1e40af;
+            letter-spacing: -0.5px;
+        }
+        
+        h2 { 
+            color: #1e40af; 
+            font-size: 12px; 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 25px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        /* Tarjeta de Paciente */
+        .patient-card { 
+            display: flex; 
+            gap: 30px; 
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 10px; 
+            padding: 20px; 
+            margin: 20px 0;
+            border-left: 4px solid #1e40af;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            page-break-inside: avoid;
+        }
+        
+        .patient-left { 
+            flex: 1.2; 
+        }
+        
+        .patient-right { 
+            flex: 1; 
+            border-left: 1px dashed #cbd5e1;
+            padding-left: 25px;
+        }
+        
+        .patient-field { 
+            margin: 8px 0; 
+            display: flex;
+            align-items: baseline;
+        }
+        
+        .label { 
+            color: #475569; 
+            font-weight: 600; 
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 110px;
+            display: inline-block;
+        }
+        
+        .value {
+            color: #0f172a;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .value-strong {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1e40af;
+        }
+        
+        .value-small {
+            font-size: 9px;
+            color: #64748b;
+            margin-left: 5px;
+        }
+        
+        .patient-right .patient-field {
+            flex-direction: column;
+            margin: 10px 0;
+        }
+        
+        .patient-right .label {
+            margin-bottom: 3px;
+            min-width: auto;
+        }
+        
+        /* Sección de Información Adicional */
+        .info-grid {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .info-box {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            page-break-inside: avoid;
+        }
+        
+        .info-box-title {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .info-box-content {
+            font-size: 11px;
+            color: #334155;
+            font-weight: 500;
+        }
+        
+        /* Tabla de Visitas */
+        .table-container {
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        table.visits { 
+            width: 100%; 
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+        
+        table.visits thead {
+            display: table-header-group;
+        }
+        
+        table.visits th { 
+            background: #1e40af; 
+            color: white;
+            font-weight: 600; 
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 2px solid #1e3a8a;
+        }
+        
+        table.visits td { 
+            padding: 10px; 
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left; 
+            vertical-align: top;
+            color: #334155;
+            line-height: 1.4;
+        }
+        
+        table.visits tr:nth-child(even) { 
+            background: #f8fafc; 
+        }
+        
+        table.visits tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Columnas específicas */
+        .col-fecha { width: 10%; font-weight: 600; color: #1e40af; }
+        .col-vet { width: 14%; }
+        .col-diag { width: 22%; }
+        .col-trat { width: 24%; }
+        .col-med { width: 20%; }
+        .col-notas { width: 10%; }
+        
+        /* Estilos de contenido */
+        .nota { 
+            font-size: 9px; 
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-primary { background: #dbeafe; color: #1e40af; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        
+        .text-empty {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        /* Estado vacío */
+        .empty-state {
+            text-align: center; 
+            padding: 50px 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 2px dashed #e2e8f0;
+            margin: 20px 0;
+        }
+        
+        .empty-state-icon {
+            font-size: 32px;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state-text {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Sección de Firma */
+        .signature-section {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+            page-break-inside: avoid;
+        }
+        
+        .signature-box {
+            text-align: center;
+            width: 220px;
+        }
+        
+        .signature-line {
+            border-top: 1.5px solid #334155;
+            padding-top: 8px;
+            margin-top: 50px;
+        }
+        
+        .signature-name {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 11px;
+        }
+        
+        .signature-title {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        
+        .signature-detail {
+            font-size: 8px;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+        
+        /* Utilidades */
+        .mt-20 { margin-top: 20px; }
+        .mb-10 { margin-bottom: 10px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        /* Evitar saltos de página */
+        .no-break { page-break-inside: avoid; }
+        tr { page-break-inside: avoid; }
+        
+        /* Print optimizations */
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .header { position: fixed; }
+            .footer { position: fixed; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-brand">
+            <div class="logo-box">CV</div>
+            <div class="brand-text">
+                <div class="brand-name">Clínica Veterinaria</div>
+                <div class="brand-subtitle">Cuidado integral de mascotas</div>
+            </div>
+        </div>
+        <div class="header-meta">
+            <div><strong>Documento:</strong> Historial Clínico</div>
+            <div><strong>Generado:</strong> <span th:text="${fechaGeneracion}"></span></div>
+            <div><strong>Expediente:</strong> <span th:text="${mascota.id}"></span></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                Clínica Veterinaria · www.clinicavet.com
+            </div>
+            <div class="footer-center">
+                HISTORIAL CLÍNICO VETERINARIO
+            </div>
+            <div class="footer-right">
+                Página <span class="page-number"></span> de <span class="page-number"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <h1>Historial Clínico</h1>
+
+    <!-- Tarjeta de Paciente -->
+    <div class="patient-card no-break">
+        <div class="patient-left">
+            <div class="patient-field">
+                <span class="label">Paciente:</span>
+                <span class="value value-strong" th:text="${mascota.nombre}">Nombre Mascota</span>
+                <span class="value-small">(ID: <span th:text="${mascota.id}">000</span>)</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Especie/Raza:</span>
+                <span class="value" th:text="${mascota.especie} + ' / ' + ${mascota.getRaza()}">Especie / Raza</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Nacimiento:</span>
+                <span class="value" th:text="${mascota.fechaNacimiento != null} ? ${#temporals.format(mascota.fechaNacimiento, 'dd/MM/yyyy')} : 'No disponible'">01/01/2020</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Sexo:</span>
+                <span class="value" th:text="${mascota.sexo != null} ? ${mascota.sexo} : 'No especificado'">Macho</span>
+            </div>
+        </div>
+        <div class="patient-right">
+            <div class="patient-field">
+                <span class="label">Propietario:</span>
+                <span class="value value-strong" th:text="${nombrePropietario}">Nombre Propietario</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Contacto:</span>
+                <span class="value" th:text="${propietarioTelefono != null} ? ${propietarioTelefono} : (${mascota.propietarioTelefono != null} ? ${mascota.propietarioTelefono} : 'No disponible')">+52 000 000 0000</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Email:</span>
+                <span class="value" th:text="${propietarioEmail != null} ? ${propietarioEmail} : (${mascota.propietarioEmail != null} ? ${mascota.propietarioEmail} : 'No disponible')">email@ejemplo.com</span>
+            </div>
+            <div class="patient-field">
+                <span class="label">Última Visita:</span>
+                <span class="value" th:text="${(visitasDTO != null and !visitasDTO.isEmpty())} ? ${#temporals.format(visitasDTO[0].visita.fechaVisita, 'dd/MM/yyyy')} : 'Sin registros'">01/01/2024</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información Adicional Rápida -->
+    <div class="info-grid">
+        <div class="info-box">
+            <div class="info-box-title">Total de Visitas</div>
+            <div class="info-box-content" th:text="${visitasDTO != null} ? ${visitasDTO.size()} : '0'">0</div>
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">Primera Consulta</div>
+            <div class="info-box-content" th:text="${(visitasDTO != null and !visitasDTO.isEmpty())} ? ${#temporals.format(visitasDTO[visitasDTO.size()-1].visita.fechaVisita, 'dd/MM/yyyy')} : 'N/A'">N/A</div>
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">Estado General</div>
+            <div class="info-box-content">
+                <span class="badge badge-success">Activo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registro de Visitas -->
+    <h2>Registro de Visitas</h2>
+
+    <div class="table-container" th:if="${visitasDTO != null and !visitasDTO.isEmpty()}">
+        <table class="visits">
+            <thead>
+                <tr>
+                    <th class="col-fecha">Fecha</th>
+                    <th class="col-vet">Veterinario</th>
+                    <th class="col-diag">Diagnóstico</th>
+                    <th class="col-trat">Tratamiento</th>
+                    <th class="col-med">Medicamentos</th>
+                    <th class="col-notas">Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="dto : ${visitasDTO}" class="no-break">
+                    <td class="col-fecha" th:text="${dto.visita.fechaVisita != null} ? ${#temporals.format(dto.visita.fechaVisita, 'dd/MM/yyyy')} : ''">01/01/2024</td>
+                    <td class="col-vet" th:text="${dto.veterinarioNombre != null} ? ${dto.veterinarioNombre} : 'N/A'">Dr. Nombre</td>
+                    <td class="col-diag" th:text="${dto.visita.diagnostico != null} ? ${dto.visita.diagnostico} : '-'">Diagnóstico</td>
+                    <td class="col-trat" th:text="${dto.visita.tratamiento != null} ? ${dto.visita.tratamiento} : '-'">Tratamiento</td>
+                    <td class="col-med">
+                        <span th:if="${dto.visita.medicamentosRecetados != null and !dto.visita.medicamentosRecetados.isEmpty()}" 
+                              th:text="${#strings.listJoin(dto.visita.medicamentosRecetados, ', ')}">Medicamentos</span>
+                        <span th:if="${dto.visita.medicamentosRecetados == null or dto.visita.medicamentosRecetados.isEmpty()}" 
+                              class="text-empty">Ninguno</span>
+                    </td>
+                    <td class="col-notas">
+                        <span class="nota" th:text="${dto.visita.notasAdicionales != null} ? ${dto.visita.notasAdicionales} : ''">Notas</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Estado Vacío -->
+    <div th:if="${visitasDTO == null or visitasDTO.isEmpty()}" class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-text">No hay visitas registradas para esta mascota</div>
+    </div>
+
+    <!-- Sección de Firmas -->
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-line">
+                <div class="signature-name">Dr. [Nombre del Veterinario]</div>
+                <div class="signature-title">Médico Veterinario Zootecnista</div>
+                <div class="signature-detail">Cédula Profesional: [Número]</div>
+            </div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line">
+                <div class="signature-name" th:text="${nombrePropietario}">Nombre del Propietario</div>
+                <div class="signature-title">Propietario/Responsable</div>
+                <div class="signature-detail">Firma de conformidad</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
