@@ -186,8 +186,29 @@
                 width: 0%;
                 box-shadow: 0 0 10px var(--m-accent);
                 transition: width 2s ease-in-out;
+        /* RESPONSIVE PARA MÓVILES */
+        @media (max-width: 500px) {
+            .mira-wrapper {
+                bottom: 15px;
+                left: 15px;
             }
-        </style>
+            .mira-avatar {
+                width: 65px;
+                height: 65px;
+                border-radius: 18px;
+            }
+            .mira-avatar i {
+                font-size: 2.2rem;
+            }
+            .mira-panel {
+                width: calc(100% - 30px);
+                left: 15px;
+                bottom: 95px;
+                max-height: 70vh;
+                border-radius: 25px;
+            }
+        }
+    </style>
 
         <!-- UI ESTRUCTURA -->
         <div class="mira-wrapper">
