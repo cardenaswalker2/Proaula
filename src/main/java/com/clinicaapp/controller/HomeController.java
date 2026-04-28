@@ -35,8 +35,8 @@ public class HomeController {
         // Las mezclamos para mostrar diferentes clínicas destacadas cada vez
         Collections.shuffle(todasLasClinicas);
         
-        // Tomamos solo las primeras 6 para la página de inicio
-        List<Clinica> clinicasDestacadas = todasLasClinicas.stream().limit(6).collect(Collectors.toList());
+        // Tomamos las primeras 15 para la página de inicio (ajustado según petición del usuario)
+        List<Clinica> clinicasDestacadas = todasLasClinicas.stream().limit(15).collect(Collectors.toList());
         
         model.addAttribute("clinicasDestacadas", clinicasDestacadas);
         
