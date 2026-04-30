@@ -19,6 +19,8 @@ public class ClinicaDTO {
     private List<String> serviciosOfrecidos = new ArrayList<>();
     private String imagenUrl;
     private String usuarioAdminId;
+    private double latitud;
+    private double longitud;
 
     public ClinicaDTO() {}
 
@@ -63,4 +65,10 @@ public class ClinicaDTO {
 
     public String getUsuarioAdminId() { return usuarioAdminId; }
     public void setUsuarioAdminId(String usuarioAdminId) { this.usuarioAdminId = usuarioAdminId; }
+
+    public double getLatitud() { return latitud; }
+    public void setLatitud(double latitud) { this.latitud = latitud; }
+
+    public double getLongitud() { return longitud; }
+    public void setLongitud(double longitud) { this.longitud = longitud; }
 }

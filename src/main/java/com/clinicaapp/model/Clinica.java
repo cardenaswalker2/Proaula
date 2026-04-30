@@ -29,10 +29,12 @@ public class Clinica {
     private String horaCierre = "18:00";
     private int duracionTurnoMinutos = 30;
 
-    // --- NUEVOS CAMPOS ---
     private EstadoClinica estado = EstadoClinica.PENDIENTE; 
     private String usuarioAdminId; 
     
+    // CAMPOS PARA MAPA
+    private double latitud;
+    private double longitud;
     // CAMPOS PARA PERSONALIZACIÓN
     private List<Map<String, String>> equipoMedico;
     private List<String> galeriaFotos;
@@ -107,6 +109,12 @@ public class Clinica {
     public void setUsuarioAdminId(String usuarioAdminId) {
         this.usuarioAdminId = usuarioAdminId;
     }
+
+    public double getLatitud() { return latitud; }
+    public void setLatitud(double latitud) { this.latitud = latitud; }
+
+    public double getLongitud() { return longitud; }
+    public void setLongitud(double longitud) { this.longitud = longitud; }
 
     // --- GETTERS Y SETTERS PARA PERSONALIZACIÓN ---
     public List<Map<String, String>> getEquipoMedico() {
