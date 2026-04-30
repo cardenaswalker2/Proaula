@@ -109,12 +109,7 @@ public class AdminUserInitializer implements ApplicationRunner {
     }
 
     private void createClinicasReales(List<Servicio> servicios) {
-        // MUY IMPORTANTE: Si ya hay datos, no hace nada.
-        // Para probar esto, debes borrar la colección 'clinicas' en tu MongoDB.
-        if (clinicaRepository.count() > 0) {
-            log.info("Clínicas ya existentes, omitiendo creación.");
-            return;
-        }
+        log.info("Verificando/Insertando clínicas reales...");
 
         List<String> todosLosIds = servicios.stream()
                 .map(Servicio::getId)
@@ -244,84 +239,49 @@ public class AdminUserInitializer implements ApplicationRunner {
 
         log.info("Verificando/Insertando clínicas...");
 
-        // SI YA EXISTEN, VAMOS A ACTUALIZAR SUS IMÁGENES SI SON DE UNSPLASH
-        if (clinicaRepository.count() > 0) {
-            log.info("Clínicas ya existentes, verificando si necesitan actualizar sus fotos o personalización...");
-            for (Clinica c : clinicaRepository.findAll()) {
-                boolean modificado = false;
-                
-                // 1. Actualizar imagen si es de Unsplash (vieja)
-                if (c.getImagenUrl() != null && c.getImagenUrl().contains("unsplash.com")) {
-                    for (String[] d : datos) {
-                        if (c.getNombre().equalsIgnoreCase(d[0])) {
-                            c.setImagenUrl(d[4]);
-                            modificado = true;
-                            break;
-                        }
-                    }
-                }
-                
-                // 2. Actualizar coordenadas si no tiene
-                if (c.getLatitud() == 0.0) {
-                    for (String[] d : datos) {
-                        if (c.getNombre().equalsIgnoreCase(d[0])) {
-                            c.setLatitud(Double.parseDouble(d[5]));
-                            c.setLongitud(Double.parseDouble(d[6]));
-                            modificado = true;
-                            break;
-                        }
-                    }
-                }
-                
-                // 3. Poblar/Actualizar personalización (Forzamos actualización para corregir fotos de animales)
-                c.setEquipoMedico(generarEquipoMedicoAleatorio());
-                c.setGaleriaFotos(generarGaleriaAleatoria());
-                modificado = true;
-                
-                if (modificado) {
-                    clinicaRepository.save(c);
-                    log.info("Datos personalizados corregidos y actualizados para: {}", c.getNombre());
-                }
-            }
-            return;
-        }
-
         for (String[] d : datos) {
             String nombre = d[0];
             String direccion = d[1];
             String telefono = d[2];
             String email = d[3];
             String imagenUrl = d[4];
+            double lat = Double.parseDouble(d[5]);
+            double lng = Double.parseDouble(d[6]);
 
-            // 1. Verificar si el usuario ya existe, si no, crearlo
-            Usuario usuario = usuarioService.findByEmail(email);
-            if (usuario == null) {
-                UsuarioRegistroDTO userDTO = new UsuarioRegistroDTO(
-                        nombre, "Sede Cartagena", email, "clinica123", telefono);
-                usuarioService.createUsuarioWithRole(userDTO, Role.ROLE_CLINICA);
-                // Lo buscamos de nuevo para obtener el ID generado por MongoDB
-                usuario = usuarioService.findByEmail(email);
+            Clinica c = clinicaRepository.findByEmail(email);
+            if (c == null) {
+                log.info("Creando nueva clínica: {}", nombre);
+                c = new Clinica();
+                
+                Usuario usuario = usuarioService.findByEmail(email);
+                if (usuario == null) {
+                    UsuarioRegistroDTO userDTO = new UsuarioRegistroDTO(
+                            nombre, "Sede Cartagena", email, "clinica123", telefono);
+                    usuarioService.createUsuarioWithRole(userDTO, Role.ROLE_CLINICA);
+                    usuario = usuarioService.findByEmail(email);
+                }
+                c.setUsuarioAdminId(usuario.getId());
             }
 
-            // 2. Crear la clínica vinculándola al usuario encontrado/creado
-            Clinica c = new Clinica();
+            // Actualizar campos para asegurar que siempre tengan coordenadas y estado APROBADO
             c.setNombre(nombre);
             c.setDireccion(direccion);
             c.setTelefono(telefono);
             c.setEmail(email);
-            c.setDescripcion("Clínica veterinaria profesional con acceso al sistema.");
-            c.setServiciosOfrecidos(todosLosIds);
             c.setImagenUrl(imagenUrl);
-            c.setLatitud(Double.parseDouble(d[5]));
-            c.setLongitud(Double.parseDouble(d[6]));
+            c.setLatitud(lat);
+            c.setLongitud(lng);
+            c.setEstado(EstadoClinica.APROBADA); 
             
-            // --- PERSONALIZACIÓN ---
-            c.setEquipoMedico(generarEquipoMedicoAleatorio());
-            c.setGaleriaFotos(generarGaleriaAleatoria());
-            // ------------------------
-
-            c.setUsuarioAdminId(usuario.getId());
-            c.setEstado(EstadoClinica.APROBADA);
+            if (c.getServiciosOfrecidos() == null || c.getServiciosOfrecidos().isEmpty()) {
+                c.setServiciosOfrecidos(todosLosIds);
+            }
+            if (c.getEquipoMedico() == null || c.getEquipoMedico().isEmpty()) {
+                c.setEquipoMedico(generarEquipoMedicoAleatorio());
+            }
+            if (c.getGaleriaFotos() == null || c.getGaleriaFotos().isEmpty()) {
+                c.setGaleriaFotos(generarGaleriaAleatoria());
+            }
 
             clinicaRepository.save(c);
         }

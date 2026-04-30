@@ -1016,7 +1016,7 @@
 
                 // Agregar marcadores
                 clinicasData.forEach(clinica => {
-                    if (clinica.latitud && clinica.longitud) {
+                    if (clinica.latitud !== undefined && clinica.longitud !== undefined && clinica.latitud !== 0) {
                         const customIcon = L.divIcon({
                             className: 'custom-marker',
                             html: '<div class="marker-dot"><div class="marker-pulse"></div></div>',
