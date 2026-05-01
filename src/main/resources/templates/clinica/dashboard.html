@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control Premium | ClínicaApp</title>
+    <title>Panel Administrativo Premium | ClínicaApp</title>
     <link th:replace="~{fragments/header :: favIcon}">
     
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Iconos de Bootstrap -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,18 +22,15 @@
     <style>
         :root {
             --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.5);
+            --primary-dark: #4f46e5;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
             --glass: rgba(255, 255, 255, 0.7);
-            --glass-strong: rgba(255, 255, 255, 0.9);
+            --glass-strong: rgba(255, 255, 255, 0.95);
             --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --radius-xl: 30px;
+            --radius-xl: 32px;
             --radius-lg: 20px;
-            --shadow-premium: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -42,14 +39,14 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             min-height: 100vh;
-            color: var(--text-main);
+            color: #1e293b;
             overflow-x: hidden;
             padding-bottom: 3rem;
         }
 
-        /* Fondo Dinámico con Blobs */
+        /* Fondo Animado Blobs */
         .bg-blobs {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -59,90 +56,54 @@
 
         .blob {
             position: absolute;
-            width: 500px; height: 500px;
-            background: var(--primary-glow);
+            width: 600px; height: 600px;
             filter: blur(100px);
             border-radius: 50%;
             animation: move 25s infinite alternate;
-            opacity: 0.3;
+            opacity: 0.2;
         }
 
-        .blob-1 { top: -100px; right: -100px; background: #818cf8; }
-        .blob-2 { bottom: -100px; left: -100px; background: #ec4899; animation-delay: -5s; }
+        .blob-1 { top: -200px; right: -200px; background: #6366f1; }
+        .blob-2 { bottom: -200px; left: -200px; background: #ec4899; animation-delay: -5s; }
 
         @keyframes move {
             from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(100px, 100px) scale(1.2); }
+            to { transform: translate(100px, 100px) scale(1.1); }
         }
 
         /* Navbar Glass */
         .navbar {
-            background: rgba(15, 23, 42, 0.8) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding: 1rem 0;
+            z-index: 1000;
         }
 
         .navbar-brand {
             font-weight: 800;
             font-size: 1.5rem;
-            letter-spacing: -1px;
             background: linear-gradient(to right, #fff, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         /* Cards Premium */
-        .card {
+        .card-premium {
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-premium);
-            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
             margin-bottom: 1.5rem;
         }
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
+        .card-premium:hover {
+            transform: translateY(-5px);
             background: var(--glass-strong);
-        }
-
-        /* Sala de Espera - Estilo "On-Air" */
-        .waiting-room-card {
-            border: 2px solid #6366f1;
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
-        }
-
-        .waiting-room-header {
-            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
-            color: white;
-            padding: 1.5rem 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .waiting-room-header::after {
-            content: 'EN VIVO';
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            animation: flash 2s infinite;
-        }
-
-        @keyframes flash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
         }
 
         /* Stat Cards */
@@ -151,66 +112,89 @@
             border-radius: var(--radius-xl);
             color: white;
             position: relative;
-            z-index: 1;
+            overflow: hidden;
         }
 
-        .stat-card h6 {
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
+        .stat-card h6 { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .stat-card h1 { font-size: 3.2rem; font-weight: 900; margin: 0.5rem 0; letter-spacing: -2px; }
+        .stat-card i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 5rem; opacity: 0.15; }
 
-        .stat-card h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin: 0.5rem 0;
-            letter-spacing: -2px;
-        }
+        .bg-gradient-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .bg-gradient-emerald { background: linear-gradient(135deg, #10b981, #059669); }
 
-        .stat-icon {
-            position: absolute;
-            right: 1.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 5rem;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-
-        .bg-indigo { background: linear-gradient(135deg, #6366f1, #4338ca); }
-        .bg-emerald { background: linear-gradient(135deg, #10b981, #059669); }
-
-        /* Sidebar Links */
-        .nav-admin-link {
+        /* Admin Menu Links */
+        .admin-nav-item {
             text-decoration: none;
-            color: var(--text-main);
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 1.25rem;
             padding: 1.25rem;
             border-radius: var(--radius-lg);
-            margin-bottom: 0.75rem;
             background: rgba(255,255,255,0.4);
+            margin-bottom: 0.75rem;
             border: 1px solid transparent;
             font-weight: 600;
         }
 
-        .nav-admin-link:hover {
+        .admin-nav-item:hover {
             background: white;
+            color: var(--primary);
             border-color: var(--primary);
-            color: var(--primary);
             transform: scale(1.02) translateX(10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.05);
         }
 
-        .nav-admin-link i {
-            font-size: 1.5rem;
+        .admin-nav-item i { font-size: 1.5rem; color: var(--primary); }
+
+        /* Sala de Espera */
+        .waiting-card {
+            border: 2px solid #6366f1;
+            animation: pulse-border 3s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
+            50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+        }
+
+        .btn-call {
+            background: #6366f1;
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-call:hover {
+            background: #4f46e5;
+            transform: scale(1.05);
+            color: white;
+        }
+
+        /* Estilo para los KPI del Dashboard Central */
+        .dashboard-feature-card {
+            padding: 2rem;
+            text-align: center;
+            border-radius: var(--radius-lg);
+            background: white;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 60px; height: 60px;
+            background: rgba(99, 102, 241, 0.1);
             color: var(--primary);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1.5rem;
         }
 
-        /* Animaciones al cargar */
+        /* Animaciones */
         .fade-in-up {
             animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
@@ -218,39 +202,6 @@
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        .btn-call-premium {
-            background: white;
-            color: var(--primary);
-            border-radius: 50px;
-            padding: 0.8rem 1.8rem;
-            font-weight: 800;
-            border: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .btn-call-premium:hover {
-            transform: scale(1.1);
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .pulse-dot {
-            width: 10px; height: 10px;
-            background: var(--success);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-            box-shadow: 0 0 10px var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -261,49 +212,46 @@
         <div class="blob blob-2"></div>
     </div>
 
-    <!-- Navbar -->
+    <!-- Navbar Superior -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/clinica/dashboard">
-                <i class="bi bi-shield-check me-2"></i>ClínicaApp <span class="fw-light opacity-50">Sede</span>
+                <i class="bi bi-shield-plus me-2"></i>ClínicaApp <span class="fw-light opacity-50">Admin</span>
             </a>
             <div class="ms-auto d-flex align-items-center gap-4">
-                <span class="text-white-50 d-none d-md-block small fw-bold" th:text="${clinica?.email ?: 'Clinica App'}">admin@clinica.com</span>
-                <a class="btn btn-danger btn-sm rounded-pill px-4 fw-bold" href="/logout">Salir</a>
+                <span class="text-white d-none d-md-block small fw-bold" th:text="${clinica?.email}">admin@clinica.com</span>
+                <a class="btn btn-danger btn-sm rounded-pill px-4" href="/logout">Salir</a>
             </div>
         </div>
     </nav>
 
     <div class="container mt-5">
         
-        <!-- Sala de Espera (Prioridad) -->
+        <!-- SALA DE ESPERA (Prioridad Alta) -->
         <div class="row mb-5 fade-in-up" th:if="${salaDeEspera != null and not #lists.isEmpty(salaDeEspera)}" style="animation-delay: 0.1s;">
             <div class="col-12">
-                <div class="card waiting-room-card border-0">
-                    <div class="waiting-room-header">
-                        <div class="d-flex align-items-center gap-3">
-                            <i class="bi bi-megaphone fs-3"></i>
-                            <h4 class="mb-0 fw-800">SALA DE ESPERA</h4>
-                        </div>
+                <div class="card-premium waiting-card border-0">
+                    <div class="card-header bg-primary text-white p-4 border-0 rounded-top-4">
+                        <h4 class="mb-0 fw-800"><i class="bi bi-megaphone-fill me-2"></i> PACIENTES EN SALA DE ESPERA</h4>
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
                             <div th:each="p : ${salaDeEspera}" class="list-group-item p-4 border-0" style="background: transparent;">
                                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                                     <div class="d-flex align-items-center gap-4">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                            <i class="bi bi-person-heart fs-3"></i>
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                                            <i class="bi bi-heart-pulse-fill fs-3"></i>
                                         </div>
                                         <div>
                                             <h4 class="mb-1 fw-800 text-primary" th:text="${p.nombreMascota ?: 'Paciente'}">Mascota</h4>
-                                            <div class="d-flex gap-3 text-muted small">
-                                                <span><i class="bi bi-person-fill me-1"></i> <span th:text="${p.nombreUsuario ?: 'Propietario'}">Dueño</span></span>
-                                                <span><i class="bi bi-activity me-1"></i> <span th:text="${p.nombreServicio ?: 'Servicio'}">Servicio</span></span>
+                                            <div class="text-muted small">
+                                                <i class="bi bi-person-fill"></i> <span th:text="${p.nombreUsuario}">Dueño</span> | 
+                                                <i class="bi bi-tag-fill"></i> <span th:text="${p.nombreServicio}">Servicio</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <a th:href="@{'/clinica/atender/' + ${p.id}}" class="btn btn-call-premium">
-                                        LLAMAR AHORA <i class="bi bi-arrow-right-circle ms-2"></i>
+                                    <a th:href="@{'/clinica/atender/' + ${p.id}}" class="btn btn-call shadow">
+                                        LLAMAR A CONSULTORIO <i class="bi bi-door-open-fill ms-2"></i>
                                     </a>
                                 </div>
                             </div>
@@ -313,115 +261,137 @@
             </div>
         </div>
 
-        <!-- KPIs y Métricas -->
-        <div class="row g-4 mb-5">
-            <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="stat-card bg-indigo shadow-lg">
+        <!-- KPIs Principales -->
+        <div class="row g-4 mb-5 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="col-lg-6">
+                <div class="stat-card bg-gradient-indigo shadow-lg">
                     <i class="bi bi-calendar-check stat-icon"></i>
-                    <h6>Citas Realizadas</h6>
+                    <h6>Citas Registradas</h6>
                     <h1 id="count-citas" th:text="${totalCitas ?: 0}">0</h1>
-                    <p class="mb-0 small opacity-75">Gestión de la semana actual</p>
+                    <a href="/clinica/citas" class="text-white text-decoration-none small fw-bold">Ver Agenda Completa <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
-                <div class="stat-card bg-emerald shadow-lg">
-                    <i class="bi bi-currency-dollar stat-icon"></i>
+            <div class="col-lg-6">
+                <div class="stat-card bg-gradient-emerald shadow-lg">
+                    <i class="bi bi-cash-stack stat-icon"></i>
                     <h6>Ingresos Recaudados</h6>
                     <h1 id="count-ingresos" th:text="'$' + ${#numbers.formatDecimal(totalIngresos ?: 0, 0, 'POINT', 0, 'POINT')}">$0</h1>
-                    <p class="mb-0 small opacity-75">Acumulado total de servicios</p>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-12 fade-in-up" style="animation-delay: 0.4s;">
-                <div class="card h-100 p-4 border-0">
-                    <h6 class="fw-bold mb-4 text-muted"><i class="bi bi-grid-fill me-2"></i> ACCIONES RÁPIDAS</h6>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <a href="/clinica/citas" class="nav-admin-link flex-column text-center p-3">
-                                <i class="bi bi-clipboard2-data mb-2"></i>
-                                <span class="small">Agenda</span>
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="/clinica/perfil" class="nav-admin-link flex-column text-center p-3">
-                                <i class="bi bi-building-gear mb-2"></i>
-                                <span class="small">Sede</span>
-                            </a>
-                        </div>
-                    </div>
+                    <a th:href="@{/clinica/reporte-ventas}" class="text-white text-decoration-none small fw-bold">Ver Reporte Financiero <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
         </div>
 
-        <!-- Gráficos de Inteligencia -->
         <div class="row g-4 mb-5">
-            <div class="col-lg-8 fade-in-up" style="animation-delay: 0.5s;">
-                <div class="card p-4 border-0">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-800 mb-0">TENDENCIA DE RENDIMIENTO</h5>
-                        <div class="dropdown">
-                            <button class="btn btn-light btn-sm rounded-pill px-3 fw-bold" disabled>Últimos 7 días</button>
+            <!-- PANEL DE CONTROL ADMINISTRATIVO (IZQUIERDA) -->
+            <div class="col-lg-4 fade-in-up" style="animation-delay: 0.3s;">
+                <div class="card-premium p-4 border-0">
+                    <h5 class="fw-800 mb-4 text-primary"><i class="bi bi-grid-3x3-gap-fill me-2"></i> PANEL DE CONTROL</h5>
+                    
+                    <a href="/clinica/citas" class="admin-nav-item">
+                        <i class="bi bi-clipboard2-heart"></i>
+                        <div>
+                            <span>Control de Pacientes</span>
+                            <small class="d-block text-muted fw-normal">Gestionar citas y atenciones</small>
                         </div>
-                    </div>
-                    <div style="height: 350px;">
+                    </a>
+                    
+                    <a href="/clinica/mis-servicios" class="admin-nav-item">
+                        <i class="bi bi-tags"></i>
+                        <div>
+                            <span>Precios y Servicios</span>
+                            <small class="d-block text-muted fw-normal">Configurar catálogo y tarifas</small>
+                        </div>
+                    </a>
+                    
+                    <a href="/clinica/horario" class="admin-nav-item">
+                        <i class="bi bi-clock-history"></i>
+                        <div>
+                            <span>Horario de Atención</span>
+                            <small class="d-block text-muted fw-normal">Definir disponibilidad de sede</small>
+                        </div>
+                    </a>
+                    
+                    <a href="/clinica/perfil" class="admin-nav-item">
+                        <i class="bi bi-building-gear"></i>
+                        <div>
+                            <span>Editar Datos de Sede</span>
+                            <small class="d-block text-muted fw-normal">Información pública y contacto</small>
+                        </div>
+                    </a>
+
+                    <a th:href="@{/clinica/reporte-ventas}" class="admin-nav-item">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <div>
+                            <span>Reportes de Ventas</span>
+                            <small class="d-block text-muted fw-normal">Analizar ingresos históricos</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ANALÍTICA Y GRÁFICOS (DERECHA) -->
+            <div class="col-lg-8 fade-in-up" style="animation-delay: 0.4s;">
+                <div class="card-premium p-4 border-0 h-100">
+                    <h5 class="fw-800 mb-4 text-primary"><i class="bi bi-graph-up-arrow me-2"></i> RENDIMIENTO SEMANAL</h5>
+                    <div style="height: 400px;">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 fade-in-up" style="animation-delay: 0.6s;">
-                <div class="card p-4 border-0 mb-4" style="height: 400px;">
-                    <h6 class="fw-bold mb-4">ESTADOS DE CITAS</h6>
-                    <canvas id="statusChart"></canvas>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 fade-in-up" style="animation-delay: 0.5s;">
+                <div class="card-premium p-4 border-0 text-center">
+                    <h6 class="fw-bold mb-4">DISTRIBUCIÓN DE CITAS</h6>
+                    <div style="height: 250px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                 </div>
-                <div class="card p-4 border-0">
-                    <h6 class="fw-bold mb-3">SERVICIOS TOP</h6>
-                    <canvas id="servicesChart" style="height: 150px;"></canvas>
+            </div>
+            <div class="col-md-6 fade-in-up" style="animation-delay: 0.6s;">
+                <div class="card-premium p-4 border-0">
+                    <h6 class="fw-bold mb-4 text-center">SERVICIOS MÁS SOLICITADOS</h6>
+                    <div style="height: 250px;">
+                        <canvas id="servicesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Info Sede Polished -->
+        <!-- INFO DE SEDE FOOTER -->
         <div class="row fade-in-up" style="animation-delay: 0.7s;">
             <div class="col-12">
-                <div class="card p-5 border-0 text-center">
-                    <div class="row g-4">
+                <div class="card-premium p-5 border-0">
+                    <div class="row text-center g-4">
                         <div class="col-md-4">
-                            <div class="p-3">
-                                <i class="bi bi-geo-alt fs-2 text-primary mb-3 d-block"></i>
-                                <h6 class="fw-800">UBICACIÓN</h6>
-                                <p class="text-muted mb-0" th:text="${clinica?.direccion ?: 'No registrada'}">Calle...</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 border-start border-end">
-                            <div class="p-3">
-                                <i class="bi bi-telephone fs-2 text-success mb-3 d-block"></i>
-                                <h6 class="fw-800">CONTACTO</h6>
-                                <p class="text-muted mb-0" th:text="${clinica?.telefono ?: 'No registrado'}">123...</p>
-                            </div>
+                            <i class="bi bi-geo-alt fs-1 text-primary mb-3"></i>
+                            <h6 class="fw-800">DIRECCIÓN</h6>
+                            <p class="text-muted" th:text="${clinica?.direccion}">Cargando...</p>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3">
-                                <i class="bi bi-info-circle fs-2 text-warning mb-3 d-block"></i>
-                                <h6 class="fw-800">ESTADO</h6>
-                                <p class="text-muted mb-0"><span class="pulse-dot"></span> Operativo</p>
-                            </div>
+                            <i class="bi bi-telephone fs-1 text-success mb-3"></i>
+                            <h6 class="fw-800">TELÉFONO</h6>
+                            <p class="text-muted" th:text="${clinica?.telefono}">Cargando...</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="bi bi-info-circle fs-1 text-warning mb-3"></i>
+                            <h6 class="fw-800">DESCRIPCIÓN</h6>
+                            <p class="text-muted text-truncate" th:text="${clinica?.descripcion}">Cargando...</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-5 pt-5 text-center">
-            <p class="text-muted small fw-bold">PROAULA CLÍNICA APP PREMIUM &copy; 2024</p>
-            <div class="opacity-25 fs-1 mt-2">
-                <i class="bi bi-shield-lock"></i>
-            </div>
+        <footer class="mt-5 text-center text-muted small fw-bold">
+            PROAULA CLÍNICA APP &copy; 2024 | GESTIÓN ADMINISTRATIVA PREMIUM
         </footer>
     </div>
 
-    <!-- Scripts de Gráficos y Animación -->
+    <!-- Scripts de Gráficos y Animaciones -->
     <script th:inline="javascript">
-        // Datos Seguros
+        // Datos del Servidor
         const labelsIngresos = JSON.parse(/*[[${labelsIngresosJson ?: '[]'}]]*/ '[]');
         const dataIngresos = JSON.parse(/*[[${dataIngresosJson ?: '[]'}]]*/ '[]');
         const labelsEstados = JSON.parse(/*[[${labelsEstadosJson ?: '[]'}]]*/ '[]');
@@ -430,11 +400,11 @@
         const dataTopServicios = JSON.parse(/*[[${dataTopServiciosJson ?: '[]'}]]*/ '[]');
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Chart 1: Revenue Line
+            // Gráfico de Ingresos
             const ctxRev = document.getElementById('revenueChart').getContext('2d');
-            const grad = ctxRev.createLinearGradient(0, 0, 0, 400);
-            grad.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
-            grad.addColorStop(1, 'rgba(99, 102, 241, 0)');
+            const gradient = ctxRev.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
             new Chart(ctxRev, {
                 type: 'line',
@@ -444,10 +414,10 @@
                         label: 'Ingresos ($)',
                         data: dataIngresos,
                         borderColor: '#6366f1',
-                        backgroundColor: grad,
-                        borderWidth: 4,
+                        backgroundColor: gradient,
                         fill: true,
                         tension: 0.4,
+                        borderWidth: 4,
                         pointBackgroundColor: '#fff',
                         pointBorderColor: '#6366f1',
                         pointBorderWidth: 3,
@@ -459,13 +429,13 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { borderDash: [5, 5], color: '#e2e8f0' }, border: { display: false } },
-                        x: { grid: { display: false }, border: { display: false } }
+                        y: { grid: { borderDash: [5, 5] }, ticks: { callback: v => '$' + v.toLocaleString() } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
 
-            // Chart 2: Status Doughnut
+            // Gráfico de Estados
             new Chart(document.getElementById('statusChart'), {
                 type: 'doughnut',
                 data: {
@@ -481,11 +451,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '75%',
-                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }
+                    plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } }
                 }
             });
 
-            // Chart 3: Services Bar
+            // Gráfico de Servicios
             new Chart(document.getElementById('servicesChart'), {
                 type: 'bar',
                 data: {
@@ -514,21 +484,14 @@
             const obj = document.getElementById(id);
             if (!obj) return;
             const startTime = performance.now();
-            
             function step(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 const current = Math.floor(start + (end - start) * progress);
-                
-                if (isCurrency) {
-                    obj.innerText = '$' + current.toLocaleString('es-CO');
-                } else {
-                    obj.innerText = current;
-                }
-                
-                if (progress < 1) {
-                    requestAnimationFrame(step);
-                } else {
+                if (isCurrency) obj.innerText = '$' + current.toLocaleString('es-CO');
+                else obj.innerText = current;
+                if (progress < 1) requestAnimationFrame(step);
+                else {
                     if (isCurrency) obj.innerText = '$' + end.toLocaleString('es-CO');
                     else obj.innerText = end;
                 }
