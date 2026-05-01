@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,15 +24,65 @@
             --google-red: #ea4335;
             --github-black: #24292e;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Nuevas variables para temas */
+            --bg-body: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --bg-card: #ffffff;
+            --bg-input: #f9fafb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
         }
 
         body {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
+        }
+
+        /* Botón de cambio de tema flotante */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1050;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            color: var(--text-main);
+            font-size: 1.4rem;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            background: var(--primary-color);
+            color: white;
         }
 
         /* Layout Principal */
@@ -183,11 +233,17 @@
             }
         }
 
-        .form-card {
-            background: white;
+        .register-card {
+            background: var(--bg-card);
             border-radius: 24px;
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        [data-theme="dark"] .register-card {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
 
         .form-header {
@@ -196,7 +252,6 @@
             text-align: center;
             border-bottom: 1px solid #e2e8f0;
         }
-
 
         .form-title {
             font-size: 1.75rem;
@@ -352,17 +407,18 @@
         .form-control-custom {
             width: 100%;
             padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid #e2e8f0;
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 1rem;
             transition: var(--transition);
-            background: #f8fafc;
+            background: var(--bg-input);
+            color: var(--text-main);
         }
 
         .form-control-custom:focus {
             outline: none;
             border-color: var(--primary-color);
-            background: white;
+            background: var(--bg-card);
             box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
         }
 
@@ -543,8 +599,10 @@
 </head>
 <body>
 
-    <!-- Header -->
-    
+    <!-- Botón Toggle Tema -->
+    <button class="theme-toggle-btn" id="themeToggle" title="Cambiar tema">
+        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+    </button>
 
     <main class="register-wrapper">
         <div class="container">
@@ -616,15 +674,9 @@
                 <!-- Panel Derecho - Formulario -->
                 <div class="col-lg-7 col-md-10 mx-auto">
                     <div class="form-panel">
-                        <div class="form-card">
+                        <div class="register-card">
                             <!-- Header -->
                             <div class="form-header">
-                                <a th:href="@{/}" class="brand-link d-inline-flex align-items-center gap-3 text-decoration-none mb-3">
-                                    <div class="brand-icon-premium">
-                                        <i class="bi bi-heart-pulse-fill"></i>
-                                    </div>
-                                    <span class="brand-text-premium mb-0">ClínicaApp</span>
-                                </a>
                                 <h2 class="form-title">Crea tu cuenta gratuita</h2>
                                 <p class="form-subtitle">Comienza a cuidar mejor a tu mascota hoy</p>
                             </div>
@@ -645,7 +697,6 @@
                                             <i class="bi bi-google"></i>
                                             Continuar con Google
                                         </a>
-                                        
                                     </div>
                                 </div>
 
@@ -658,24 +709,14 @@
                                             <label for="nombre" class="form-label required">Nombre</label>
                                             <div class="input-group-custom">
                                                 <i class="bi bi-person input-icon"></i>
-                                                <input type="text" 
-                                                       id="nombre" 
-                                                       class="form-control-custom" 
-                                                       th:field="*{nombre}" 
-                                                       placeholder="Tu nombre"
-                                                       required>
+                                                <input type="text" id="nombre" class="form-control-custom" th:field="*{nombre}" placeholder="Tu nombre" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6 form-group">
                                             <label for="apellido" class="form-label required">Apellido</label>
                                             <div class="input-group-custom">
                                                 <i class="bi bi-person input-icon"></i>
-                                                <input type="text" 
-                                                       id="apellido" 
-                                                       class="form-control-custom" 
-                                                       th:field="*{apellido}" 
-                                                       placeholder="Tu apellido"
-                                                       required>
+                                                <input type="text" id="apellido" class="form-control-custom" th:field="*{apellido}" placeholder="Tu apellido" required>
                                             </div>
                                         </div>
                                     </div>
@@ -684,12 +725,7 @@
                                         <label for="email" class="form-label required">Correo Electrónico</label>
                                         <div class="input-group-custom">
                                             <i class="bi bi-envelope input-icon"></i>
-                                            <input type="email" 
-                                                   id="email" 
-                                                   class="form-control-custom" 
-                                                   th:field="*{email}" 
-                                                   placeholder="tu@email.com"
-                                                   required>
+                                            <input type="email" id="email" class="form-control-custom" th:field="*{email}" placeholder="tu@email.com" required>
                                         </div>
                                     </div>
 
@@ -697,12 +733,7 @@
                                         <label for="telefono" class="form-label required">Teléfono</label>
                                         <div class="input-group-custom">
                                             <i class="bi bi-telephone input-icon"></i>
-                                            <input type="tel" 
-                                                   id="telefono" 
-                                                   class="form-control-custom" 
-                                                   th:field="*{telefono}" 
-                                                   placeholder="+57 300 123 4567"
-                                                   required>
+                                            <input type="tel" id="telefono" class="form-control-custom" th:field="*{telefono}" placeholder="+57 300 123 4567" required>
                                         </div>
                                         <div class="password-hint">Incluye el código de país (ej: +57 para Colombia)</div>
                                     </div>
@@ -711,13 +742,7 @@
                                         <label for="password" class="form-label required">Contraseña</label>
                                         <div class="input-group-custom">
                                             <i class="bi bi-lock input-icon"></i>
-                                            <input type="password" 
-                                                   id="password" 
-                                                   class="form-control-custom" 
-                                                   th:field="*{password}" 
-                                                   placeholder="Mínimo 8 caracteres"
-                                                   required
-                                                   minlength="8">
+                                            <input type="password" id="password" class="form-control-custom" th:field="*{password}" placeholder="Mínimo 8 caracteres" required minlength="8">
                                         </div>
                                         <div class="password-strength" id="passwordStrength">
                                             <div class="password-strength-bar" id="strengthBar"></div>
@@ -729,11 +754,7 @@
                                         <label for="confirmPassword" class="form-label required">Confirmar Contraseña</label>
                                         <div class="input-group-custom">
                                             <i class="bi bi-lock-fill input-icon"></i>
-                                            <input type="password" 
-                                                   id="confirmPassword" 
-                                                   class="form-control-custom" 
-                                                   placeholder="Repite tu contraseña"
-                                                   required>
+                                            <input type="password" id="confirmPassword" class="form-control-custom" placeholder="Repite tu contraseña" required>
                                         </div>
                                         <div class="invalid-feedback" id="confirmFeedback">
                                             <i class="bi bi-exclamation-circle"></i>
@@ -772,9 +793,7 @@
     </main>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" 
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" 
-            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -832,21 +851,15 @@
             // Validación del formulario
             form.addEventListener('submit', function(event) {
                 let isValid = true;
-
-                // Validar longitud de contraseña
                 if (password.value.length < 8) {
                     password.classList.add('is-invalid');
                     isValid = false;
                 } else {
                     password.classList.remove('is-invalid');
                 }
-
-                // Validar coincidencia
                 if (!validatePasswords()) {
                     isValid = false;
                 }
-
-                // Validar términos
                 const terms = document.getElementById('terms');
                 if (!terms.checked) {
                     terms.classList.add('is-invalid');
@@ -858,15 +871,12 @@
                 if (!isValid) {
                     event.preventDefault();
                     event.stopPropagation();
-                    
-                    // Scroll al primer error
                     const firstInvalid = form.querySelector('.is-invalid');
                     if (firstInvalid) {
                         firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         firstInvalid.focus();
                     }
                 } else {
-                    // Loading state
                     submitBtn.classList.add('loading');
                     submitBtn.disabled = true;
                 }
@@ -882,6 +892,32 @@
                 e.target.value = value;
             });
         });
+        // --- Lógica del Modo Nocturno ---
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        // Cargar tema guardado
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+            } else {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+            }
+        }
     </script>
 </body>
 </html>
