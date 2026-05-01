@@ -90,6 +90,24 @@
             color: white;
         }
 
+        /* Estrellas para el Modo Nocturno */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            background: transparent;
+        }
+
+        [data-theme="dark"] #stars-canvas {
+            opacity: 1;
+        }
+
         /* Layout Principal */
         .login-wrapper {
             min-height: 100vh;
@@ -610,6 +628,9 @@
         <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
     </button>
 
+    <!-- Canvas para el Cielo Estrellado -->
+    <canvas id="stars-canvas"></canvas>
+
     <div class="login-wrapper">
         <!-- Panel Izquierdo - Hero -->
         <div class="login-hero">
@@ -961,10 +982,66 @@
         function updateThemeIcon(theme) {
             if (theme === 'dark') {
                 themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                startStars();
             } else {
                 themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                stopStars();
             }
         }
+
+        // --- Sistema de Estrellas Animadas ---
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let animationFrame;
+        let isAnimating = false;
+
+        function initStars() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            const starCount = 150;
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    opacity: Math.random(),
+                    speed: 0.005 + Math.random() * 0.02
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.opacity += star.speed;
+                if (star.opacity > 1 || star.opacity < 0) star.speed *= -1;
+            });
+            animationFrame = requestAnimationFrame(drawStars);
+        }
+
+        function startStars() {
+            if (!isAnimating) {
+                isAnimating = true;
+                initStars();
+                drawStars();
+            }
+        }
+
+        function stopStars() {
+            isAnimating = false;
+            cancelAnimationFrame(animationFrame);
+        }
+
+        window.addEventListener('resize', () => {
+            if (isAnimating) initStars();
+        });
     </script>
 </body>
 
