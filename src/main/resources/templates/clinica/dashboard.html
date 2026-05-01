@@ -35,7 +35,6 @@
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow-soft: 0 4px 24px rgba(15, 23, 42, 0.06);
             --shadow-hover: 0 20px 50px rgba(99, 102, 241, 0.18);
-            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
             --radius-xl: 24px;
             --radius-lg: 16px;
             --radius-md: 12px;
@@ -43,844 +42,181 @@
         }
 
         * {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 25%, #e0e7ff 50%, #f5f3ff 75%, #fff1f2 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
+            background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 100%);
             min-height: 100vh;
             color: #1e293b;
             overflow-x: hidden;
         }
 
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            33% {
-                background-position: 100% 50%;
-            }
-
-            66% {
-                background-position: 50% 100%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Partículas flotantes de fondo */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Navbar Premium - Glassmorphism */
         .navbar {
-            background: rgba(15, 23, 42, 0.85) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-            position: relative;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .navbar-brand {
             font-weight: 800;
-            font-size: 1.5rem;
-            letter-spacing: -0.5px;
             background: linear-gradient(to right, #fff, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: transform 0.3s ease;
         }
 
-        .navbar-brand:hover {
-            transform: scale(1.02);
-        }
-
-        .navbar-brand i {
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.75rem;
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover i {
-            transform: rotate(10deg);
-        }
-
-        .btn-outline-danger {
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            border-radius: 50px;
-            padding: 0.5rem 1.25rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            background: rgba(239, 68, 68, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-outline-danger::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-outline-danger:hover::before {
-            left: 100%;
-        }
-
-        .btn-outline-danger:hover {
-            background: linear-gradient(135deg, #ef4444, #f87171);
-            border-color: transparent;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Alertas Animadas Premium */
-        .alert {
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-soft);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .alert::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, rgba(209, 250, 229, 0.9) 0%, rgba(167, 243, 208, 0.9) 100%);
-            color: #065f46;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .alert-success::before {
-            background: linear-gradient(180deg, #10b981, #34d399);
-        }
-
-        .alert-primary {
-            background: linear-gradient(135deg, rgba(219, 234, 254, 0.9) 0%, rgba(191, 219, 254, 0.9) 100%);
-            color: #1e40af;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .alert-primary::before {
-            background: linear-gradient(180deg, #3b82f6, #60a5fa);
-        }
-
-        .alert i {
-            font-size: 1.25rem;
-            margin-right: 0.75rem;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Sala de Espera - Destacado Especial Premium */
-        .waiting-room-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 249, 255, 0.9) 100%);
-            border: 2px solid #3b82f6;
-            border-radius: var(--radius-xl);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-soft);
-            animation: pulse-border 2.5s infinite;
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            position: relative;
-        }
-
-        .waiting-room-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        @keyframes pulse-border {
-
-            0%,
-            100% {
-                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-soft);
-            }
-
-            50% {
-                box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2), 0 8px 32px rgba(59, 130, 246, 0.15);
-            }
-        }
-
-        .waiting-room-card .card-header {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-            border: none;
-            padding: 1.5rem 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .waiting-room-card .card-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                left: -100%;
-            }
-
-            100% {
-                left: 100%;
-            }
-        }
-
-        .waiting-room-card .card-header h5 {
-            font-size: 1.25rem;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .waiting-room-card .card-header i {
-            animation: megaphone-shake 1.5s ease-in-out infinite;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
-
-        @keyframes megaphone-shake {
-
-            0%,
-            100% {
-                transform: rotate(0deg);
-            }
-
-            10% {
-                transform: rotate(-10deg);
-            }
-
-            20% {
-                transform: rotate(10deg);
-            }
-
-            30% {
-                transform: rotate(0deg);
-            }
-        }
-
-        .waiting-room-card .list-group-item {
-            background: transparent;
-            border-color: rgba(59, 130, 246, 0.1);
-            padding: 1.5rem 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .waiting-room-card .list-group-item:hover {
-            background: rgba(59, 130, 246, 0.04);
-            transform: translateX(8px);
-        }
-
-        .waiting-room-card h5 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e40af;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .waiting-room-card .badge {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
-        }
-
-        .btn-call {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            border: none;
-            border-radius: 50px;
-            padding: 1rem 2rem;
-            font-weight: 700;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-call::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-call:hover::before {
-            left: 100%;
-        }
-
-        .btn-call:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        }
-
-        .btn-call:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-
-        .btn-call i {
-            animation: door-open 1s ease-in-out infinite;
-        }
-
-        @keyframes door-open {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            50% {
-                transform: translateX(3px);
-            }
-        }
-
-        /* Stat Cards Premium - Glassmorphism */
-        .stat-card {
+        /* Dashboard Cards */
+        .card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-soft);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            position: relative;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            opacity: 1 !important; /* Forzar visibilidad */
+            transform: none !important;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.8s ease;
-            pointer-events: none;
-        }
-
-        .stat-card:hover::after {
-            opacity: 0.1;
-            transform: scale(1);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px) scale(1.02);
+        .card:hover {
+            transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
         }
 
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+        /* Waiting Room Special Style */
+        .waiting-room-card {
+            border: 2px solid #3b82f6;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .waiting-room-card .card-header {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: white;
+            padding: 1.25rem 2rem;
+            border: none;
         }
 
-        .bg-gradient-primary::before {
-            display: none;
-        }
-
-        .bg-gradient-success {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%) !important;
-            color: white;
-        }
-
-        .bg-gradient-success::before {
-            display: none;
-        }
-
-        .stat-card .card-body {
+        /* KPI Cards */
+        .stat-card {
             padding: 2rem;
+            border-radius: var(--radius-xl);
+            color: white;
             position: relative;
-            z-index: 1;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
         }
 
-        .stat-card h6 {
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            opacity: 0.9;
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-        }
+        .bg-gradient-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .bg-gradient-success { background: linear-gradient(135deg, #10b981, #34d399); }
 
         .stat-card h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
-            letter-spacing: -2px;
-            line-height: 1;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin: 0.5rem 0;
         }
 
         .stat-card i {
-            font-size: 4rem;
-            opacity: 0.15;
             position: absolute;
             right: 1.5rem;
             top: 50%;
             transform: translateY(-50%);
-            transition: all 0.3s ease;
+            font-size: 4rem;
+            opacity: 0.2;
         }
 
-        .stat-card:hover i {
-            opacity: 0.25;
-            transform: translateY(-50%) scale(1.1) rotate(-5deg);
-        }
-
-        .stat-card .btn-link {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            position: relative;
-        }
-
-        .stat-card .btn-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: white;
-            transition: width 0.3s ease;
-        }
-
-        .stat-card .btn-link:hover::after {
-            width: 100%;
-        }
-
-        .stat-card .btn-link:hover {
-            color: white;
-            gap: 1rem;
-        }
-
-        /* Panel Administrativo Premium */
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-hover);
-        }
-
-        .card-header {
-            background: linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95)) !important;
-            border-bottom: 2px solid rgba(241, 245, 249, 0.8);
-            padding: 1.5rem 2rem !important;
-        }
-
-        .card-header h6 {
-            font-weight: 800;
-            color: #1e293b;
-            font-size: 1.1rem;
-            letter-spacing: -0.5px;
-        }
-
+        /* Sidebar Links */
         .sidebar-link {
             text-decoration: none;
             color: #475569;
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1rem 1.25rem;
+            padding: 1rem;
             border-radius: var(--radius-md);
-            margin-bottom: 0.75rem;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            font-size: 0.95rem;
-            background: rgba(248, 250, 252, 0.8);
-            border: 1px solid rgba(226, 232, 240, 0.6);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-link::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0;
-            background: linear-gradient(180deg, #6366f1, #8b5cf6);
-            transition: width 0.3s ease;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .sidebar-link:hover::before {
-            width: 4px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.5);
         }
 
         .sidebar-link:hover {
-            background: rgba(255, 255, 255, 0.95);
-            color: #4f46e5;
-            transform: translateX(8px);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.12);
-            border-color: rgba(99, 102, 241, 0.2);
+            background: white;
+            color: var(--primary);
+            transform: translateX(5px);
         }
 
-        .sidebar-link i {
-            font-size: 1.25rem;
-            width: 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .sidebar-link:hover i {
-            transform: scale(1.2) rotate(-5deg);
-        }
-
-        /* Info de Sede Premium */
-        .rounded-4 {
-            border-radius: var(--radius-xl) !important;
-        }
-
-        .card-body label {
+        .btn-call {
+            background: #2563eb;
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
             font-weight: 700;
-            color: #64748b;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border: none;
+            transition: all 0.3s;
         }
 
-        .card-body .border {
-            background: rgba(248, 250, 252, 0.8) !important;
-            border-color: rgba(226, 232, 240, 0.6) !important;
-            border-radius: var(--radius-md);
-            padding: 1rem !important;
-            font-weight: 500;
-            color: #334155;
-            transition: all 0.3s ease;
+        .btn-call:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
+            color: white;
         }
 
-        .card-body .border:hover {
-            background: white !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.3) !important;
+        /* Fallback for charts if data is missing */
+        canvas {
+            max-width: 100%;
         }
-
-        /* Tip Card Premium */
-        .alert.bg-white {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%) !important;
-            border: 1px solid rgba(224, 242, 254, 0.6) !important;
-            border-radius: var(--radius-xl);
-            padding: 1.5rem 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .bg-info-subtle {
-            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%) !important;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
-            transition: transform 0.3s ease;
-        }
-
-        .alert.bg-white:hover .bg-info-subtle {
-            transform: scale(1.1) rotate(10deg);
-        }
-
-        .bg-info-subtle i {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.5rem;
-        }
-
-        .alert h6 {
-            color: #0369a1;
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-
-        .alert p {
-            color: #64748b;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        /* Footer Premium */
-        footer {
-            border-top: 1px solid rgba(226, 232, 240, 0.6) !important;
-            padding-top: 3rem !important;
-            margin-top: 4rem !important;
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 1;
-        }
-
-        footer p {
-            color: #94a3b8;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        /* Badge premium */
-        .badge.bg-primary-subtle {
-            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
-            color: #4338ca;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            font-weight: 700;
-            padding: 0.5rem 1rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .stat-card h1 {
-                font-size: 2.5rem;
-            }
-
-            .waiting-room-card .list-group-item {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
-
-            .btn-call {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .sidebar-link:hover {
-                transform: translateX(4px);
-            }
-        }
-
-        /* Scrollbar Premium */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(241, 245, 249, 0.5);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 100%);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-        }
-
-        /* Animaciones adicionales */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-card,
-        .card:not(.waiting-room-card) {
-            animation: fadeIn 0.6s ease forwards;
-            opacity: 0;
-        }
-
-        .waiting-room-card {
-            animation: fadeIn 0.6s ease forwards, pulse-border 2.5s infinite;
-            opacity: 0;
-        }
-
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(1) { animation-delay: 0.15s; }
     </style>
 </head>
 
-<body class="bg-light">
-
-    <!-- Navbar Superior Premium -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/clinica/dashboard">
-                <i class="bi bi-shield-plus me-2"></i>ClínicaApp <small class="fw-light opacity-75">Sede</small>
+            <a class="navbar-brand" href="/clinica/dashboard">
+                <i class="bi bi-shield-plus me-2 text-primary"></i>ClínicaApp <small class="fw-light">Sede</small>
             </a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="text-white-50 d-none d-md-inline small fw-medium"
-                    th:text="${clinica?.email ?: 'email@clinica.com'}">email@clinica.com</span>
-                <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2);" class="d-none d-md-block">
-                </div>
-                <a class="btn btn-outline-danger btn-sm" href="/logout">
-                    <i class="bi bi-box-arrow-right me-1"></i> Salir
-                </a>
+            <div class="ms-auto">
+                <span class="text-white-50 me-3 small" th:text="${clinica?.email ?: ''}">admin@clinica.com</span>
+                <a class="btn btn-outline-danger btn-sm rounded-pill" href="/logout">Salir</a>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4 position-relative" style="z-index: 1;">
-
-        <!-- Alertas de éxito Premium -->
-        <div th:if="${param.perfilActualizado}" class="alert alert-success alert-dismissible fade show shadow-sm mb-4"
-            role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> ¡Los datos de la sede han sido actualizados exitosamente!
+    <div class="container mt-4">
+        
+        <!-- Alertas -->
+        <div th:if="${param.perfilActualizado}" class="alert alert-success alert-dismissible fade show rounded-4">
+            <i class="bi bi-check-circle-fill me-2"></i> Perfil actualizado correctamente.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <div th:if="${param.success == 'atendida'}"
-            class="alert alert-primary alert-dismissible fade show shadow-sm mb-4" role="alert">
-            <i class="bi bi-clipboard2-check-fill me-2"></i> Atención médica registrada. La cita se ha completado
-            correctamente.
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <!-- NOTIFICACIÓN: SALA DE ESPERA (Pacientes enviados por recepción) -->
+        <!-- SALA DE ESPERA (Prioridad Máxima) -->
         <div class="row mb-4" th:if="${salaDeEspera != null and not #lists.isEmpty(salaDeEspera)}">
             <div class="col-12">
                 <div class="card waiting-room-card">
-                    <div class="card-header text-white py-3 border-0">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-megaphone-fill me-2"></i> PACIENTES EN SALA DE ESPERA
-                        </h5>
-                        <span class="badge bg-white text-primary position-absolute"
-                            style="top: 1.5rem; right: 2rem; font-size: 0.85rem;"
-                            th:text="${#lists.size(salaDeEspera) + ' paciente' + (${#lists.size(salaDeEspera) > 1 ? 's' : ''})}">1
-                            paciente</span>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-megaphone-fill me-2"></i> PACIENTES EN SALA DE ESPERA</h5>
+                        <span class="badge bg-white text-primary rounded-pill px-3" th:text="${#lists.size(salaDeEspera)}">0</span>
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            <div th:each="p : ${salaDeEspera}"
-                                class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div
-                                        style="width: 50px; height: 50px; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                                        <i class="bi bi-heart-pulse-fill text-primary"></i>
+                            <div th:each="p : ${salaDeEspera}" class="list-group-item p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-primary-subtle p-3 rounded-4">
+                                            <i class="bi bi-heart-pulse-fill text-primary fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1 fw-bold text-primary" th:text="${p.nombreMascota ?: 'Paciente'}">Mascota</h5>
+                                            <p class="mb-0 text-muted small">
+                                                <i class="bi bi-person me-1"></i><span th:text="${p.nombreUsuario ?: 'Dueño'}">Dueño</span>
+                                                <span class="mx-2">|</span>
+                                                <i class="bi bi-tag me-1"></i><span th:text="${p.nombreServicio ?: 'Consulta'}">Servicio</span>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h5 class="mb-1 fw-bold text-primary" style="font-size: 1.2rem;">
-                                            <span th:text="${p.nombreMascota ?: 'Sin nombre'}">Mascota</span>
-                                        </h5>
-                                        <p class="mb-0 text-muted small">
-                                            <i class="bi bi-person me-1"></i><strong
-                                                th:text="${p.nombreUsuario ?: 'Usuario'}">Nombre</strong>
-                                            <span class="mx-2">|</span>
-                                            <i class="bi bi-tag me-1"></i><span class="badge bg-secondary"
-                                                th:text="${p.nombreServicio ?: 'General'}">Servicio</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="text-muted small mb-2" style="font-size: 0.75rem;">
-                                        <i class="bi bi-clock me-1"></i>En espera
-                                    </div>
-                                    <a th:href="@{'/clinica/atender/' + ${p.id}}" class="btn btn-call">
-                                        <i class="bi bi-door-open-fill me-1"></i> LLAMAR A CONSULTORIO
+                                    <a th:href="@{'/clinica/atender/' + ${p.id}}" class="btn btn-call shadow-sm">
+                                        <i class="bi bi-door-open-fill me-1"></i> LLAMAR AHORA
                                     </a>
                                 </div>
                             </div>
@@ -890,485 +226,184 @@
             </div>
         </div>
 
-        <!-- Dashboard Normal -->
-        <div class="row g-4 mb-4">
-            <!-- GRÁFICOS DE RENDIMIENTO (BI) -->
+        <!-- Grid Principal -->
+        <div class="row g-4">
+            <!-- Columna Izquierda: Gráficos -->
             <div class="col-lg-8">
-                <!-- Gráfico Principal de Ingresos -->
-                <div class="card mb-4">
-                    <div
-                        class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-2">
-                            <div
-                                style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-graph-up-arrow text-white"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Tendencia de Ingresos</h5>
-                                <small class="text-muted" style="font-size: 0.75rem;">Análisis semanal de
-                                    rendimiento</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3">
-                            <i class="bi bi-calendar-week me-1"></i>Últimos 7 días
-                        </span>
+                <!-- Gráfico de Ingresos -->
+                <div class="card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Tendencia de Ingresos</h6>
                     </div>
-                    <div class="card-body pt-0">
-                        <div style="height: 300px; position: relative;">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
+                    <div style="height: 300px;">
+                        <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Gráficos Secundarios -->
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header bg-transparent border-0 py-3 text-center">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi bi-pie-chart-fill text-primary" style="font-size: 1.2rem;"></i>
-                                    <h6 class="mb-0 fw-bold">Distribución de Citas</h6>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div style="height: 220px; position: relative;">
-                                    <canvas id="statusChart"></canvas>
-                                </div>
+                        <div class="card p-4">
+                            <h6 class="fw-bold mb-4 text-center">Estados de Citas</h6>
+                            <div style="height: 200px;">
+                                <canvas id="statusChart"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header bg-transparent border-0 py-3 text-center">
-                                <div class="d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi bi-stars text-warning" style="font-size: 1.2rem;"></i>
-                                    <h6 class="mb-0 fw-bold">Servicios Populares</h6>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div style="height: 220px; position: relative;">
-                                    <canvas id="servicesChart"></canvas>
-                                </div>
+                        <div class="card p-4">
+                            <h6 class="fw-bold mb-4 text-center">Top Servicios</h6>
+                            <div style="height: 200px;">
+                                <canvas id="servicesChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna Lateral: Estadísticas (KPIs) y Menú -->
+            <!-- Columna Derecha: KPIs y Menú -->
             <div class="col-lg-4">
-                <!-- Card de Citas -->
-                <div class="stat-card bg-gradient-primary text-white mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-white-50">Citas Totales</h6>
-                                <h1 class="mb-0" id="kpi-citas" th:text="${totalCitas ?: 0}">0</h1>
-                                <div class="mt-2 d-flex align-items-center gap-1"
-                                    style="font-size: 0.8rem; opacity: 0.8;">
-                                    <i class="bi bi-arrow-up-short"></i>
-                                    <span>Esta semana</span>
-                                </div>
-                            </div>
-                            <i class="bi bi-calendar2-check"></i>
-                        </div>
-                        <a href="/clinica/citas"
-                            class="btn btn-link text-white text-decoration-none p-0 mt-3 small fw-bold">
-                            Ver Agenda Completa <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
+                <!-- KPI Citas -->
+                <div class="stat-card bg-gradient-primary">
+                    <h6 class="text-white-50">CITAS TOTALES</h6>
+                    <h1 th:text="${totalCitas ?: 0}">0</h1>
+                    <i class="bi bi-calendar-check"></i>
+                    <a href="/clinica/citas" class="text-white text-decoration-none small fw-bold">Ver agenda <i class="bi bi-arrow-right"></i></a>
                 </div>
 
-                <!-- Card de Ingresos -->
-                <div class="stat-card bg-gradient-success text-white mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-white-50">Ingresos Recaudados</h6>
-                                <h1 class="mb-0" id="kpi-ingresos"
-                                    th:text="'$' + ${#numbers.formatDecimal(totalIngresos ?: 0, 1, 'COMMA', 2, 'POINT')}">
-                                    $0.00</h1>
-                                <div class="mt-2 d-flex align-items-center gap-1"
-                                    style="font-size: 0.8rem; opacity: 0.8;">
-                                    <i class="bi bi-graph-up"></i>
-                                    <span>Acumulado del mes</span>
-                                </div>
-                            </div>
-                            <i class="bi bi-cash-stack"></i>
-                        </div>
-                        <a th:href="@{/clinica/reporte-ventas}"
-                            class="text-white text-decoration-none fw-bold small mt-3 d-inline-flex align-items-center gap-1"
-                            style="opacity: 0.9; transition: all 0.3s;">
-                            Ver detalle de pagos <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                <!-- KPI Ingresos -->
+                <div class="stat-card bg-gradient-success">
+                    <h6 class="text-white-50">INGRESOS TOTALES</h6>
+                    <h1 th:text="'$' + ${#numbers.formatDecimal(totalIngresos ?: 0, 0, 'POINT', 0, 'POINT')}">$0</h1>
+                    <i class="bi bi-cash-stack"></i>
+                    <a href="/clinica/reporte-ventas" class="text-white text-decoration-none small fw-bold">Ver reportes <i class="bi bi-arrow-right"></i></a>
                 </div>
 
-                <!-- Panel Administrativo Premium -->
-                <div class="card mb-4">
-                    <div class="card-header bg-white py-3 border-0">
-                        <div class="d-flex align-items-center gap-2">
-                            <div
-                                style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #ec4899); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-grid-3x3-gap-fill text-white" style="font-size: 0.9rem;"></i>
-                            </div>
-                            <h6 class="m-0 fw-bold text-dark">Panel Administrativo</h6>
-                        </div>
-                    </div>
-                    <div class="card-body pt-0">
-                        <a href="/clinica/citas" class="sidebar-link">
-                            <i class="bi bi-clipboard2-pulse text-primary"></i>
-                            <div>
-                                <span>Control de Pacientes</span>
-                                <small class="d-block text-muted"
-                                    style="font-size: 0.75rem; font-weight: 500;">Gestionar citas y atenciones</small>
-                            </div>
-                        </a>
-                        <a href="/clinica/mis-servicios" class="sidebar-link">
-                            <i class="bi bi-tags text-success"></i>
-                            <div>
-                                <span>Mis Precios y Servicios</span>
-                                <small class="d-block text-muted"
-                                    style="font-size: 0.75rem; font-weight: 500;">Configurar tarifas</small>
-                            </div>
-                        </a>
-                        <a href="/clinica/horario" class="sidebar-link">
-                            <i class="bi bi-clock-history text-warning"></i>
-                            <div>
-                                <span>Horario de Atención</span>
-                                <small class="d-block text-muted" style="font-size: 0.75rem; font-weight: 500;">Definir
-                                    disponibilidad</small>
-                            </div>
-                        </a>
-                        <a href="/clinica/perfil" class="sidebar-link">
-                            <i class="bi bi-geo-alt text-danger"></i>
-                            <div>
-                                <span>Editar Datos de Sede</span>
-                                <small class="d-block text-muted"
-                                    style="font-size: 0.75rem; font-weight: 500;">Información del consultorio</small>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- Columna Derecha: Información de la Sede -->
-            <div class="col-lg-8">
-                <div class="card mb-4">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-0">
-                        <div class="d-flex align-items-center gap-2">
-                            <div
-                                style="width: 36px; height: 36px; background: linear-gradient(135deg, #94a3b8, #64748b); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-info-circle text-white" style="font-size: 1rem;"></i>
-                            </div>
-                            <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Información de mi Sede</h5>
-                        </div>
-                        <a href="/clinica/perfil" class="btn btn-sm"
-                            style="background: rgba(99, 102, 241, 0.1); color: #6366f1; border-radius: 50px; font-weight: 600; font-size: 0.8rem; padding: 0.5rem 1rem; transition: all 0.3s;">
-                            <i class="bi bi-pencil-square me-1"></i>Editar
-                        </a>
-                    </div>
-                    <div class="card-body bg-white">
-                        <div class="row g-4">
-                            <div class="col-sm-6">
-                                <label class="d-block mb-2"><i class="bi bi-geo-alt-fill me-1 text-danger"></i>Dirección
-                                    Registrada</label>
-                                <div class="border" th:text="${clinica?.direccion ?: 'No registrada'}">Cargando...</div>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="d-block mb-2"><i
-                                        class="bi bi-telephone-fill me-1 text-success"></i>Teléfono Público</label>
-                                <div class="border" th:text="${clinica?.telefono ?: 'No registrado'}">Cargando...</div>
-                            </div>
-                            <div class="col-12">
-                                <label class="d-block mb-2"><i class="bi bi-card-text me-1 text-primary"></i>Descripción
-                                    para Clientes</label>
-                                <div class="border" style="min-height: 80px; line-height: 1.6;"
-                                    th:text="${clinica?.descripcion ?: 'Sin descripción.'}">Sin descripción.</div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Menú de Acceso Rápido -->
+                <div class="card p-3">
+                    <h6 class="fw-bold p-2 mb-3">ADMINISTRACIÓN</h6>
+                    <a href="/clinica/citas" class="sidebar-link">
+                        <i class="bi bi-clipboard2-pulse"></i> Control de Pacientes
+                    </a>
+                    <a href="/clinica/mis-servicios" class="sidebar-link">
+                        <i class="bi bi-tags"></i> Servicios y Precios
+                    </a>
+                    <a href="/clinica/horario" class="sidebar-link">
+                        <i class="bi bi-clock"></i> Horarios de Atención
+                    </a>
+                    <a href="/clinica/perfil" class="sidebar-link">
+                        <i class="bi bi-gear"></i> Configuración Sede
+                    </a>
                 </div>
 
-                <!-- Tip Card Premium -->
-                <div class="alert bg-white shadow-sm d-flex align-items-center p-4" role="alert">
-                    <div class="bg-info-subtle me-3 flex-shrink-0">
-                        <i class="bi bi-lightbulb"></i>
+                <!-- Tip Card -->
+                <div class="alert alert-info border-0 rounded-4 p-4 mt-3">
+                    <div class="d-flex gap-3">
+                        <i class="bi bi-lightbulb fs-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Información</h6>
+                            <p class="small mb-0">Los pacientes aparecen en la Sala de Espera cuando se confirma su asistencia.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="mb-1">Tip para Veterinarios</h6>
-                        <p class="mb-0">Cuando la recepción haga el check-in de un paciente, te aparecerá una caja azul
-                            arriba para que lo llames al consultorio de inmediato.</p>
-                    </div>
-                    <i class="bi bi-chevron-right text-muted ms-auto d-none d-md-block" style="opacity: 0.5;"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Premium -->
-        <footer class="mt-5 pt-4 text-center mb-5">
-            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
-                <div
-                    style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulse-dot 2s infinite;">
+        <!-- Info de Sede -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h6 class="fw-bold mb-4">DETALLES DE LA SEDE</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-bold d-block mb-1">DIRECCIÓN</label>
+                            <p class="mb-0 fw-medium" th:text="${clinica?.direccion ?: 'No definida'}">Calle...</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-bold d-block mb-1">TELÉFONO</label>
+                            <p class="mb-0 fw-medium" th:text="${clinica?.telefono ?: 'No definido'}">123...</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small fw-bold d-block mb-1">DESCRIPCIÓN</label>
+                            <p class="mb-0 fw-medium" th:text="${clinica?.descripcion ?: 'Sin descripción'}">Desc...</p>
+                        </div>
+                    </div>
                 </div>
-                <span style="color: #10b981; font-weight: 700; font-size: 0.8rem;">Sistema Operativo</span>
-                <span style="color: #cbd5e1;">|</span>
-                <span style="color: #94a3b8; font-size: 0.8rem;">v2.1</span>
             </div>
-            <p class="small mb-0">Sistema de Gestión Clínica © 2024</p>
+        </div>
+
+        <footer class="py-5 text-center text-muted">
+            <p class="small mb-0">ClínicaApp Sede v2.2 | 2024</p>
         </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
-        // --- 1. DATOS DEL SERVIDOR ---
-        const labelsEstados = JSON.parse(/*[[${labelsEstadosJson ?: '[]'}]]*/ '[]');
-        const dataEstados = JSON.parse(/*[[${dataEstadosJson ?: '[]'}]]*/ '[]');
+        // Datos seguros del servidor
         const labelsIngresos = JSON.parse(/*[[${labelsIngresosJson ?: '[]'}]]*/ '[]');
         const dataIngresos = JSON.parse(/*[[${dataIngresosJson ?: '[]'}]]*/ '[]');
+        const labelsEstados = JSON.parse(/*[[${labelsEstadosJson ?: '[]'}]]*/ '[]');
+        const dataEstados = JSON.parse(/*[[${dataEstadosJson ?: '[]'}]]*/ '[]');
         const labelsTopServicios = JSON.parse(/*[[${labelsTopServiciosJson ?: '[]'}]]*/ '[]');
         const dataTopServicios = JSON.parse(/*[[${dataTopServiciosJson ?: '[]'}]]*/ '[]');
 
-        // --- 2. CONFIGURACIÓN DE GRÁFICOS PREMIUM ---
-
-        // Gráfico de Ingresos (Línea) - Premium
-        const canvasRev = document.getElementById('revenueChart');
-        if (canvasRev) {
-            const ctxRev = canvasRev.getContext('2d');
-            const gradRev = ctxRev.createLinearGradient(0, 0, 0, 300);
-            gradRev.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
-            gradRev.addColorStop(0.5, 'rgba(99, 102, 241, 0.1)');
-            gradRev.addColorStop(1, 'rgba(99, 102, 241, 0)');
-
-            new Chart(ctxRev, {
-                type: 'line',
-                data: {
-                    labels: labelsIngresos,
-                    datasets: [{
-                        label: 'Ingresos ($)',
-                        data: dataIngresos,
-                        borderColor: '#6366f1',
-                        backgroundColor: gradRev,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#6366f1',
-                        pointBorderWidth: 3,
-                        pointRadius: 5,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#6366f1',
-                        pointHoverBorderColor: '#fff',
-                        pointHoverBorderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            titleFont: { size: 13, weight: '700', family: 'Plus Jakarta Sans' },
-                            bodyFont: { size: 12, family: 'Plus Jakarta Sans' },
-                            cornerRadius: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) {
-                                    return '$' + (context.parsed.y || 0).toLocaleString();
-                                }
-                            }
-                        }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Chart de Ingresos
+            const ctxRev = document.getElementById('revenueChart');
+            if(ctxRev) {
+                new Chart(ctxRev, {
+                    type: 'line',
+                    data: {
+                        labels: labelsIngresos,
+                        datasets: [{
+                            label: 'Ingresos ($)',
+                            data: dataIngresos,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(99, 102, 241, 0.06)', drawBorder: false },
-                            ticks: {
-                                font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
-                                color: '#94a3b8',
-                                callback: value => '$' + value.toLocaleString(),
-                                padding: 10
-                            },
-                            border: { display: false }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
-                                color: '#64748b'
-                            },
-                            border: { display: false }
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        }
-
-        // Gráfico de Estados (Doughnut) - Premium
-        const canvasStatus = document.getElementById('statusChart');
-        if (canvasStatus) {
-            new Chart(canvasStatus, {
-                type: 'doughnut',
-                data: {
-                    labels: labelsEstados,
-                    datasets: [{
-                        data: dataEstados,
-                        backgroundColor: [
-                            '#3b82f6', // info
-                            '#f59e0b', // warning
-                            '#6366f1', // primary
-                            '#10b981', // success
-                            '#ef4444'  // danger
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 12
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 10,
-                                padding: 15,
-                                font: { size: 11, weight: '600', family: 'Plus Jakarta Sans' },
-                                usePointStyle: true,
-                                pointStyle: 'circle'
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            cornerRadius: 12,
-                            bodyFont: { family: 'Plus Jakarta Sans' }
-                        }
-                    },
-                    cutout: '72%',
-                    animation: {
-                        animateRotate: true,
-                        duration: 1500
-                    }
-                }
-            });
-        }
-
-        // Gráfico de Servicios (Barra Horizontal) - Premium
-        const canvasServices = document.getElementById('servicesChart');
-        if (canvasServices) {
-            new Chart(canvasServices, {
-                type: 'bar',
-                data: {
-                    labels: labelsTopServicios,
-                    datasets: [{
-                        label: 'Citas',
-                        data: dataTopServicios,
-                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        barThickness: 20
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            cornerRadius: 12,
-                            bodyFont: { family: 'Plus Jakarta Sans' }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                stepSize: 1,
-                                font: { weight: '600', size: 10, family: 'Plus Jakarta Sans' },
-                                color: '#94a3b8'
-                            },
-                            border: { display: false }
-                        },
-                        y: {
-                            grid: { display: false },
-                            ticks: {
-                                font: { weight: '600', size: 11, family: 'Plus Jakarta Sans' },
-                                color: '#475569'
-                            },
-                            border: { display: false }
-                        }
-                    },
-                    animation: {
-                        duration: 1500,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-        }
-
-        // --- 3. ANIMACIONES DE KPI PREMIUM ---
-        function animateCounter(id, start, end, duration, isCurrency) {
-            let obj = document.getElementById(id);
-            if (!obj) return;
-
-            const startTime = performance.now();
-            
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                // Easing function: easeOutQuart
-                const easeProgress = 1 - Math.pow(1 - progress, 4);
-                const current = start + (end - start) * easeProgress;
-
-                if (isCurrency) {
-                    obj.innerText = '$' + current.toLocaleString('es-CO', { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                    });
-                } else {
-                    obj.innerText = Math.floor(current);
-                }
-
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                } else {
-                    // Asegurar valor final exacto
-                    if (isCurrency) {
-                        obj.innerText = '$' + end.toLocaleString('es-CO', { 
-                            minimumFractionDigits: 2, 
-                            maximumFractionDigits: 2 
-                        });
-                    } else {
-                        obj.innerText = end;
-                    }
-                }
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
             }
 
-            requestAnimationFrame(update);
-        }
+            // Chart de Estados
+            const ctxStat = document.getElementById('statusChart');
+            if(ctxStat) {
+                new Chart(ctxStat, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labelsEstados,
+                        datasets: [{
+                            data: dataEstados,
+                            backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#6366f1']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+                });
+            }
 
-        // Ejecutar animaciones al cargar
-        document.addEventListener('DOMContentLoaded', () => {
-            const totalCitas = parseInt(/*[[${totalCitas ?: 0}]]*/ '0');
-            const totalIngresos = parseFloat(/*[[${totalIngresos ?: 0}]]*/ '0');
-
-            setTimeout(() => {
-                animateCounter('kpi-citas', 0, totalCitas, 2000, false);
-                animateCounter('kpi-ingresos', 0, totalIngresos, 2000, true);
-            }, 300);
+            // Chart de Servicios
+            const ctxServ = document.getElementById('servicesChart');
+            if(ctxServ) {
+                new Chart(ctxServ, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsTopServicios,
+                        datasets: [{
+                            label: 'Citas',
+                            data: dataTopServicios,
+                            backgroundColor: '#6366f1'
+                        }]
+                    },
+                    options: { 
+                        indexAxis: 'y', 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
         });
     </script>
 </body>
-
 </html>
