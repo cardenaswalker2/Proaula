@@ -1,42 +1,114 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Clínica App - Encuentra veterinarios de confianza en Cartagena. Agenda citas en línea, compara servicios y cuida la salud de tu mascota fácilmente.">
-    <title>Clínica App | Veterinarios en Cartagena - Agenda Citas Online</title>
+        content="Clínica App - La plataforma veterinaria más avanzada de Colombia. Agenda citas en tiempo real, historial médico digital y telemedicina 24/7.">
+    <title>ClínicaApp | Plataforma Veterinaria Premium - Cartagena</title>
     <link th:replace="~{fragments/header :: favIcon}">
     <div th:replace="~{fragments/asistente_publico :: guido-bot}"></div>
 
-    <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
+    <!-- Favicon SVG Premium -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%230ea5e9'/%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='28' fill='url(%23g)'/%3E%3Cpath d='M50 78c-15-10-28-22-28-38 0-12 8-18 15-12 3 2 6 4 13 4s10-2 13-4c7-6 15 0 15 12 0 16-13 28-28 38z' fill='white' opacity='0.95'/%3E%3Cpath d='M35 48c2-3 5-5 8-5s6 2 7 5M50 48c1-3 4-5 7-5s6 2 8 5' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='38' cy='38' r='2.5' fill='white'/%3E%3Ccircle cx='62' cy='38' r='2.5' fill='white'/%3E%3C/svg%3E">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Three.js para efectos 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            purple: '#8b5cf6',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'gradient-x': 'gradient-x 15s ease infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
         :root {
-            --medical-blue: #0ea5e9;
-            --medical-dark: #0284c7;
-            --medical-light: #e0f2fe;
-            --healing-green: #10b981;
-            --healing-light: #d1fae5;
-            --care-purple: #8b5cf6;
-            --warm-white: #fafaf9;
-            --soft-gray: #f5f5f4;
+            --bg-primary: #fafaf9;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f5f5f4;
             --text-primary: #1c1917;
             --text-secondary: #78716c;
+            --text-tertiary: #a8a29e;
+            --border-color: #e7e5e4;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
             --shadow-soft: 0 4px 20px rgba(14, 165, 233, 0.08);
             --shadow-medium: 0 8px 30px rgba(14, 165, 233, 0.12);
             --shadow-strong: 0 20px 50px rgba(14, 165, 233, 0.15);
-            --radius-xl: 24px;
-            --radius-lg: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border-color: #334155;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -45,979 +117,1762 @@
         }
 
         body {
-            background: var(--warm-white);
+            background: var(--bg-primary);
             color: var(--text-primary);
             overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
 
-        /* Hero Section - Estilo Clínica Premium */
-        .hero-section {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdf4 100%);
-            min-height: 90vh;
-            display: flex;
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0ea5e9, #8b5cf6);
+            border-radius: 4px;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        [data-theme="dark"] .glass-strong {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-x 5s ease infinite;
+        }
+
+        /* Premium Button */
+        .btn-premium {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            background-size: 200% 200%;
+            animation: gradient-x 3s ease infinite;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
             align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
             position: relative;
             overflow: hidden;
         }
 
-        .hero-section::before {
+        .btn-premium::before {
             content: '';
             position: absolute;
             top: 0;
-            right: 0;
-            width: 60%;
+            left: -100%;
+            width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="%230ea5e9" fill-opacity="0.03" d="M45,-58C58.3,-47.3,69.1,-33.8,73.4,-18.3C77.7,-2.8,75.5,14.7,67.6,29.3C59.7,43.9,46.1,55.6,30.9,62.9C15.7,70.2,-1.1,73.1,-16.8,69.3C-32.5,65.5,-47.1,55,-57.6,40.7C-68.1,26.4,-74.5,8.3,-72.6,-8.4C-70.7,-25.1,-60.5,-40.4,-47.2,-51.1C-33.9,-61.8,-17.5,-67.9,-1.2,-66.4C15.1,-64.9,31.7,-68.7,45,-58Z" transform="translate(100 100)"/></svg>') no-repeat center;
-            background-size: cover;
-            animation: float 20s ease-in-out infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, -20px) rotate(5deg); }
+        .btn-premium:hover::before {
+            left: 100%;
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.4);
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, var(--healing-green), #059669);
-            color: white;
-            padding: 0.5rem 1.25rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        .btn-premium:active {
+            transform: translateY(-1px);
         }
 
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            color: var(--text-primary);
-            margin-bottom: 1.5rem;
+        /* 3D Card Tilt */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
         }
 
-        .hero-content h1 span {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .tilt-card .card-content {
+            transform: translateZ(50px);
         }
 
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        /* Search Box Premium */
-        .search-container {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-strong);
-            border: 1px solid rgba(14, 165, 233, 0.1);
-            max-width: 700px;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .search-input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-
-        .search-icon {
+        .tilt-card .card-shine {
             position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--medical-blue);
-            font-size: 1.25rem;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            border-radius: inherit;
         }
 
-        .search-input {
+        .tilt-card:hover .card-shine {
+            opacity: 1;
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 1rem 1.25rem 1rem 3.5rem;
-            border: 2px solid #e7e5e4;
-            border-radius: var(--radius-lg);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--medical-blue);
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
-        }
-
-        .btn-search {
-            background: linear-gradient(135deg, var(--medical-blue), var(--medical-dark));
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: var(--radius-lg);
-            font-weight: 700;
+        /* Loading Screen */
+        .loader-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            z-index: 99999;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn-search:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
-        }
-
-        .hero-features {
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .hero-feature {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .hero-feature i {
-            color: var(--healing-green);
-            font-size: 1.25rem;
-        }
-
-        /* Hero Image/Illustration */
-        .hero-visual {
-            position: relative;
-            display: flex;
             justify-content: center;
-            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        .hero-image-container {
+        .loader-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            width: 80px;
+            height: 80px;
             position: relative;
-            width: 100%;
-            max-width: 500px;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
-        .hero-image {
-            width: 100%;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-strong);
+        .loader-bar {
+            width: 200px;
+            height: 3px;
+            background: var(--border-color);
+            border-radius: 3px;
+            margin-top: 2rem;
+            overflow: hidden;
             position: relative;
-            z-index: 2;
         }
 
-        .floating-card {
+        .loader-bar::after {
+            content: '';
             position: absolute;
-            background: white;
-            border-radius: var(--radius-lg);
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                left: -100%;
+            }
+
+            50% {
+                left: 0%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: var(--glass-strong);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
             padding: 1rem 1.5rem;
-            box-shadow: var(--shadow-medium);
+            box-shadow: var(--shadow-strong);
             display: flex;
             align-items: center;
             gap: 1rem;
-            z-index: 3;
-            animation: floatCard 6s ease-in-out infinite;
+            min-width: 300px;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: all;
         }
 
-        .floating-card.card-1 {
-            top: 10%;
-            left: -10%;
-            animation-delay: 0s;
+        .toast-item.show {
+            transform: translateX(0);
         }
 
-        .floating-card.card-2 {
-            bottom: 20%;
-            right: -10%;
-            animation-delay: 3s;
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
         }
 
-        @keyframes floatCard {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .chat-button {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
 
-        .floating-icon {
+        .chat-button:hover {
+            transform: scale(1.1) rotate(-10deg);
+        }
+
+        .chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 550px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            box-shadow: var(--shadow-strong);
+            border: 1px solid var(--border-color);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            animation: chatSlide 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes chatSlide {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-avatar {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
-        .floating-icon.blue {
-            background: var(--medical-light);
-            color: var(--medical-blue);
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: var(--bg-primary);
         }
 
-        .floating-icon.green {
-            background: var(--healing-light);
-            color: var(--healing-green);
+        .message {
+            max-width: 80%;
+            padding: 1rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: messageSlide 0.3s ease;
         }
 
-        /* Partners Section */
-        .partners-section {
-            background: white;
-            padding: 3rem 0;
-            border-bottom: 1px solid #e7e5e4;
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .partners-title {
-            text-align: center;
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
+        .message-bot {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
         }
 
-        .partner-logo {
-            max-height: 60px;
-            width: auto;
-            filter: grayscale(100%) opacity(0.5);
-            transition: all 0.3s ease;
-            object-fit: contain;
+        .message-user {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
         }
 
-        .partner-logo:hover {
-            filter: grayscale(0%) opacity(1);
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #0ea5e9;
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-send:hover {
             transform: scale(1.05);
         }
 
-        /* Section Headers */
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
+        /* Map Section */
+        .map-container {
+            position: relative;
+            height: 500px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--bg-tertiary);
         }
 
-        .section-label {
+        .map-pin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transform: translate(-50%, -100%);
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 10;
+        }
+
+        .map-pin:hover {
+            transform: translate(-50%, -100%) scale(1.2);
+            z-index: 20;
+        }
+
+        .map-pin-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .map-pin-icon i {
+            transform: rotate(45deg);
+            font-size: 1rem;
+        }
+
+        .map-tooltip {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: var(--bg-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .map-pin:hover .map-tooltip {
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Testimonial Carousel 3D */
+        .testimonial-carousel {
+            perspective: 1000px;
+            height: 400px;
+            position: relative;
+        }
+
+        .testimonial-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .testimonial-card {
+            position: absolute;
+            width: 350px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            backface-visibility: hidden;
+            transition: all 0.5s;
+        }
+
+        /* Calendar Widget */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .calendar-day:hover:not(.disabled) {
+            background: var(--bg-tertiary);
+            border-color: #0ea5e9;
+        }
+
+        .calendar-day.active {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .calendar-day.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Navigation */
+        .nav-premium {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.4s ease;
+        }
+
+        .nav-premium.scrolled {
+            background: var(--glass-strong);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-soft);
+            padding: 0.75rem 0;
+        }
+
+        .nav-link-premium {
+            position: relative;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link-premium::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .nav-link-premium:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link-premium:hover::after {
+            width: 80%;
+        }
+
+        /* Search Expand */
+        .search-expand {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+
+        .search-expand.active {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+        }
+
+        .search-expand input {
+            position: absolute;
+            left: 48px;
+            width: calc(100% - 60px);
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .search-expand.active input {
+            opacity: 1;
+        }
+
+        /* Stats Counter Animation */
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-panel {
+                width: calc(100vw - 40px);
+                height: 60vh;
+                right: -10px;
+            }
+
+            .testimonial-card {
+                width: 280px;
+            }
+
+            .stat-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Marquee */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .marquee-track {
+            display: inline-flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
+        }
+
+        /* Floating Elements */
+        .float-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .float-element:nth-child(2) {
+            animation-delay: -2s;
+        }
+
+        .float-element:nth-child(3) {
+            animation-delay: -4s;
+        }
+
+        /* Gradient Border */
+        .gradient-border {
+            position: relative;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6, #10b981);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gradient-border:hover::before {
+            opacity: 1;
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        .ripple:active::after {
+            transform: scale(0, 0);
+            opacity: 0.3;
+            transition: 0s;
+        }
+
+        /* Custom Checkbox */
+        .custom-checkbox {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .custom-checkbox:checked {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            border-color: transparent;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Badge Premium */
+        .badge-premium {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: var(--medical-light);
-            color: var(--medical-dark);
             padding: 0.5rem 1rem;
             border-radius: 50px;
             font-size: 0.875rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .section-subtitle {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Service Cards - Estilo Médico */
-        .services-section {
-            padding: 6rem 0;
-            background: var(--soft-gray);
-        }
-
-        .service-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 2.5rem;
-            height: 100%;
-            transition: all 0.4s ease;
-            border: 1px solid #e7e5e4;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--medical-blue), var(--healing-green));
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-strong);
-            border-color: transparent;
-        }
-
-        .service-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .service-icon::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            opacity: 0.1;
-        }
-
-        .service-icon i {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .service-card h5 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .service-card p {
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        /* Clinics Section */
-        .clinics-section {
-            padding: 6rem 0;
-            background: white;
-        }
-
-        .clinic-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.4s ease;
-            border: 1px solid #e7e5e4;
-            height: 100%;
-        }
-
-        .clinic-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-strong);
-        }
-
-        .clinic-image-wrapper {
-            position: relative;
-            overflow: hidden;
-            height: 220px;
-        }
-
-        .clinic-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .clinic-card:hover .clinic-image {
-            transform: scale(1.05);
-        }
-
-        .clinic-badge {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            background: white;
-            color: var(--medical-blue);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .clinic-badge i {
-            color: #fbbf24;
-        }
-
-        .clinic-body {
-            padding: 1.5rem;
-        }
-
-        .clinic-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .clinic-location {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .clinic-location i {
-            color: var(--medical-blue);
-        }
-
-        .clinic-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .clinic-footer {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn-clinic-primary {
-            flex: 1;
-            background: linear-gradient(135deg, var(--medical-blue), var(--medical-dark));
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
             font-weight: 600;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-clinic-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
-            color: white;
-        }
-
-        .btn-clinic-secondary {
-            width: 48px;
-            height: 48px;
-            border: 2px solid #e7e5e4;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .btn-clinic-secondary:hover {
-            border-color: #fecaca;
-            color: #ef4444;
-            background: #fef2f2;
-        }
-
-        /* Stats Section - Estilo Médico */
-        .stats-section {
-            background: linear-gradient(135deg, var(--medical-blue) 0%, var(--care-purple) 100%);
-            padding: 5rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></svg>');
-            background-size: 50px 50px;
-            opacity: 0.5;
-        }
-
-        .stat-item {
-            text-align: center;
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-number {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-label {
-            font-size: 1.125rem;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        /* For Clinics Section */
-        .for-clinics-section {
-            padding: 6rem 0;
-            background: linear-gradient(135deg, #f0f9ff 0%, #fafaf9 100%);
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 2rem 0;
-        }
-
-        .feature-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-        }
-
-        .feature-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--healing-light);
-            color: var(--healing-green);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-            margin-top: 0.125rem;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, var(--medical-blue), var(--care-purple));
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
-        }
-
-        .btn-primary-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.4);
-            color: white;
-        }
-
-        /* FAQ Section */
-        .faq-section {
-            padding: 6rem 0;
-            background: var(--soft-gray);
-        }
-
-        .accordion-item {
-            background: white;
-            border: none;
-            border-radius: var(--radius-lg) !important;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .accordion-button {
-            padding: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            background: white;
-            border: none;
-        }
-
-        .accordion-button:not(.collapsed) {
-            background: var(--medical-light);
-            color: var(--medical-dark);
-            box-shadow: none;
-        }
-
-        .accordion-button:focus {
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        .accordion-body {
-            padding: 0 1.5rem 1.5rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-
-        /* Virtual Office Section */
-        .virtual-office-section {
-            padding: 6rem 0;
-            background: white;
-        }
-
-        .virtual-office-card {
-            background: linear-gradient(135deg, var(--medical-light) 0%, white 100%);
-            border-radius: var(--radius-xl);
-            padding: 3rem;
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(139, 92, 246, 0.1));
+            color: #0ea5e9;
             border: 1px solid rgba(14, 165, 233, 0.2);
-            position: relative;
-            overflow: hidden;
         }
 
-        .virtual-office-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
-        }
-
-        /* WhatsApp FAB */
-        .whatsapp-fab {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
-            z-index: 1050;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: 3px solid white;
-            animation: pulse-whatsapp 2s infinite;
-        }
-
-        @keyframes pulse-whatsapp {
-            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
-            70% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-
-        .whatsapp-fab:hover {
-            transform: scale(1.1) rotate(10deg);
-            color: white;
-        }
-
-        /* Animations */
-        .section-fade-in {
+        /* Section Reveal */
+        .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .section-fade-in.is-visible {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* Responsive */
-        @media (max-width: 991.98px) {
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero-visual {
-                margin-top: 3rem;
-            }
-
-            .floating-card {
-                display: none;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            .btn-search {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .stat-number {
-                font-size: 2.5rem;
-            }
+        /* Stagger children */
+        .stagger-children>* {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        @media (max-width: 767.98px) {
-            .hero-content h1 {
-                font-size: 2rem;
-            }
+        .stagger-children.active>* {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-            .section-title {
-                font-size: 1.75rem;
-            }
+        .stagger-children.active>*:nth-child(1) {
+            transition-delay: 0.1s;
+        }
 
-            .hero-features {
-                flex-direction: column;
-                gap: 1rem;
+        .stagger-children.active>*:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        .stagger-children.active>*:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+
+        .stagger-children.active>*:nth-child(4) {
+            transition-delay: 0.4s;
+        }
+
+        .stagger-children.active>*:nth-child(5) {
+            transition-delay: 0.5s;
+        }
+
+        .stagger-children.active>*:nth-child(6) {
+            transition-delay: 0.6s;
+        }
+
+        /* Image mask */
+        .image-mask {
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+
+        /* Horizontal scroll snap */
+        .snap-scroll {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .snap-scroll>* {
+            scroll-snap-align: start;
+        }
+
+        /* Glow effect */
+        .glow {
+            position: relative;
+        }
+
+        .glow::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            opacity: 0;
+            filter: blur(15px);
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+
+        .glow:hover::after {
+            opacity: 0.5;
+        }
+
+        /* Noise texture overlay */
+        .noise {
+            position: relative;
+        }
+
+        .noise::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus styles */
+        *:focus-visible {
+            outline: 2px solid #0ea5e9;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        /* Selection */
+        ::selection {
+            background: rgba(14, 165, 233, 0.3);
+            color: inherit;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Magnetic button effect placeholder */
+        .magnetic {
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Text scramble effect */
+        .scramble-text {
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Cursor follower */
+        .cursor-follower {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0ea5e9;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s, width 0.3s, height 0.3s;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        @media (pointer: coarse) {
+            .cursor-follower {
+                display: none;
             }
         }
     </style>
 </head>
 
-<body>
+<body class="antialiased">
 
-    <!-- Header Fragment -->
-    <div th:replace="~{fragments/header :: header-publico}"></div>
+    <!-- Loading Screen -->
+    <div class="loader-screen" id="loader">
+        <div class="loader-logo">
+            <svg viewBox="0 0 100 100" width="80" height="80">
+                <defs>
+                    <linearGradient id="loaderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0ea5e9" />
+                        <stop offset="100%" style="stop-color:#8b5cf6" />
+                    </linearGradient>
+                </defs>
+                <rect width="100" height="100" rx="28" fill="url(#loaderGrad)" />
+                <path
+                    d="M50 78c-15-10-28-22-28-38 0-12 8-18 15-12 3 2 6 4 13 4s10-2 13-4c7-6 15 0 15 12 0 16-13 28-28 38z"
+                    fill="white" opacity="0.95" />
+                <path d="M35 48c2-3 5-5 8-5s6 2 7 5M50 48c1-3 4-5 7-5s6 2 8 5" stroke="white" stroke-width="2.5"
+                    stroke-linecap="round" fill="none" />
+            </svg>
+        </div>
+        <div class="loader-bar"></div>
+        <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">Cargando experiencia premium...</p>
+    </div>
 
-    <!-- Botón Flotante WhatsApp -->
-    <a href="https://wa.me/573005722844?text=Hola%2C%20necesito%20ayuda%20con%20la%20plataforma%20ClínicaApp."
-        class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-        <i class="bi bi-whatsapp"></i>
-    </a>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Custom Cursor (Desktop only) -->
+    <div class="cursor-follower" id="cursor"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-premium" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <!-- Logo -->
+            <a th:href="@{/}" class="flex items-center gap-3 group">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-purple flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <span class="text-xl font-bold text-gradient">ClínicaApp</span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden md:flex items-center gap-1">
+                <a href="#inicio" class="nav-link-premium">Inicio</a>
+                <a href="#clinicas" class="nav-link-premium">Clínicas</a>
+                <a href="#servicios" class="nav-link-premium">Servicios</a>
+                <a href="#testimonios" class="nav-link-premium">Testimonios</a>
+                <a href="#faq" class="nav-link-premium">FAQ</a>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Search -->
+                <div class="search-expand" id="searchExpand" onclick="toggleSearch()">
+                    <i class="bi bi-search text-lg"></i>
+                    <input type="text" placeholder="Buscar clínicas, servicios..." onkeydown="handleSearch(event)">
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema">
+                    <i class="bi bi-sun-fill" id="themeIcon"></i>
+                </button>
+
+                <!-- Auth -->
+                <div class="hidden md:flex items-center gap-2">
+                    <div sec:authorize="!isAuthenticated()" class="flex items-center gap-2">
+                        <a th:href="@{/login}"
+                            class="px-5 py-2.5 rounded-xl font-semibold text-sm text-gray-600 hover:text-primary-600 transition-colors dark:text-gray-300 dark:hover:text-primary-400">
+                            Login
+                        </a>
+                        <a th:href="@{/registro}" class="btn-premium text-sm py-2.5 px-5">
+                            Registrarse
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="flex items-center gap-2">
+                        <a th:href="@{/oficina-virtual}" class="btn-premium text-sm py-2.5 px-5">
+                            <i class="bi bi-person-workspace mr-2"></i> Mi Oficina
+                        </a>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="p-2.5 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all" title="Cerrar Sesión">
+                                <i class="bi bi-box-arrow-right text-lg"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu -->
+                <button
+                    class="md:hidden w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+                    onclick="toggleMobileMenu()">
+                    <i class="bi bi-list text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div class="md:hidden hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 p-6 shadow-xl"
+            id="mobileMenu">
+            <div class="flex flex-col gap-4">
+                <a href="#inicio"
+                    class="text-lg font-semibold text-gray-800 dark:text-white py-2 border-b border-gray-100 dark:border-gray-800">Inicio</a>
+                <a href="#clinicas"
+                    class="text-lg font-semibold text-gray-800 dark:text-white py-2 border-b border-gray-100 dark:border-gray-800">Clínicas</a>
+                <a href="#servicios"
+                    class="text-lg font-semibold text-gray-800 dark:text-white py-2 border-b border-gray-100 dark:border-gray-800">Servicios</a>
+                <a href="#testimonios"
+                    class="text-lg font-semibold text-gray-800 dark:text-white py-2 border-b border-gray-100 dark:border-gray-800">Testimonios</a>
+                <a href="#faq"
+                    class="text-lg font-semibold text-gray-800 dark:text-white py-2 border-b border-gray-100 dark:border-gray-800">FAQ</a>
+                <div class="flex gap-3 mt-4" sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}"
+                        class="flex-1 text-center py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 font-semibold text-gray-800 dark:text-white">Login</a>
+                    <a th:href="@{/registro}"
+                        class="flex-1 text-center py-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold">Registro</a>
+                </div>
+                <div class="flex gap-3 mt-4" sec:authorize="isAuthenticated()">
+                    <a th:href="@{/oficina-virtual}"
+                        class="flex-1 text-center py-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-purple text-white font-semibold">Mi Oficina</a>
+                    <form th:action="@{/logout}" method="post" class="flex-1 m-0">
+                        <button type="submit" class="w-full text-center py-3 rounded-xl border-2 border-rose-200 text-rose-500 font-semibold">Salir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Spacer for fixed nav -->
+    <div class="h-20"></div>
 
     <!-- Hero Section -->
-    <header class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-content">
-                    <div class="hero-badge">
-                        <i class="bi bi-shield-check"></i>
-                        Plataforma #1 en Cartagena
+    <section id="inicio" class="relative min-h-[90vh] flex items-center overflow-hidden noise">
+        <!-- Particle Canvas -->
+        <canvas id="particle-canvas"></canvas>
+
+        <!-- Background Gradient Orbs -->
+        <div class="absolute top-20 left-10 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl float-element"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-purple/20 rounded-full blur-3xl float-element">
+        </div>
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-emerald/10 rounded-full blur-3xl float-element">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 py-20 relative z-10 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Content -->
+                <div class="space-y-8 reveal" id="heroContent">
+                    <!-- Badge -->
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-accent-purple/10 border border-primary-200 dark:border-primary-800 dark:from-primary-900/30 dark:to-accent-purple/20">
+                        <span class="relative flex h-3 w-3">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+                        </span>
+                        <span class="text-sm font-semibold text-primary-700 dark:text-primary-300">Plataforma #1 en
+                            Cartagena</span>
                     </div>
-                    <h1>
-                        El cuidado que tu mascota merece, <span>a un clic de distancia</span>
+
+                    <!-- Title -->
+                    <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight">
+                        El cuidado que tu <br>
+                        <span class="text-gradient">mascota merece</span><br>
+                        <span class="text-4xl lg:text-6xl text-gray-400 dark:text-gray-500 font-bold">a un clic de
+                            distancia</span>
                     </h1>
-                    <p class="hero-subtitle">
-                        Encuentra veterinarios de confianza en Cartagena, compara servicios y agenda citas en línea de forma rápida, segura y desde la comodidad de tu hogar.
+
+                    <!-- Subtitle -->
+                    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-xl leading-relaxed">
+                        Encuentra veterinarios de confianza, agenda citas en tiempo real, accede a historial médico
+                        digital y recibe recordatorios inteligentes. Todo en una plataforma segura.
                     </p>
 
-                    <div class="search-container">
-                        <form th:action="@{/buscar-clinicas}" method="get" class="search-box">
-                            <div class="search-input-wrapper">
-                                <i class="bi bi-search search-icon"></i>
-                                <input type="search" name="query" class="search-input" 
-                                       placeholder="Busca por clínica, servicio o barrio..." required>
+                    <!-- Search Box Premium -->
+                    <div class="glass rounded-2xl p-2 max-w-2xl shadow-xl">
+                        <form th:action="@{/buscar-clinicas}" method="get" class="flex flex-col sm:flex-row gap-2">
+                            <div class="flex-1 relative">
+                                <i
+                                    class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 text-lg"></i>
+                                <input type="text" name="query" id="heroSearch" placeholder="¿Qué necesita tu mascota hoy?"
+                                    class="w-full pl-12 pr-4 py-4 rounded-xl bg-white/50 dark:bg-gray-800/50 border-2 border-transparent focus:border-primary-400 outline-none text-gray-800 dark:text-white font-medium transition-all">
                             </div>
-                            <button type="submit" class="btn-search">
+                            <button type="submit" class="btn-premium py-4 px-8 whitespace-nowrap">
                                 <i class="bi bi-search"></i>
                                 Buscar
                             </button>
                         </form>
+                        <!-- Quick Tags -->
+                        <div class="flex flex-wrap gap-2 mt-3 px-2 pb-2">
+                            <button onclick="quickSearch('Vacunación')"
+                                class="px-3 py-1.5 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold hover:bg-primary-100 transition">Vacunación</button>
+                            <button onclick="quickSearch('Urgencias')"
+                                class="px-3 py-1.5 rounded-lg bg-accent-rose/10 text-accent-rose text-xs font-semibold hover:bg-accent-rose/20 transition">Urgencias
+                                24h</button>
+                            <button onclick="quickSearch('Peluquería')"
+                                class="px-3 py-1.5 rounded-lg bg-accent-purple/10 text-accent-purple text-xs font-semibold hover:bg-accent-purple/20 transition">Peluquería</button>
+                            <button onclick="quickSearch('Cirugía')"
+                                class="px-3 py-1.5 rounded-lg bg-accent-emerald/10 text-accent-emerald text-xs font-semibold hover:bg-accent-emerald/20 transition">Cirugía</button>
+                        </div>
                     </div>
 
-                    <div class="hero-features">
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Cancelación gratis</span>
+                    <!-- Features -->
+                    <div class="flex flex-wrap gap-6 pt-4">
+                        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 font-semibold">
+                            <div
+                                class="w-8 h-8 rounded-full bg-accent-emerald/10 flex items-center justify-center text-accent-emerald">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            Cancelación gratis
                         </div>
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Pago seguro</span>
+                        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 font-semibold">
+                            <div
+                                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            Pago seguro SSL
                         </div>
-                        <div class="hero-feature">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Veterinarios verificados</span>
+                        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 font-semibold">
+                            <div
+                                class="w-8 h-8 rounded-full bg-accent-purple/10 flex items-center justify-center text-accent-purple">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
+                            Veterinarios verificados
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 hero-visual">
-                    <div class="hero-image-container">
-                        <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?q=80&w=1000&auto=format&fit=crop" 
-                             alt="Veterinario cuidando mascota" class="hero-image">
-                        
-                        <div class="floating-card card-1">
-                            <div class="floating-icon blue">
+
+                <!-- Visual -->
+                <div class="relative lg:h-[600px] flex items-center justify-center reveal"
+                    style="transition-delay: 0.2s" id="heroVisual">
+                    <!-- Main Image -->
+                    <div class="relative z-10">
+                        <div
+                            class="relative rounded-3xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
+                            <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?q=80&w=1000&auto=format&fit=crop"
+                                alt="Veterinario cuidando mascota" class="w-full max-w-lg rounded-3xl image-mask">
+                            <!-- Overlay gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Cards -->
+                    <div
+                        class="absolute -left-8 top-10 glass-strong rounded-2xl p-4 shadow-xl float-element z-20 max-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xl">
                                 <i class="bi bi-calendar-check"></i>
                             </div>
                             <div>
-                                <div class="fw-bold">+2,500</div>
-                                <small class="text-muted">Citas este mes</small>
+                                <p class="text-2xl font-bold text-gray-800 dark:text-white">+2,500</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Citas este mes</p>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="floating-card card-2">
-                            <div class="floating-icon green">
+                    <div class="absolute -right-4 bottom-20 glass-strong rounded-2xl p-4 shadow-xl float-element z-20"
+                        style="animation-delay: -2s">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-emerald to-emerald-600 flex items-center justify-center text-white text-xl">
                                 <i class="bi bi-heart-pulse"></i>
                             </div>
                             <div>
-                                <div class="fw-bold">98%</div>
-                                <small class="text-muted">Clientes felices</small>
+                                <p class="text-2xl font-bold text-gray-800 dark:text-white">98%</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Clientes felices</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="absolute left-10 bottom-10 glass-strong rounded-2xl p-3 shadow-xl float-element z-20"
+                        style="animation-delay: -4s">
+                        <div class="flex items-center gap-2">
+                            <div class="flex -space-x-2">
+                                <img src="https://i.pravatar.cc/100?img=1"
+                                    class="w-8 h-8 rounded-full border-2 border-white" alt="User">
+                                <img src="https://i.pravatar.cc/100?img=2"
+                                    class="w-8 h-8 rounded-full border-2 border-white" alt="User">
+                                <img src="https://i.pravatar.cc/100?img=3"
+                                    class="w-8 h-8 rounded-full border-2 border-white" alt="User">
+                            </div>
+                            <span class="text-xs font-bold text-gray-600 dark:text-gray-300">+12K usuarios</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
 
-    <!-- Partners Section -->
-    <section class="partners-section">
-        <div class="container">
-            <p class="partners-title">Con la confianza de las mejores marcas</p>
-            <div class="row align-items-center justify-content-center g-4">
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://static-shop.vivapets.com/media/catalog/product/cache/11fc96e7318a291175a0004e054be56e/p/a/packshot_5.jpg"
-                        alt="Royal Canin" class="partner-logo img-fluid" loading="lazy">
+        <!-- Scroll Indicator -->
+        <div
+            class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+            <span class="text-xs font-medium text-gray-500">Scroll</span>
+            <i class="bi bi-chevron-down text-lg"></i>
+        </div>
+    </section>
+
+    <!-- Partners Marquee -->
+    <section class="py-12 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
+        <div class="text-center mb-8">
+            <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Con la confianza de las mejores marcas
+            </p>
+        </div>
+        <div class="marquee-container">
+            <div class="marquee-track">
+                <!-- First set -->
+                <div class="flex items-center gap-16 px-8">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Royal_Canin_Logo.svg/200px-Royal_Canin_Logo.svg.png"
+                        class="h-12 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Royal Canin">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Purina_logo.svg/200px-Purina_logo.svg.png"
+                        class="h-12 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Purina">
+                    <img src="https://www.hillspet.com/content/dam/cp-sites/hills/hills-pet/global/2023-rebrand/logos/hills-header-logo.svg"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Hill's">
+                    <img src="https://www.nexgard.com.br/sites/default/files/2020-03/NexGard%20Logo.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="NexGard">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Pedigree_logo.svg/200px-Pedigree_logo.svg.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Pedigree">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Whiskas_logo.svg/200px-Whiskas_logo.svg.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Whiskas">
                 </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://purina.com.ec/sites/default/files/2024-08/Dog%20Chow%20Selecci%C3%B3n%20de%20Prote%C3%ADnas%20Cordero.png"
-                        alt="Purina" class="partner-logo img-fluid" loading="lazy">
-                </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://petcol.co/cdn/shop/products/hills_adulto_small_paws_pollo_666x.png?v=1578604260"
-                        alt="Hill's" class="partner-logo img-fluid" loading="lazy">
-                </div>
-                <div class="col-6 col-md-3 col-lg-2 text-center">
-                    <img src="https://schmidtherman.cl/wp-content/uploads/2024/06/WhatsApp-Image-2024-07-09-at-9.31.36-AM.jpeg"
-                        alt="NexGard" class="partner-logo img-fluid" loading="lazy">
+                <!-- Duplicate for seamless loop -->
+                <div class="flex items-center gap-16 px-8">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Royal_Canin_Logo.svg/200px-Royal_Canin_Logo.svg.png"
+                        class="h-12 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Royal Canin">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Purina_logo.svg/200px-Purina_logo.svg.png"
+                        class="h-12 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Purina">
+                    <img src="https://www.hillspet.com/content/dam/cp-sites/hills/hills-pet/global/2023-rebrand/logos/hills-header-logo.svg"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Hill's">
+                    <img src="https://www.nexgard.com.br/sites/default/files/2020-03/NexGard%20Logo.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="NexGard">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Pedigree_logo.svg/200px-Pedigree_logo.svg.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Pedigree">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Whiskas_logo.svg/200px-Whiskas_logo.svg.png"
+                        class="h-10 w-auto grayscale hover:grayscale-0 opacity-50 hover:opacity-100 transition-all duration-300"
+                        alt="Whiskas">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Servicios Section -->
-    <section class="services-section section-fade-in">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-label">
+    <!-- Stats Section -->
+    <section class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-purple opacity-5"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid md:grid-cols-3 gap-8 stagger-children" id="statsSection">
+                <div
+                    class="text-center p-8 rounded-3xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 reveal">
+                    <div
+                        class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-primary-500/30">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <div class="stat-value" data-target="12560">0</div>
+                    <p class="text-gray-600 dark:text-gray-400 font-semibold mt-2">Mascotas Atendidas</p>
+                </div>
+                <div
+                    class="text-center p-8 rounded-3xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 reveal">
+                    <div
+                        class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent-emerald to-emerald-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-value" data-target="8734">0</div>
+                    <p class="text-gray-600 dark:text-gray-400 font-semibold mt-2">Familias Felices</p>
+                </div>
+                <div
+                    class="text-center p-8 rounded-3xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 reveal">
+                    <div
+                        class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-accent-purple to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-purple-500/30">
+                        <i class="bi bi-hospital"></i>
+                    </div>
+                    <div class="stat-value" data-target="50">0</div>
+                    <p class="text-gray-600 dark:text-gray-400 font-semibold mt-2">Clínicas Asociadas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicios" class="py-24 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <div class="badge-premium inline-flex mb-4">
                     <i class="bi bi-grid-3x3-gap"></i>
                     Nuestros Servicios
                 </div>
-                <h2 class="section-title">Cuidado integral para tu mascota</h2>
-                <p class="section-subtitle">Todo lo que necesitas para mantener a tu mejor amigo saludable y feliz en un solo lugar.</p>
+                <h2 class="text-4xl lg:text-5xl font-bold mb-4">Cuidado integral para tu mascota</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Todo lo que necesitas para mantener a tu mejor amigo
+                    saludable y feliz en un solo lugar.</p>
             </div>
 
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children" id="servicesGrid">
+                <!-- Service 1 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-purple/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/20 flex items-center justify-center text-3xl text-primary-600 dark:text-primary-400 mb-6 group-hover:scale-110 transition-transform">
                             <i class="bi bi-clipboard2-pulse-fill"></i>
                         </div>
-                        <h5>Consultas y Chequeos</h5>
-                        <p>Agendamiento rápido para revisiones generales, diagnósticos especializados y segundas opiniones con los mejores veterinarios de Cartagena.</p>
+                        <h3 class="text-xl font-bold mb-3">Consultas y Chequeos</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Agendamiento rápido para
+                            revisiones generales, diagnósticos especializados y segundas opiniones con los mejores
+                            veterinarios.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-primary-600 font-semibold group/link">
+                            Agendar ahora
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
+
+                <!-- Service 2 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-accent-emerald/5 to-emerald-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/20 dark:to-emerald-800/10 flex items-center justify-center text-3xl text-emerald-600 dark:text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
                             <i class="bi bi-shield-plus"></i>
                         </div>
-                        <h5>Vacunación y Prevención</h5>
-                        <p>Mantén al día el esquema de vacunación y desparasitación con recordatorios automáticos y alertas personalizadas para tu mascota.</p>
+                        <h3 class="text-xl font-bold mb-3">Vacunación y Prevención</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Mantén al día el esquema de
+                            vacunación con recordatorios automáticos y alertas personalizadas para tu mascota.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-emerald-600 font-semibold group/link">
+                            Ver calendario
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="service-card">
-                        <div class="service-icon">
+
+                <!-- Service 3 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-accent-purple/5 to-purple-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/20 dark:to-purple-800/10 flex items-center justify-center text-3xl text-purple-600 dark:text-purple-400 mb-6 group-hover:scale-110 transition-transform">
                             <i class="bi bi-scissors"></i>
                         </div>
-                        <h5>Peluquería y Bienestar</h5>
-                        <p>Servicios de grooming profesional, baños medicados y spa para consentir a tu mejor amigo como se merece.</p>
+                        <h3 class="text-xl font-bold mb-3">Peluquería y Bienestar</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Servicios de grooming
+                            profesional, baños medicados y spa para consentir a tu mejor amigo como se merece.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-purple-600 font-semibold group/link">
+                            Reservar spa
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service 4 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-accent-rose/5 to-rose-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-200 dark:from-rose-900/20 dark:to-rose-800/10 flex items-center justify-center text-3xl text-rose-600 dark:text-rose-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-bandaid-fill"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Urgencias 24/7</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Atención de emergencias las 24
+                            horas con clínicas especializadas y veterinarios de guardia siempre disponibles.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-rose-600 font-semibold group/link">
+                            Ver urgencias
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service 5 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/20 dark:to-amber-800/10 flex items-center justify-center text-3xl text-amber-600 dark:text-amber-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-camera-video-fill"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Telemedicina</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Consultas virtuales con
+                            veterinarios expertos desde la comodidad de tu hogar. Ideal para seguimientos y dudas.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-amber-600 font-semibold group/link">
+                            Iniciar consulta
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Service 6 -->
+                <div
+                    class="group relative bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-100 to-cyan-200 dark:from-cyan-900/20 dark:to-cyan-800/10 flex items-center justify-center text-3xl text-cyan-600 dark:text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                            <i class="bi bi-file-earmark-medical-fill"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Historial Digital</h3>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Accede al historial clínico
+                            completo de tu mascota, vacunas, desparasitaciones y recetas en formato PDF.</p>
+                        <a href="#" class="inline-flex items-center gap-2 text-cyan-600 font-semibold group/link">
+                            Ver historial
+                            <i class="bi bi-arrow-right group-hover/link:translate-x-1 transition-transform"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Clínicas Destacadas -->
-    <section class="clinics-section section-fade-in">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-label">
-                    <i class="bi bi-star-fill"></i>
-                    Destacados
+    <!-- Interactive Map Section -->
+    <section class="py-24 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <div class="badge-premium inline-flex mb-4">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    Cobertura Total
                 </div>
-                <h2 class="section-title">Clínicas Populares en Cartagena</h2>
-                <p class="section-subtitle">Explora algunas de las clínicas mejor valoradas por nuestra comunidad de dueños responsables.</p>
+                <h2 class="text-4xl lg:text-5xl font-bold mb-4">Encuentra clínicas cerca de ti</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Más de 50 clínicas veterinarias distribuidas
+                    estratégicamente en todos los barrios de Cartagena.</p>
             </div>
 
-            <div class="row g-4" th:if="${!clinicasDestacadas.isEmpty()}">
-                <div class="col-lg-4 col-md-6" th:each="clinica : ${clinicasDestacadas}">
-                    <article class="clinic-card">
-                        <div class="clinic-image-wrapper">
-                            <img th:src="${clinica.imagenUrl != null and !#strings.isEmpty(clinica.imagenUrl)} 
-                                        ? ${clinica.imagenUrl} 
-                                        : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop'"
-                                class="clinic-image" alt="Imagen de la clínica" loading="lazy">
-                            <div class="clinic-badge">
-                                <i class="bi bi-star-fill"></i>
-                                4.8
-                            </div>
+            <div class="relative">
+                <!-- Map -->
+                <div class="map-container reveal" id="mapContainer">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop"
+                        alt="Mapa de Cartagena" class="w-full h-full object-cover opacity-80 dark:opacity-60">
+
+                    <!-- Map Pins -->
+                    <div class="map-pin" style="left: 30%; top: 40%;">
+                        <div class="map-tooltip">Pet City - Santa Mónica</div>
+                        <div class="map-pin-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
                         </div>
-                        <div class="clinic-body">
-                            <h5 class="clinic-name" th:text="${clinica.nombre}">Nombre Clínica</h5>
-                            <div class="clinic-location">
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span th:text="${#strings.abbreviate(clinica.direccion, 40)}">Dirección</span>
-                            </div>
-                            <p class="clinic-description" th:text="${#strings.abbreviate(clinica.descripcion, 100)}">Descripción...</p>
-                            <div class="clinic-footer">
-                                <a th:href="@{/detalle-clinica/{id}(id=${clinica.id})}" class="btn-clinic-primary">
-                                    Ver Servicios
-                                </a>
-                                <button class="btn-clinic-secondary" aria-label="Guardar en favoritos">
-                                    <i class="bi bi-heart"></i>
-                                </button>
-                            </div>
+                    </div>
+                    <div class="map-pin" style="left: 50%; top: 35%;">
+                        <div class="map-tooltip">Centro Torices</div>
+                        <div class="map-pin-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
                         </div>
-                    </article>
+                    </div>
+                    <div class="map-pin" style="left: 65%; top: 50%;">
+                        <div class="map-tooltip">Vetzone - Alto Bosque</div>
+                        <div class="map-pin-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                    </div>
+                    <div class="map-pin" style="left: 45%; top: 60%;">
+                        <div class="map-tooltip">Mascotas 24h - Manga</div>
+                        <div class="map-pin-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                    </div>
+                    <div class="map-pin" style="left: 25%; top: 55%;">
+                        <div class="map-tooltip">BlueVet Center</div>
+                        <div class="map-pin-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                    </div>
+
+                    <!-- Map Overlay Info -->
+                    <div class="absolute bottom-6 left-6 glass-strong rounded-2xl p-4 max-w-xs">
+                        <h4 class="font-bold text-gray-800 dark:text-white mb-1">Cartagena, Colombia</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">15 clínicas disponibles en tu zona</p <div
+                            class="mt-3 flex items-center gap-2">
+                        <span
+                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold">
+                            <i class="bi bi-circle-fill text-[8px] animate-pulse"></i>
+                            Abierto ahora
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinic List Preview -->
+        <div class="mt-8 grid md:grid-cols-3 gap-4 stagger-children" id="mapClinics">
+            <div class="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-lg transition-all cursor-pointer reveal"
+                onclick="showToast('Navegando a Pet City...', 'info')">
+                <div
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div class="flex-1">
+                    <h5 class="font-bold text-gray-800 dark:text-white text-sm">Pet City Cartagena</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Santa Mónica • 2.3 km</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center gap-1 text-amber-500 text-sm">
+                        <i class="bi bi-star-fill"></i>
+                        <span class="font-bold">4.8</span>
+                    </div>
+                    <span class="text-xs text-gray-400">24 reseñas</span>
                 </div>
             </div>
 
-            <div class="text-center mt-5">
-                <a th:href="@{/buscar-clinicas}" class="btn-primary-custom">
+            <div class="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-lg transition-all cursor-pointer reveal"
+                onclick="showToast('Navegando a Centro Torices...', 'info')">
+                <div
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-emerald to-emerald-600 flex items-center justify-center text-white">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div class="flex-1">
+                    <h5 class="font-bold text-gray-800 dark:text-white text-sm">Centro Veterinario Torices</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Torices • 1.8 km</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center gap-1 text-amber-500 text-sm">
+                        <i class="bi bi-star-fill"></i>
+                        <span class="font-bold">4.9</span>
+                    </div>
+                    <span class="text-xs text-gray-400">31 reseñas</span>
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-4 flex items-center gap-4 hover:shadow-lg transition-all cursor-pointer reveal"
+                onclick="showToast('Navegando a Vetzone...', 'info')">
+                <div
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-purple to-purple-600 flex items-center justify-center text-white">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div class="flex-1">
+                    <h5 class="font-bold text-gray-800 dark:text-white text-sm">Vetzone</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Alto Bosque • 3.1 km</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center gap-1 text-amber-500 text-sm">
+                        <i class="bi bi-star-fill"></i>
+                        <span class="font-bold">4.7</span>
+                    </div>
+                    <span class="text-xs text-gray-400">18 reseñas</span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Clinics Section -->
+    <section id="clinicas" class="py-24 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6 reveal">
+                <div class="max-w-2xl">
+                    <div class="badge-premium inline-flex mb-4">
+                        <i class="bi bi-star-fill"></i>
+                        Destacados
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-bold mb-4">Clínicas Populares en Cartagena</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400">Explora las clínicas mejor valoradas por nuestra
+                        comunidad de dueños responsables.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        class="filter-btn active px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-primary-500 to-accent-purple text-white shadow-lg shadow-primary-500/25 transition-all"
+                        onclick="filterClinics('all', this)">
+                        Todas
+                    </button>
+                    <button
+                        class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-primary-400 transition-all"
+                        onclick="filterClinics('24h', this)">
+                        <i class="bi bi-clock-history mr-1"></i>24 Horas
+                    </button>
+                    <button
+                        class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-primary-400 transition-all"
+                        onclick="filterClinics('urgencias', this)">
+                        <i class="bi bi-bandaid-fill mr-1"></i>Urgencias
+                    </button>
+                    <button
+                        class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-sm bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-primary-400 transition-all"
+                        onclick="filterClinics('especializada', this)">
+                        <i class="bi bi-award-fill mr-1"></i>Especializada
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children" id="clinicsGrid" th:if="${clinicasDestacadas != null and !clinicasDestacadas.isEmpty()}">
+                <!-- Clinic Loop -->
+                <article th:each="clinica : ${clinicasDestacadas}"
+                    class="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal clinic-card">
+                    <div class="relative h-56 overflow-hidden">
+                        <img th:src="${clinica.imagenUrl != null and !#strings.isEmpty(clinica.imagenUrl)} 
+                                    ? ${clinica.imagenUrl} 
+                                    : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&auto=format&fit=crop'"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            alt="Imagen de la clínica">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span
+                                class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur text-primary-600 text-xs font-bold shadow-lg">
+                                <i class="bi bi-star-fill text-amber-400 mr-1"></i><span>4.8</span>
+                            </span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span
+                                class="px-3 py-1.5 rounded-full bg-accent-emerald/90 backdrop-blur text-white text-xs font-bold shadow-lg">
+                                <i class="bi bi-check-circle-fill mr-1"></i>Verificado
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-bold text-lg" th:text="${clinica.nombre}">Nombre Clínica</h3>
+                            <p class="text-white/80 text-sm flex items-center gap-1">
+                                <i class="bi bi-geo-alt-fill"></i> <span th:text="${#strings.abbreviate(clinica.direccion, 40)}">Dirección</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span
+                                class="px-3 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold">Consultas</span>
+                            <span
+                                class="px-3 py-1 rounded-lg bg-accent-emerald/10 text-accent-emerald text-xs font-semibold">Vacunación</span>
+                    class="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal clinic-card"
+                    data-category="urgencias">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1000&auto=format&fit=crop"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            alt="Vetzone">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span
+                                class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur text-primary-600 text-xs font-bold shadow-lg">
+                                <i class="bi bi-star-fill text-amber-400 mr-1"></i>4.9
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-bold text-lg">Vetzone</h3>
+                            <p class="text-white/80 text-sm flex items-center gap-1">
+                                <i class="bi bi-geo-alt-fill"></i> Transversal 51B #21C-101, Alto Bosque
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span
+                                class="px-3 py-1 rounded-lg bg-accent-rose/10 text-accent-rose text-xs font-semibold">Urgencias</span>
+                            <span
+                                class="px-3 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold">Traumatología</span>
+                            <span
+                                class="px-3 py-1 rounded-lg bg-accent-purple/10 text-accent-purple text-xs font-semibold">Neurología</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">Centro de especialidades
+                            con resonancia magnética y tomografía para diagnósticos avanzados.</p>
+                        <div class="flex gap-3">
+                            <a href="/detalle-clinica/69f009789f07f42b8c2d7a53"
+                                class="flex-1 btn-premium py-3 text-sm justify-center">
+                                Ver Servicios
+                            </a>
+                            <button
+                                class="w-12 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
+                                onclick="toggleFavorite(this)">
+                                <i class="bi bi-heart text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="text-center mt-12 reveal">
+                <a href="/buscar-clinicas" class="btn-premium inline-flex">
                     Ver Todas las Clínicas
                     <i class="bi bi-arrow-right"></i>
                 </a>
@@ -1025,98 +1880,347 @@
         </div>
     </section>
 
-    <!-- Estadísticas -->
-    <section class="stats-section section-fade-in">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-heart-pulse"></i>
-                        </div>
-                        <div class="stat-number" data-count="12560">0</div>
-                        <div class="stat-label">Mascotas Atendidas</div>
+    <!-- Appointment Calendar Section -->
+    <section class="py-24 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <div class="badge-premium inline-flex mb-4">
+                        <i class="bi bi-calendar-heart"></i>
+                        Agenda Inteligente
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-people"></i>
+                    <h2 class="text-4xl lg:text-5xl font-bold mb-6">Reserva tu cita en segundos</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                        Nuestro sistema de agenda inteligente te muestra disponibilidad en tiempo real. Selecciona
+                        fecha, hora y recibe confirmación instantánea con recordatorios automáticos por WhatsApp.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 flex-shrink-0">
+                                <i class="bi bi-check-lg text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Disponibilidad Real</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Horarios actualizados al instante,
+                                    sin esperas ni confusiones.</p>
+                            </div>
                         </div>
-                        <div class="stat-number" data-count="8734">0</div>
-                        <div class="stat-label">Familias Felices</div>
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-accent-emerald flex-shrink-0">
+                                <i class="bi bi-check-lg text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Recordatorios Automáticos</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Notificaciones por WhatsApp y email
+                                    24h antes de tu cita.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center text-accent-purple flex-shrink-0">
+                                <i class="bi bi-check-lg text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Reagenda Fácil</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Cambia tu cita hasta 2 horas antes
+                                    sin penalización.</p>
+                            </div>
+                        </div>
                     </div>
+
+                    <button class="btn-premium mt-8"
+                        onclick="showToast('¡Calendario interactivo activado!', 'success')">
+                        <i class="bi bi-calendar-plus"></i>
+                        Agendar Ahora
+                    </button>
                 </div>
-                <div class="col-md-4">
-                    <div class="stat-item">
-                        <div class="stat-icon">
-                            <i class="bi bi-hospital"></i>
+
+                <div class="reveal">
+                    <div class="glass-strong rounded-3xl p-6 shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <button
+                                class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-primary-100 dark:hover:bg-primary-900/30 transition"
+                                onclick="changeMonth(-1)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <h3 class="text-xl font-bold" id="calendarMonth">Noviembre 2025</h3>
+                            <button
+                                class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-primary-100 dark:hover:bg-primary-900/30 transition"
+                                onclick="changeMonth(1)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
                         </div>
-                        <div class="stat-number" data-count="50">0</div>
-                        <div class="stat-label">Clínicas Asociadas</div>
+
+                        <div class="calendar-grid mb-2">
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">LUN</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">MAR</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">MIE</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">JUE</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">VIE</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">SAB</div>
+                            <div class="text-center text-xs font-bold text-gray-400 py-2">DOM</div>
+                        </div>
+
+                        <div class="calendar-grid" id="calendarDays">
+                            <!-- Generated by JS -->
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Horarios
+                                    disponibles:</span>
+                                <span class="text-xs text-primary-600 font-bold">5 slots libres</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button
+                                    class="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold hover:bg-primary-100 transition"
+                                    onclick="selectTime(this)">9:00 AM</button>
+                                <button
+                                    class="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold hover:bg-primary-100 transition"
+                                    onclick="selectTime(this)">11:30 AM</button>
+                                <button
+                                    class="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold hover:bg-primary-100 transition"
+                                    onclick="selectTime(this)">2:00 PM</button>
+                                <button
+                                    class="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-sm font-semibold hover:bg-primary-100 transition"
+                                    onclick="selectTime(this)">4:30 PM</button>
+                                <button
+                                    class="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-400 text-sm font-semibold cursor-not-allowed">6:00
+                                    PM</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Para Clínicas -->
-    <section class="for-clinics-section section-fade-in">
-        <div class="container">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <div class="section-label" style="display: inline-flex;">
-                        <i class="bi bi-briefcase"></i>
+    <!-- Testimonials 3D Carousel -->
+    <section id="testimonios"
+        class="py-24 bg-gradient-to-br from-primary-50 to-accent-purple/5 dark:from-gray-900 dark:to-gray-800">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <div class="badge-premium inline-flex mb-4">
+                    <i class="bi bi-chat-heart-fill"></i>
+                    Testimonios
+                </div>
+                <h2 class="text-4xl lg:text-5xl font-bold mb-4">Lo que dicen nuestros clientes</h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400">Miles de familias confían en nosotros para el
+                    cuidado de sus mascotas.</p>
+            </div>
+
+            <div class="testimonial-carousel reveal" id="testimonialCarousel">
+                <div class="testimonial-track" id="testimonialTrack">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-card" data-index="0">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=32" alt="María G."
+                                class="w-14 h-14 rounded-full object-cover ring-4 ring-primary-100 dark:ring-primary-900/30">
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">María González</h4>
+                                <div class="flex items-center gap-1 text-amber-400 text-sm">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">"Increíble plataforma. Pude
+                            agendar la cirugía de mi perro en minutos y el seguimiento post-operatorio fue excelente.
+                            Los recordatorios automáticos me salvaron de olvidar los medicamentos."</p>
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <i class="bi bi-hospital text-primary-500"></i>
+                            <span>Cliente de Pet City</span>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-card" data-index="1">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="Carlos R."
+                                class="w-14 h-14 rounded-full object-cover ring-4 ring-accent-emerald/20">
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Carlos Rodríguez</h4>
+                                <div class="flex items-center gap-1 text-amber-400 text-sm">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">"A las 3 AM mi gato tuvo una
+                            emergencia. Encontré una clínica 24h a 5 minutos y salvaron su vida. El sistema de urgencias
+                            es verdaderamente invaluable."</p>
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <i class="bi bi-hospital text-accent-emerald"></i>
+                            <span>Cliente de Mascotas 24h</span>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-card" data-index="2">
+                        <div class="flex items-center gap-4 mb-6">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Ana P."
+                                class="w-14 h-14 rounded-full object-cover ring-4 ring-accent-purple/20">
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Ana Patricia López</h4>
+                                <div class="flex items-center gap-1 text-amber-400 text-sm">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">"Como dueña de 3 perros, el
+                            historial digital me facilita la vida. Tengo todas las vacunas y desparasitaciones en un
+                            solo lugar. ¡Totalmente recomendado!"</p>
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <i class="bi bi-hospital text-accent-purple"></i>
+                            <span>Cliente de Mascoclinica</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-center gap-4 mt-8">
+                    <button
+                        class="w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center text-gray-600 hover:text-primary-600 hover:scale-110 transition-all"
+                        onclick="rotateTestimonials(-1)">
+                        <i class="bi bi-chevron-left text-xl"></i>
+                    </button>
+                    <div class="flex items-center gap-2" id="testimonialDots">
+                        <span class="w-3 h-3 rounded-full bg-primary-500 transition-all"></span>
+                        <span class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600 transition-all"></span>
+                        <span class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600 transition-all"></span>
+                    </div>
+                    <button
+                        class="w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center text-gray-600 hover:text-primary-600 hover:scale-110 transition-all"
+                        onclick="rotateTestimonials(1)">
+                        <i class="bi bi-chevron-right text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Clinics Section -->
+    <section class="py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+        <div
+            class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary-50 to-transparent dark:from-gray-800/50 opacity-50">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <div class="badge-premium inline-flex mb-4">
+                        <i class="bi bi-briefcase-fill"></i>
                         Para Profesionales
                     </div>
-                    <h2 class="section-title text-start">¿Eres una Clínica Veterinaria?</h2>
-                    <p class="lead text-secondary mb-4">
-                        Únete a nuestra red y digitaliza tus servicios. Llega a miles de dueños de mascotas en Cartagena, optimiza tu agenda y gestiona tus pacientes de forma eficiente.
+                    <h2 class="text-4xl lg:text-5xl font-bold mb-6">¿Eres una Clínica Veterinaria?</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                        Únete a nuestra red y digitaliza tus servicios. Llega a miles de dueños de mascotas en
+                        Cartagena, optimiza tu agenda y gestiona tus pacientes de forma eficiente.
                     </p>
-                    <ul class="feature-list">
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
+
+                    <div class="space-y-4 mb-8">
+                        <div
+                            class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-accent-emerald group-hover:scale-110 transition-transform">
+                                <i class="bi bi-graph-up-arrow text-xl"></i>
                             </div>
-                            <span>Reduce citas no asistidas con pagos anticipados integrados</span>
-                        </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Aumenta tus citas un 150%</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Visibilidad online y sistema de
+                                    reservas 24/7</p>
                             </div>
-                            <span>Panel de administración intuitivo y completo con analytics</span>
-                        </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform">
+                                <i class="bi bi-credit-card text-xl"></i>
                             </div>
-                            <span>Soporte técnico 24/7 especializado para tu clínica</span>
-                        </li>
-                        <li>
-                            <div class="feature-icon">
-                                <i class="bi bi-check-lg"></i>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Pagos anticipados integrados</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Reduce citas no asistidas con Stripe
+                                </p>
                             </div>
-                            <span>Integración con sistemas de historial médico digital</span>
-                        </li>
-                    </ul>
-                    <a th:href="@{/clinica/registrar-clinica}" class="btn-primary-custom">
-                        Registra tu Clínica
+                        </div>
+                        <div
+                            class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-accent-purple/10 flex items-center justify-center text-accent-purple group-hover:scale-110 transition-transform">
+                                <i class="bi bi-pie-chart-fill text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Panel con Analytics</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Métricas de rendimiento y reportes
+                                    automáticos</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors group">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                                <i class="bi bi-headset text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Soporte 24/7 Especializado</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Equipo técnico dedicado a tu clínica
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/clinica/registrar-clinica" class="btn-premium">
+                        Registra tu Clínica Gratis
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-                <div class="col-lg-6">
-                    <div class="position-relative">
+
+                <div class="relative reveal">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                         <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=2070&auto=format&fit=crop"
-                            class="img-fluid rounded-4 shadow-lg" alt="Equipo de veterinarios trabajando" loading="lazy">
-                        <div class="position-absolute bottom-0 start-0 m-4 bg-white p-4 rounded-4 shadow-lg d-none d-md-block">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                                    <i class="bi bi-graph-up-arrow text-success fs-3"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-0 fw-bold fs-4">+150%</p>
-                                    <p class="mb-0 small text-secondary">Incremento promedio en citas</p>
-                                </div>
+                            alt="Equipo veterinario" class="w-full rounded-3xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    </div>
+
+                    <div class="absolute -bottom-6 -left-6 glass-strong rounded-2xl p-6 shadow-xl max-w-[250px]">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-emerald to-emerald-600 flex items-center justify-center text-white text-xl">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800 dark:text-white">+150%</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Incremento promedio</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-accent-emerald to-emerald-500 h-2 rounded-full"
+                                style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute -top-6 -right-6 glass-strong rounded-2xl p-4 shadow-xl">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-gray-800 dark:text-white">Certificado</p>
+                                <p class="text-xs text-gray-500">Plataforma segura</p>
                             </div>
                         </div>
                     </div>
@@ -1126,157 +2230,997 @@
     </section>
 
     <!-- FAQ Section -->
-    <section class="faq-section section-fade-in">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-label">
-                    <i class="bi bi-question-circle"></i>
+    <section id="faq" class="py-24 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <div class="badge-premium inline-flex mb-4">
+                    <i class="bi bi-question-circle-fill"></i>
                     Preguntas Frecuentes
                 </div>
-                <h2 class="section-title">Resolvemos tus dudas</h2>
+                <h2 class="text-4xl lg:text-5xl font-bold mb-4">Resolvemos tus dudas</h2>
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
-                                    <i class="bi bi-credit-card me-3 text-primary"></i>
-                                    ¿Cómo funciona el pago de las citas?
-                                </button>
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Al solicitar tu cita, serás redirigido a nuestra pasarela de pago segura (procesada por Stripe). Puedes pagar con tarjeta de crédito, débito y otros métodos. La cita solo se enviará a la clínica para su confirmación una vez que el pago haya sido procesado exitosamente.
-                                </div>
+            <div class="space-y-4 stagger-children" id="faqContainer">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden reveal">
+                    <button
+                        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 flex-shrink-0">
+                                <i class="bi bi-credit-card"></i>
                             </div>
+                            <span class="font-bold text-gray-800 dark:text-white">¿Cómo funciona el pago de las
+                                citas?</span>
                         </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                                    <i class="bi bi-calendar-x me-3 text-primary"></i>
-                                    ¿Qué pasa si necesito cancelar mi cita?
-                                </button>
-                            </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    Puedes cancelar tu cita desde tu panel de usuario. Las políticas de reembolso dependen de cada clínica y del tiempo de antelación con el que realices la cancelación. Generalmente, cancelaciones con más de 24 horas de anticipación tienen reembolso completo.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                                    <i class="bi bi-coin me-3 text-primary"></i>
-                                    ¿Registrarse tiene algún costo?
-                                </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    <strong>No.</strong> Crear tu cuenta en ClínicaApp es y siempre será <em>totalmente gratis</em>. Solo pagas por los servicios veterinarios que agendas a través de la plataforma. No hay cuotas mensuales ni cargos ocultos para los dueños de mascotas.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Oficina Virtual -->
-    <section class="virtual-office-section section-fade-in">
-        <div class="container">
-            <div class="virtual-office-card">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 position-relative z-1">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-2">
-                                <i class="bi bi-headset text-primary fs-2"></i>
-                            </div>
-                            <div>
-                                <h2 class="fw-bold mb-0">Visita nuestra Oficina Virtual</h2>
-                                <p class="text-secondary mb-0">Soporte personalizado 24/7</p>
-                            </div>
-                        </div>
-                        <p class="lead text-secondary mb-0">
-                            ¿Tienes preguntas sobre tu rol en la plataforma o necesitas soporte rápido? Nuestra Oficina Virtual está diseñada para ayudarte con accesos directos a tu panel de control y ayuda contextualizada.
+                        <i class="bi bi-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden px-6 pb-5 pl-20">
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Al solicitar tu cita, serás redirigido a nuestra pasarela de pago segura (procesada por
+                            Stripe). Puedes pagar con tarjeta de crédito, débito y otros métodos. La cita solo se
+                            confirma una vez procesado el pago exitosamente.
                         </p>
                     </div>
-                    <div class="col-lg-4 text-lg-end text-center mt-4 mt-lg-0 position-relative z-1">
-                        <a th:href="@{/oficina-virtual}" class="btn-primary-custom">
-                            <i class="bi bi-box-arrow-in-right"></i>
-                            Ir a la Oficina Virtual
-                        </a>
+                </div>
+
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden reveal">
+                    <button
+                        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-accent-rose/10 flex items-center justify-center text-accent-rose flex-shrink-0">
+                                <i class="bi bi-calendar-x"></i>
+                            </div>
+                            <span class="font-bold text-gray-800 dark:text-white">¿Qué pasa si necesito cancelar?</span>
+                        </div>
+                        <i class="bi bi-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden px-6 pb-5 pl-20">
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Puedes cancelar desde tu panel de usuario. Cancelaciones con más de 24h de anticipación
+                            tienen reembolso completo. Entre 24h y 2h antes, 50% de reembolso. Menos de 2h no aplica.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden reveal">
+                    <button
+                        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-accent-emerald/10 flex items-center justify-center text-accent-emerald flex-shrink-0">
+                                <i class="bi bi-coin"></i>
+                            </div>
+                            <span class="font-bold text-gray-800 dark:text-white">¿Registrarse tiene algún costo?</span>
+                        </div>
+                        <i class="bi bi-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden px-6 pb-5 pl-20">
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <strong>No.</strong> Crear tu cuenta es y siempre será <em>totalmente gratis</em>. Solo
+                            pagas por los servicios que agendas. No hay cuotas mensuales ni cargos ocultos para dueños
+                            de mascotas.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden reveal">
+                    <button
+                        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center text-accent-purple flex-shrink-0">
+                                <i class="bi bi-file-earmark-medical"></i>
+                            </div>
+                            <span class="font-bold text-gray-800 dark:text-white">¿Cómo accedo al historial
+                                médico?</span>
+                        </div>
+                        <i class="bi bi-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden px-6 pb-5 pl-20">
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Desde tu panel de usuario, selecciona tu mascota y encontrarás todo el historial clínico:
+                            vacunas, desparasitaciones, recetas y resultados de laboratorio. Puedes descargarlo en PDF
+                            en cualquier momento.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden reveal">
+                    <button
+                        class="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                        onclick="toggleFaq(this)">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                            <span class="font-bold text-gray-800 dark:text-white">¿Mis datos están seguros?</span>
+                        </div>
+                        <i class="bi bi-chevron-down text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="hidden px-6 pb-5 pl-20">
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Utilizamos encriptación SSL de grado bancario y cumplimos con la Ley de Protección de Datos
+                            Personales de Colombia. Tus datos médicos y de pago nunca son compartidos con terceros.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Fragment -->
-    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- CTA Section -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-purple"></div>
+        <div class="absolute inset-0 opacity-20">
+            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="white">
+                    <animate attributeName="d" dur="10s" repeatCount="indefinite" values="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z;
+                                M0,50 Q25,70 50,50 T100,50 L100,100 L0,100 Z;
+                                M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" />
+                </path>
+            </svg>
+        </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+            <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6">¿Listo para cuidar mejor a tu mascota?</h2>
+            <p class="text-xl text-white/80 mb-10 max-w-2xl mx-auto">Únete a más de 12,000 familias que ya confían en
+                ClínicaApp para el cuidado de sus mejores amigos.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/registro"
+                    class="px-8 py-4 bg-white text-primary-600 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all inline-flex items-center justify-center gap-2">
+                    Crear Cuenta Gratis
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="/buscar-clinicas"
+                    class="px-8 py-4 bg-white/10 backdrop-blur text-white border-2 border-white/30 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all inline-flex items-center justify-center gap-2">
+                    Explorar Clínicas
+                </a>
+            </div>
+        </div>
+    </section>
 
-    <!-- Custom Scripts -->
-    <script th:src="@{/js/scripts.js}"></script>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white relative">
+        <!-- Wave -->
+        <div class="absolute -top-px left-0 right-0">
+            <svg viewBox="0 0 1440 100" fill="none" class="w-full h-auto">
+                <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="#111827" />
+            </svg>
+        </div>
 
+        <div class="max-w-7xl mx-auto px-6 pt-24 pb-12">
+            <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <!-- Brand -->
+                <div class="lg:col-span-2">
+                    <a href="/" class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-400 to-accent-purple flex items-center justify-center text-white text-xl">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="text-2xl font-bold">ClínicaApp</span>
+                    </a>
+                    <p class="text-gray-400 mb-6 max-w-sm leading-relaxed">
+                        Simplificamos el acceso a servicios veterinarios de calidad en Cartagena. Conectamos a dueños de
+                        mascotas con los mejores profesionales.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-gray-400">
+                            <i class="bi bi-geo-alt-fill text-primary-400"></i>
+                            <span>Cartagena, Colombia</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-gray-400">
+                            <i class="bi bi-envelope-fill text-primary-400"></i>
+                            <a href="mailto:hola@clinicaapp.com"
+                                class="hover:text-white transition">hola@clinicaapp.com</a>
+                        </div>
+                        <div class="flex items-center gap-3 text-gray-400">
+                            <i class="bi bi-telephone-fill text-primary-400"></i>
+                            <a href="tel:+573005722844" class="hover:text-white transition">+57 300 572 2844</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-bold mb-6 text-lg">Explorar</h4>
+                    <ul class="space-y-3">
+                        <li><a href="/"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Inicio</a>
+                        </li>
+                        <li><a href="/buscar-clinicas"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Buscar
+                                Clínicas</a></li>
+                        <li><a href="#servicios"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Servicios</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Sobre
+                                Nosotros</a></li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Blog</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-6 text-lg">Servicios</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Consultas</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Vacunación</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Urgencias</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Peluquería</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-400 hover:text-white transition flex items-center gap-2 group"><i
+                                    class="bi bi-chevron-right text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>Para
+                                Clínicas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold mb-6 text-lg">Newsletter</h4>
+                    <p class="text-gray-400 text-sm mb-4">Recibe tips de cuidado y promociones exclusivas.</p>
+                    <form onsubmit="handleNewsletter(event)" class="space-y-3">
+                        <input type="email" placeholder="tu@email.com" required
+                            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-400 focus:outline-none transition">
+                        <button type="submit"
+                            class="w-full py-3 rounded-xl bg-gradient-to-r from-primary-500 to-accent-purple text-white font-bold hover:shadow-lg hover:shadow-primary-500/25 transition-all">
+                            Suscribirse
+                        </button>
+                    </form>
+                    <div class="flex gap-3 mt-6">
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#1877f2] hover:text-white transition-all"><i
+                                class="bi bi-facebook"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-gradient-to-br hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white transition-all"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition-all"><i
+                                class="bi bi-twitter-x"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#0a66c2] hover:text-white transition-all"><i
+                                class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom -->
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm">© 2026 <strong class="text-white">ClínicaApp</strong>. Todos los
+                    derechos reservados.</p>
+                <div class="flex gap-6 text-sm">
+                    <a href="#" class="text-gray-500 hover:text-white transition">Términos</a>
+                    <a href="#" class="text-gray-500 hover:text-white transition">Privacidad</a>
+                    <a href="#" class="text-gray-500 hover:text-white transition">Cookies</a>
+                </div>
+                <div class="flex gap-3">
+                    <span class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs flex items-center gap-1"><i
+                            class="bi bi-shield-check text-primary-400"></i>Seguro</span>
+                    <span class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs flex items-center gap-1"><i
+                            class="bi bi-lock-fill text-primary-400"></i>SSL</span>
+                    <span class="px-3 py-1 rounded-full bg-gray-800 text-gray-400 text-xs flex items-center gap-1"><i
+                            class="bi bi-patch-check-fill text-primary-400"></i>Verificado</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- WhatsApp FAB -->
+    <a href="https://wa.me/573005722844?text=Hola%2C%20necesito%20ayuda%20con%20ClínicaApp" target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-8 left-8 w-14 h-14 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] text-white flex items-center justify-center text-2xl shadow-xl shadow-green-500/30 z-50 hover:scale-110 transition-transform border-3 border-white">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <!-- JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Intersection Observer para animaciones
-            const observerOptions = {
-                root: null,
-                rootMargin: "0px",
-                threshold: 0.1
+        // ===== LOADER =====
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1500);
+        });
+
+        // ===== THEME TOGGLE =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.classList.remove('bi-moon-fill');
+                icon.classList.add('bi-sun-fill');
+                showToast('Modo claro activado', 'info');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.classList.remove('bi-sun-fill');
+                icon.classList.add('bi-moon-fill');
+                showToast('Modo oscuro activado', 'info');
+            }
+        }
+
+        // ===== NAVIGATION SCROLL =====
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ===== MOBILE MENU =====
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // ===== SEARCH =====
+        function toggleSearch() {
+            const search = document.getElementById('searchExpand');
+            search.classList.toggle('active');
+            if (search.classList.contains('active')) {
+                search.querySelector('input').focus();
+            }
+        }
+
+        function handleSearch(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value;
+                if (query) {
+                    showToast(`Buscando: "${query}"...`, 'info');
+                    setTimeout(() => {
+                        window.location.href = `/buscar-clinicas?query=${encodeURIComponent(query)}`;
+                    }, 1000);
+                }
+            }
+        }
+
+        function handleHeroSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('heroSearch').value;
+            if (query) {
+                showToast(`Buscando servicios de "${query}"...`, 'info');
+                setTimeout(() => {
+                    window.location.href = `/buscar-clinicas?query=${encodeURIComponent(query)}`;
+                }, 1500);
+            }
+        }
+
+        function quickSearch(term) {
+            document.getElementById('heroSearch').value = term;
+            showToast(`Buscando: ${term}...`, 'info');
+            setTimeout(() => {
+                window.location.href = `/buscar-clinicas?query=${encodeURIComponent(term)}`;
+            }, 1000);
+        }
+
+        // ===== TOAST NOTIFICATIONS =====
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+
+            const icons = {
+                success: 'bi-check-circle-fill text-emerald-500',
+                error: 'bi-x-circle-fill text-rose-500',
+                info: 'bi-info-circle-fill text-primary-500',
+                warning: 'bi-exclamation-triangle-fill text-amber-500'
             };
 
+            toast.innerHTML = `
+                <i class="bi ${icons[type]} text-xl"></i>
+                <span class="font-semibold text-gray-800 dark:text-white text-sm">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        // ===== PARTICLE SYSTEM =====
+        (function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+
+            function resize() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    this.speedY = Math.random() * 1 - 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                    this.color = Math.random() > 0.5 ? '#0ea5e9' : '#8b5cf6';
+                }
+
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = this.opacity;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function init() {
+                particles = [];
+                const particleCount = Math.min(50, Math.floor(canvas.width * canvas.height / 15000));
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+
+                // Draw connections
+                particles.forEach((a, i) => {
+                    particles.slice(i + 1).forEach(b => {
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 100) {
+                            ctx.strokeStyle = '#0ea5e9';
+                            ctx.globalAlpha = 0.1 * (1 - distance / 100);
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                animationId = requestAnimationFrame(animate);
+            }
+
+            init();
+            animate();
+
+            // Pause when not visible
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
+                        if (!animationId) animate();
+                    } else {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                });
+            });
+            observer.observe(canvas);
+        })();
+
+        // ===== GSAP SCROLL ANIMATIONS =====
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Reveal animations
+            gsap.utils.toArray('.reveal').forEach(elem => {
+                gsap.fromTo(elem,
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: elem,
+                            start: 'top 85%',
+                            toggleActions: 'play none none none'
+                        }
+                    }
+                );
+            });
+
+            // Stagger children
+            gsap.utils.toArray('.stagger-children').forEach(parent => {
+                gsap.fromTo(parent.children,
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.15,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: parent,
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        }
+                    }
+                );
+            });
+
+            // Stats counter animation
+            const statsSection = document.getElementById('statsSection');
+            if (statsSection) {
+                ScrollTrigger.create({
+                    trigger: statsSection,
+                    start: 'top 80%',
+                    onEnter: () => {
+                        document.querySelectorAll('.stat-value').forEach(counter => {
+                            const target = parseInt(counter.dataset.target);
+                            const duration = 2000;
+                            const start = performance.now();
+
+                            function update(currentTime) {
+                                const elapsed = currentTime - start;
+                                const progress = Math.min(elapsed / duration, 1);
+                                const easeOut = 1 - Math.pow(1 - progress, 4);
+                                const current = Math.floor(easeOut * target);
+
+                                counter.textContent = current.toLocaleString('es-CO');
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(update);
+                                }
+                            }
+
+                            requestAnimationFrame(update);
+                        });
+                    },
+                    once: true
+                });
+            }
+
+            // Parallax for floating elements
+            gsap.to('.float-element', {
+                y: -50,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '#inicio',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: 1
+                }
+            });
+        }
+
+        // ===== 3D TILT CARDS =====
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+                // Update shine position
+                const shine = card.querySelector('.card-shine');
+                if (shine) {
+                    shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.3) 0%, transparent 60%)`;
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+
+        // ===== CUSTOM CURSOR =====
+        const cursor = document.getElementById('cursor');
+        let cursorX = 0, cursorY = 0;
+        let currentX = 0, currentY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            cursorX = e.clientX;
+            cursorY = e.clientY;
+        });
+
+        function animateCursor() {
+            currentX += (cursorX - currentX) * 0.1;
+            currentY += (cursorY - currentY) * 0.1;
+            cursor.style.left = currentX + 'px';
+            cursor.style.top = currentY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effect on interactive elements
+        document.querySelectorAll('a, button, .tilt-card, .map-pin').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // ===== CLINIC FILTERS =====
+        function filterClinics(category, btn) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active', 'bg-gradient-to-r', 'from-primary-500', 'to-accent-purple', 'text-white', 'shadow-lg', 'shadow-primary-500/25');
+                b.classList.add('bg-white', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-400', 'border', 'border-gray-200', 'dark:border-gray-700');
+            });
+
+            btn.classList.remove('bg-white', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-400', 'border', 'border-gray-200', 'dark:border-gray-700');
+            btn.classList.add('active', 'bg-gradient-to-r', 'from-primary-500', 'to-accent-purple', 'text-white', 'shadow-lg', 'shadow-primary-500/25');
+
+            // Filter cards
+            const cards = document.querySelectorAll('.clinic-card');
+            cards.forEach((card, index) => {
+                const cardCategory = card.dataset.category;
+                if (category === 'all' || cardCategory === category) {
+                    gsap.to(card, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.4,
+                        delay: index * 0.05,
+                        display: 'block'
+                    });
+                } else {
+                    gsap.to(card, {
+                        opacity: 0,
+                        scale: 0.8,
+                        duration: 0.4,
+                        onComplete: () => {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+
+            showToast(`Filtrando: ${category === 'all' ? 'Todas las clínicas' : category}`, 'info');
+        }
+
+        // ===== FAVORITE TOGGLE =====
+        function toggleFavorite(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill', 'text-rose-500');
+                btn.classList.add('border-rose-200', 'bg-rose-50', 'dark:bg-rose-900/20');
+                showToast('Agregado a favoritos', 'success');
+
+                // Add pop animation
+                gsap.fromTo(btn, { scale: 0.8 }, { scale: 1, duration: 0.4, ease: 'elastic.out(1, 0.5)' });
+            } else {
+                icon.classList.remove('bi-heart-fill', 'text-rose-500');
+                icon.classList.add('bi-heart');
+                btn.classList.remove('border-rose-200', 'bg-rose-50', 'dark:bg-rose-900/20');
+                showToast('Eliminado de favoritos', 'info');
+            }
+        }
+
+        // ===== CALENDAR =====
+        let currentMonth = new Date();
+        let selectedDate = null;
+
+        function generateCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
+
+            const container = document.getElementById('calendarDays');
+            container.innerHTML = '';
+
+            // Empty cells for days before start of month
+            for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+                const empty = document.createElement('div');
+                container.appendChild(empty);
+            }
+
+            // Days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day relative';
+                cell.textContent = day;
+
+                const date = new Date(year, month, day);
+                const isToday = date.toDateString() === today.toDateString();
+                const isPast = date < today && !isToday;
+                const hasEvent = [5, 12, 18, 25].includes(day);
+
+                if (isPast) {
+                    cell.classList.add('disabled');
+                } else {
+                    cell.onclick = () => selectDate(cell, date);
+
+                    if (isToday) {
+                        cell.classList.add('active');
+                        selectedDate = date;
+                    }
+
+                    if (hasEvent) {
+                        cell.classList.add('has-event');
+                    }
+                }
+
+                container.appendChild(cell);
+            }
+        }
+
+        function selectDate(cell, date) {
+            document.querySelectorAll('.calendar-day').forEach(c => c.classList.remove('active'));
+            cell.classList.add('active');
+            selectedDate = date;
+            showToast(`Fecha seleccionada: ${date.toLocaleDateString('es-CO')}`, 'info');
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            generateCalendar();
+
+            // Animate transition
+            gsap.fromTo('#calendarDays',
+                { opacity: 0, x: delta > 0 ? 20 : -20 },
+                { opacity: 1, x: 0, duration: 0.3 }
+            );
+        }
+
+        function selectTime(btn) {
+            if (btn.classList.contains('cursor-not-allowed')) return;
+
+            document.querySelectorAll('.calendar-grid button').forEach(b => {
+                b.classList.remove('bg-primary-500', 'text-white');
+                b.classList.add('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600');
+            });
+
+            btn.classList.remove('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600');
+            btn.classList.add('bg-primary-500', 'text-white');
+
+            showToast(`Hora seleccionada: ${btn.textContent}`, 'success');
+        }
+
+        generateCalendar();
+
+        // ===== TESTIMONIALS 3D CAROUSEL =====
+        let currentTestimonial = 0;
+        const testimonialCards = document.querySelectorAll('.testimonial-card');
+        const totalTestimonials = testimonialCards.length;
+
+        function updateTestimonials() {
+            testimonialCards.forEach((card, i) => {
+                const offset = i - currentTestimonial;
+                const absOffset = Math.abs(offset);
+
+                if (absOffset > 1) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translate(-50%, -50%) scale(0.8) rotateY(' + (offset * 45) + 'deg) translateZ(-400px)';
+                    card.style.pointerEvents = 'none';
+                } else {
+                    card.style.opacity = absOffset === 0 ? '1' : '0.5';
+                    card.style.transform = `translate(-50%, -50%) scale(${absOffset === 0 ? 1 : 0.85}) rotateY(${offset * 35}deg) translateZ(${absOffset === 0 ? 0 : -200}px)`;
+                    card.style.pointerEvents = absOffset === 0 ? 'auto' : 'none';
+                    card.style.zIndex = absOffset === 0 ? '10' : '5';
+                }
+            });
+
+            // Update dots
+            const dots = document.querySelectorAll('#testimonialDots span');
+            dots.forEach((dot, i) => {
+                if (i === currentTestimonial) {
+                    dot.classList.remove('bg-gray-300', 'dark:bg-gray-600');
+                    dot.classList.add('bg-primary-500');
+                    dot.style.transform = 'scale(1.3)';
+                } else {
+                    dot.classList.remove('bg-primary-500');
+                    dot.classList.add('bg-gray-300', 'dark:bg-gray-600');
+                    dot.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function rotateTestimonials(direction) {
+            currentTestimonial = (currentTestimonial + direction + totalTestimonials) % totalTestimonials;
+            updateTestimonials();
+        }
+
+        // Auto-rotate
+        setInterval(() => rotateTestimonials(1), 5000);
+        updateTestimonials();
+
+        // ===== FAQ ACCORDION =====
+        function toggleFaq(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('.bi-chevron-down');
+            const isOpen = !content.classList.contains('hidden');
+
+            // Close all others
+            document.querySelectorAll('#faqContainer .hidden').forEach(el => {
+                if (el !== content && !el.classList.contains('hidden')) {
+                    el.classList.add('hidden');
+                    el.previousElementSibling.querySelector('.bi-chevron-down').style.transform = 'rotate(0deg)';
+                }
+            });
+
+            if (isOpen) {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+
+                // Animate content
+                gsap.fromTo(content,
+                    { height: 0, opacity: 0 },
+                    { height: 'auto', opacity: 1, duration: 0.4, ease: 'power2.out' }
+                );
+            }
+        }
+
+
+        // ===== NEWSLETTER =====
+        function handleNewsletter(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input').value;
+            showToast(`¡Gracias por suscribirte! Revisa ${email}`, 'success');
+            e.target.reset();
+        }
+
+        // ===== MAGNETIC BUTTONS =====
+        document.querySelectorAll('.magnetic').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
+
+        // ===== RIPPLE EFFECT =====
+        document.querySelectorAll('.ripple').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const ripple = document.createElement('span');
+                ripple.style.cssText = `
+                    position: absolute;
+                    background: rgba(255,255,255,0.3);
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    transform: translate(-50%, -50%);
+                    animation: rippleEffect 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add ripple keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rippleEffect {
+                to {
+                    width: 200px;
+                    height: 200px;
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ===== SMOOTH SCROLL FOR ANCHORS =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ===== INTERSECTION OBSERVER FALLBACK =====
+        if (typeof gsap === 'undefined') {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        revealObserver.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.section-fade-in').forEach(section => {
-                observer.observe(section);
+            document.querySelectorAll('.reveal').forEach(el => {
+                el.classList.add('transition-all', 'duration-700');
+                revealObserver.observe(el);
             });
+        }
 
-            // Animación de contadores
-            function animateValue(obj, start, end, duration) {
-                let startTimestamp = null;
-                const step = (timestamp) => {
-                    if (!startTimestamp) startTimestamp = timestamp;
-                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-                    obj.innerHTML = Math.floor(easeOutQuart * (end - start) + start).toLocaleString('es-CO');
-                    if (progress < 1) {
-                        window.requestAnimationFrame(step);
-                    }
-                };
-                window.requestAnimationFrame(step);
+        // ===== PERFORMANCE: Pause animations when tab hidden =====
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Pause expensive animations
+            } else {
+                // Resume
             }
-
-            const counterObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const counters = entry.target.querySelectorAll('[data-count]');
-                        counters.forEach(counter => {
-                            animateValue(counter, 0, parseInt(counter.dataset.count), 2000);
-                        });
-                        counterObserver.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            document.querySelectorAll('.stats-section').forEach(section => {
-                counterObserver.observe(section);
-            });
         });
+
+        // ===== INIT =====
+        console.log('%c ClínicaApp Premium ', 'background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: white; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 10px;');
+        console.log('%c Plataforma veterinaria 100% profesional ', 'color: #0ea5e9; font-size: 14px;');
     </script>
 </body>
 
