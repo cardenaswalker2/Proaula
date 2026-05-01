@@ -11,79 +11,301 @@
     <!-- Iconos de Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-bg-strong: rgba(255, 255, 255, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 4px 24px rgba(15, 23, 42, 0.06);
+            --shadow-hover: 0 20px 50px rgba(99, 102, 241, 0.18);
+            --shadow-card: 0 8px 32px rgba(15, 23, 42, 0.08);
             --radius-xl: 24px;
-            --radius-lg: 20px;
-            --radius-md: 14px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
             --radius-sm: 10px;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Stats Cards Elite */
+        * {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 25%, #e0e7ff 50%, #f5f3ff 75%, #fff1f2 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 2rem;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            33% {
+                background-position: 100% 50%;
+            }
+
+            66% {
+                background-position: 50% 100%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Partículas flotantes */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navbar Premium Glassmorphism */
+        .navbar {
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.875rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(to right, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.02);
+        }
+
+        .navbar-brand i {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+
+        .btn-back {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Alertas Premium */
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(209, 250, 229, 0.9) 0%, rgba(167, 243, 208, 0.9) 100%);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Stats Grid Premium */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
         }
 
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.25rem;
+            }
+        }
+
         .stat-card-mini {
-            background: white;
-            padding: 1.25rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(0,0,0,0.05);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-soft);
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.5rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            animation: slideUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card-mini::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--card-color), var(--card-color-light));
+        }
+
+        .stat-card-mini:nth-child(1) {
+            animation-delay: 0.05s;
+            --card-color: #6366f1;
+            --card-color-light: #8b5cf6;
+        }
+
+        .stat-card-mini:nth-child(2) {
+            animation-delay: 0.1s;
+            --card-color: #f59e0b;
+            --card-color-light: #fbbf24;
+        }
+
+        .stat-card-mini:nth-child(3) {
+            animation-delay: 0.15s;
+            --card-color: #0ea5e9;
+            --card-color-light: #22d3ee;
+        }
+
+        .stat-card-mini:nth-child(4) {
+            animation-delay: 0.2s;
+            --card-color: #10b981;
+            --card-color-light: #34d399;
         }
 
         .stat-card-mini:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px) scale(1.02);
             box-shadow: var(--shadow-hover);
         }
 
         .stat-card-mini .val {
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 800;
-            color: #0f172a;
+            color: #1e293b;
             line-height: 1;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .stat-card-mini .lab {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
         }
 
         .stat-card-mini i {
             position: absolute;
-            right: -10px;
-            bottom: -10px;
-            font-size: 3rem;
-            opacity: 0.05;
+            right: -5px;
+            bottom: -5px;
+            font-size: 3.5rem;
+            opacity: 0.06;
             transform: rotate(-15deg);
+            transition: all 0.3s ease;
         }
 
-        /* Toolbar refinements */
+        .stat-card-mini:hover i {
+            opacity: 0.1;
+            transform: rotate(-10deg) scale(1.1);
+        }
+
+        /* Toolbar Premium */
         .sticky-toolbar {
             position: sticky;
             top: 75px;
             z-index: 900;
-            background: #ffffff;
-            border-bottom: 2px solid #e2e8f0;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+            animation-delay: 0.25s;
         }
 
         .search-wrapper {
@@ -98,26 +320,32 @@
             transform: translateY(-50%);
             color: #94a3b8;
             font-size: 1.1rem;
+            transition: color 0.3s ease;
         }
 
         .search-input {
             width: 100%;
-            padding: 0.875rem 1rem 0.875rem 3rem;
+            padding: 1rem 1rem 1rem 3.5rem;
             border-radius: 50px;
             border: 2px solid #e2e8f0;
             background: white;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 20px rgba(99, 102, 241, 0.1);
         }
 
-        /* Filter Pills */
+        .search-input:focus+i {
+            color: #6366f1;
+        }
+
+        /* Filter Pills Premium */
         .filter-pills {
             display: flex;
             gap: 0.5rem;
@@ -126,183 +354,50 @@
             scrollbar-width: none;
         }
 
-        .filter-pills::-webkit-scrollbar { display: none; }
+        .filter-pills::-webkit-scrollbar {
+            display: none;
+        }
 
         .filter-pill {
             padding: 0.625rem 1.25rem;
             border-radius: 50px;
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
             border: 1px solid #e2e8f0;
             color: #64748b;
             font-weight: 700;
             font-size: 0.8rem;
             white-space: nowrap;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-pill:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .filter-pill.active {
-            background: var(--dark-gradient);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
         }
 
-        /* Cita Card Elite enhancements */
-        .cita-card {
-            border-left: 6px solid #cbd5e1;
-        }
-        .cita-card[data-estado="Confirmada"] { border-left-color: #667eea; }
-        .cita-card[data-estado="Pendiente"] { border-left-color: #f59e0b; }
-        .cita-card[data-estado="Completada"] { border-left-color: #10b981; }
-        .cita-card[data-estado="Cancelada"] { border-left-color: #ef4444; }
-
-        .today-ribbon {
-            background: #667eea;
-            color: white;
-            font-weight: 800;
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-left: 8px;
-            vertical-align: middle;
-            display: none;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-        }
-
-        .btn-whatsapp:hover {
-            transform: scale(1.1) rotate(10deg);
-            background: #128c7e;
-            color: white;
-        }
-
-        * {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: #334155;
-            padding-bottom: 2rem;
-        }
-
-        /* Navbar Móvil Optimizado */
-        .navbar {
-            background: var(--dark-gradient) !important;
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.875rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(to right, #fff, #e2e8f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 60vw;
-        }
-
-        .navbar-brand i {
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .btn-outline-light {
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
-            white-space: nowrap;
-        }
-
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-1px);
-        }
-
-        /* Alertas Flotantes */
-        .alert {
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 1rem 1.25rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            animation: slideDown 0.4s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
-        }
-
-        .alert i {
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .btn-close {
-            padding: 0.75rem;
-            margin: -0.5rem -0.5rem -0.5rem auto;
-        }
-
-        /* Header de Sección */
+        /* Section Header */
         .section-header {
             margin-bottom: 1.5rem;
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+            animation-delay: 0.3s;
         }
 
         .section-header h5 {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 800;
-            color: #0f172a;
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -310,72 +405,7 @@
         }
 
         .section-header i {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 0.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-        }
-
-        /* Cards de Citas (Vista Móvil Principal) */
-        .citas-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .cita-card {
-            background: #ffffff;
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            animation: slideUp 0.5s ease forwards;
-            opacity: 0;
-        }
-
-        .cita-card:nth-child(1) { animation-delay: 0.05s; }
-        .cita-card:nth-child(2) { animation-delay: 0.1s; }
-        .cita-card:nth-child(3) { animation-delay: 0.15s; }
-        .cita-card:nth-child(4) { animation-delay: 0.2s; }
-        .cita-card:nth-child(5) { animation-delay: 0.25s; }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .cita-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        /* Header de Card */
-        .cita-header {
-            padding: 1.25rem;
-            border-bottom: 2px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 1rem;
-            background: #ffffff;
-        }
-
-        .cita-fecha {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .cita-fecha i {
-            background: var(--info-gradient);
+            background: linear-gradient(135deg, #6366f1, #ec4899);
             color: white;
             width: 40px;
             height: 40px;
@@ -383,8 +413,144 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Cita Cards Premium */
+        .citas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .cita-card {
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: slideUp 0.5s ease forwards;
+            opacity: 0;
+            position: relative;
+        }
+
+        .cita-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--estado-color), var(--estado-color-light));
+            opacity: 0.8;
+        }
+
+        .cita-card[data-estado="Confirmada"] {
+            --estado-color: #6366f1;
+            --estado-color-light: #8b5cf6;
+        }
+
+        .cita-card[data-estado="Pendiente"] {
+            --estado-color: #f59e0b;
+            --estado-color-light: #fbbf24;
+        }
+
+        .cita-card[data-estado="Completada"] {
+            --estado-color: #10b981;
+            --estado-color-light: #34d399;
+        }
+
+        .cita-card[data-estado="Cancelada"] {
+            --estado-color: #ef4444;
+            --estado-color-light: #f87171;
+        }
+
+        .cita-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .cita-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .cita-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .cita-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .cita-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cita-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Header de Card */
+        .cita-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+        }
+
+        .cita-fecha {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .cita-fecha i {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #4338ca;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.25rem;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .cita-card:hover .cita-fecha i {
+            transform: scale(1.1) rotate(-5deg);
         }
 
         .cita-fecha-texto {
@@ -394,18 +560,32 @@
 
         .cita-fecha-texto .fecha {
             font-weight: 700;
-            font-size: 1rem;
-            color: #0f172a;
+            font-size: 1.05rem;
+            color: #1e293b;
             line-height: 1.2;
         }
 
         .cita-fecha-texto .hora {
             font-size: 0.875rem;
             color: #64748b;
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        /* Badges */
+        .today-ribbon {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 800;
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            vertical-align: middle;
+            display: none;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Badges Premium */
         .badge-estado {
             padding: 0.5rem 1rem;
             border-radius: 50px;
@@ -415,40 +595,54 @@
             letter-spacing: 0.5px;
             border: none;
             white-space: nowrap;
+            backdrop-filter: blur(10px);
         }
 
         .badge-pendiente {
-            background: var(--warning-gradient);
-            color: white;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         .badge-confirmada {
-            background: var(--primary-gradient);
-            color: white;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #4338ca;
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
 
         .badge-completada {
-            background: var(--success-gradient);
-            color: white;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .badge-cancelada {
-            background: var(--danger-gradient);
-            color: white;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
         /* Body de Card */
         .cita-body {
-            padding: 1.25rem;
+            padding: 1.5rem;
         }
 
         .info-row {
             display: flex;
             align-items: flex-start;
-            gap: 0.875rem;
+            gap: 1rem;
             margin-bottom: 1rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover {
+            background: rgba(99, 102, 241, 0.02);
+            margin: 0 -1.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            border-bottom-color: transparent;
         }
 
         .info-row:last-of-type {
@@ -457,34 +651,44 @@
             border-bottom: none;
         }
 
+        .info-row:last-of-type:hover {
+            margin-bottom: 0;
+            padding-bottom: 0.75rem;
+        }
+
         .info-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .info-row:hover .info-icon {
+            transform: scale(1.1);
         }
 
         .info-icon.paciente {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
             color: #92400e;
         }
 
         .info-icon.contacto {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
             color: #1e40af;
         }
 
         .info-icon.servicio {
-            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-            color: #9d174d;
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+            color: #be185d;
         }
 
         .info-icon.pago {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
             color: #065f46;
         }
 
@@ -494,17 +698,17 @@
         }
 
         .info-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             margin-bottom: 0.25rem;
         }
 
         .info-value {
             font-weight: 700;
-            color: #0f172a;
+            color: #1e293b;
             font-size: 0.95rem;
             line-height: 1.4;
             word-break: break-word;
@@ -512,8 +716,10 @@
 
         .info-value.nombre {
             font-weight: 800;
-            color: #1e1b4b;
             font-size: 1.1rem;
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .contacto-detalles {
@@ -529,6 +735,7 @@
             gap: 0.5rem;
             font-size: 0.875rem;
             color: #64748b;
+            font-weight: 500;
         }
 
         .contacto-item i {
@@ -541,27 +748,76 @@
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            padding: 0.375rem 0.875rem;
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 700;
+            backdrop-filter: blur(10px);
         }
 
         .badge-pago.pagado {
-            background: var(--success-gradient);
-            color: white;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .badge-pago.pendiente {
-            background: var(--warning-gradient);
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* WhatsApp Button */
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
             color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            flex-shrink: 0;
+        }
+
+        .btn-whatsapp:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+            color: white;
+        }
+
+        /* Historial Button */
+        .btn-historial {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-historial:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
 
         /* Acciones */
         .cita-actions {
-            padding: 1rem 1.25rem;
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.8));
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
@@ -578,45 +834,60 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent;
             cursor: pointer;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-action i {
-            font-size: 1.1rem;
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
         }
 
         .btn-confirmar {
             background: white;
-            border-color: #10b981;
-            color: #059669;
+            border-color: #bbf7d0;
+            color: #16a34a;
         }
 
         .btn-confirmar:hover {
-            background: var(--success-gradient);
+            background: linear-gradient(135deg, #10b981, #34d399);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            border-color: transparent;
         }
 
         .btn-atender {
             background: white;
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #c7d2fe;
+            color: #4f46e5;
         }
 
         .btn-atender:hover {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            border-color: transparent;
         }
 
         .btn-cancelar {
             background: white;
-            border-color: #ef4444;
+            border-color: #fecaca;
             color: #dc2626;
             flex: 0 0 auto;
             min-width: 50px;
@@ -624,73 +895,75 @@
         }
 
         .btn-cancelar:hover {
-            background: var(--danger-gradient);
+            background: linear-gradient(135deg, #ef4444, #f87171);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-historial {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            color: #475569;
-            flex: 0 0 auto;
-            min-width: 50px;
-            padding: 0.875rem;
-        }
-
-        .btn-historial:hover {
-            background: var(--info-gradient);
-            color: white;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+            border-color: transparent;
         }
 
         /* Estados Finales */
         .estado-final {
-            padding: 1rem 1.25rem;
-            background: #f8fafc;
-            border-top: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
             font-weight: 700;
+            font-size: 0.95rem;
         }
 
         .estado-final.completada {
-            color: #059669;
-            background: #f0fdf4;
+            color: #065f46;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
         }
 
         .estado-final.cancelada {
-            color: #dc2626;
-            background: #fef2f2;
+            color: #991b1b;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
         }
 
         .estado-final i {
             font-size: 1.5rem;
         }
 
-        /* Estado Vacío */
+        /* Estado Vacío Premium */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             background: var(--glass-bg);
+            backdrop-filter: blur(15px);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow-soft);
+            border: 1px solid var(--glass-border);
+            animation: fadeIn 0.6s ease forwards;
         }
 
         .empty-state i {
             font-size: 5rem;
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            background: linear-gradient(135deg, #c7d2fe, #ddd6fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1.5rem;
             display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .empty-state h6 {
             font-size: 1.25rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #475569;
             margin-bottom: 0.5rem;
         }
@@ -699,16 +972,30 @@
             color: #94a3b8;
             font-size: 1rem;
             margin: 0;
+            font-weight: 500;
         }
 
-        /* Footer */
+        /* Footer Premium */
         .footer {
             margin-top: 3rem;
             text-align: center;
+            padding: 2rem 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer p {
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .footer small {
             color: #94a3b8;
-            font-size: 0.875rem;
             font-weight: 500;
-            padding: 0 1rem;
         }
 
         /* VISTA DESKTOP (Table) - Solo visible en lg+ */
@@ -719,11 +1006,16 @@
 
             .table-container {
                 display: block;
-                background: var(--glass-bg);
+                background: var(--glass-bg-strong);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
                 border-radius: var(--radius-xl);
-                box-shadow: var(--shadow-soft);
+                box-shadow: var(--shadow-card);
                 overflow: hidden;
-                border: 1px solid rgba(255, 255, 255, 0.6);
+                border: 1px solid var(--glass-border);
+                animation: fadeIn 0.6s ease forwards;
+                opacity: 0;
+                animation-delay: 0.35s;
             }
 
             .table {
@@ -733,14 +1025,14 @@
             }
 
             .table thead th {
-                background: #f8fafc;
+                background: rgba(248, 250, 252, 0.9);
                 color: #475569;
                 font-weight: 700;
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 1px;
                 padding: 1.25rem 1.5rem;
-                border-bottom: 2px solid #e2e8f0;
+                border-bottom: 2px solid rgba(226, 232, 240, 0.6);
                 white-space: nowrap;
             }
 
@@ -749,14 +1041,17 @@
             }
 
             .table tbody tr:hover {
-                background: linear-gradient(to right, #f8fafc, #ffffff);
+                background: rgba(99, 102, 241, 0.03);
+                transform: scale(1.005);
             }
 
             .table td {
-                padding: 1.5rem;
+                padding: 1.25rem 1.5rem;
                 vertical-align: middle;
-                border-bottom: 1px solid #e2e8f0;
-                font-size: 0.95rem;
+                border-bottom: 1px solid rgba(226, 232, 240, 0.4);
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #334155;
             }
 
             .btn-group-desktop {
@@ -771,32 +1066,39 @@
                 font-weight: 600;
                 border-radius: var(--radius-sm);
                 transition: all 0.3s ease;
+                border-width: 2px;
             }
 
             .btn-group-desktop .btn-outline-success {
-                border-color: #10b981;
-                color: #059669;
+                border-color: #bbf7d0;
+                color: #16a34a;
+                background: white;
             }
 
             .btn-group-desktop .btn-outline-success:hover {
-                background: var(--success-gradient);
+                background: linear-gradient(135deg, #10b981, #34d399);
                 color: white;
                 transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+                border-color: transparent;
             }
 
             .btn-group-desktop .btn-outline-primary {
-                border-color: #667eea;
-                color: #667eea;
+                border-color: #c7d2fe;
+                color: #4f46e5;
+                background: white;
             }
 
             .btn-group-desktop .btn-outline-primary:hover {
-                background: var(--primary-gradient);
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
                 color: white;
                 transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+                border-color: transparent;
             }
 
             .btn-group-desktop .btn-outline-danger {
-                border-color: #ef4444;
+                border-color: #fecaca;
                 color: #dc2626;
                 width: 40px;
                 height: 40px;
@@ -805,12 +1107,15 @@
                 justify-content: center;
                 padding: 0;
                 border-radius: 50%;
+                background: white;
             }
 
             .btn-group-desktop .btn-outline-danger:hover {
-                background: var(--danger-gradient);
+                background: linear-gradient(135deg, #ef4444, #f87171);
                 color: white;
                 transform: translateY(-2px) rotate(5deg);
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+                border-color: transparent;
             }
         }
 
@@ -824,7 +1129,7 @@
             }
         }
 
-        /* Ajustes específicos para móviles pequeños */
+        /* Ajustes móviles */
         @media (max-width: 375px) {
             .cita-header {
                 flex-direction: column;
@@ -841,42 +1146,47 @@
             }
         }
 
-        /* Scrollbar */
+        /* Scrollbar Premium */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-gradient);
-            border-radius: 3px;
+            background: linear-gradient(135deg, #c7d2fe, #ddd6fe);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
         }
     </style>
 </head>
 
 <body class="bg-light">
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark">
+    <!-- Navbar Premium -->
+    <nav class="navbar navbar-dark">
         <div class="container">
             <span class="navbar-brand">
                 <i class="bi bi-calendar-check"></i>
                 Gestión de Citas
             </span>
-            <a href="/clinica/dashboard" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-arrow-left d-none d-sm-inline"></i>
-                Volver
+            <a href="/clinica/dashboard" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+                <span class="d-none d-sm-inline">Volver</span>
             </a>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 position-relative" style="z-index: 1;">
 
-        <!-- Alertas -->
+        <!-- Alertas Premium -->
         <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill"></i>
             <span th:if="${param.success[0] == 'confirmada'}">¡Cita confirmada! Se notificará al cliente.</span>
@@ -885,36 +1195,37 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <!-- Dashboard Quick Metrics -->
+        <!-- Dashboard Quick Metrics Premium -->
         <div class="stats-grid">
-            <div class="stat-card-mini border-bottom border-primary border-3">
+            <div class="stat-card-mini">
                 <span class="lab">Citas Totales</span>
                 <span class="val" id="totalCount" th:text="${#lists.size(citas)}">0</span>
                 <i class="bi bi-calendar3-range"></i>
             </div>
-            <div class="stat-card-mini border-bottom border-warning border-3">
+            <div class="stat-card-mini">
                 <span class="lab">Pendientes</span>
                 <span class="val text-warning" id="pendingCount">0</span>
                 <i class="bi bi-hourglass-split"></i>
             </div>
-            <div class="stat-card-mini border-bottom border-info border-3">
+            <div class="stat-card-mini">
                 <span class="lab">Confirmadas</span>
                 <span class="val text-info" id="confirmedCount">0</span>
                 <i class="bi bi-check2-all"></i>
             </div>
-            <div class="stat-card-mini border-bottom border-success border-3">
+            <div class="stat-card-mini">
                 <span class="lab">Para Hoy</span>
                 <span class="val text-success" id="todayCount">0</span>
                 <i class="bi bi-clock-history"></i>
             </div>
         </div>
 
-        <!-- Toolbar: Search & Filter -->
+        <!-- Toolbar: Search & Filter Premium -->
         <div class="sticky-toolbar">
             <div class="d-flex flex-column gap-3">
                 <div class="search-wrapper">
                     <i class="bi bi-search"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar por paciente o dueño...">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Buscar por paciente o dueño...">
                 </div>
                 <div class="filter-pills">
                     <div class="filter-pill active" data-filter="all">Todas</div>
@@ -926,7 +1237,7 @@
             </div>
         </div>
 
-        <!-- Header -->
+        <!-- Header de Sección -->
         <div class="section-header">
             <h5>
                 <i class="bi bi-list-ul"></i>
@@ -936,8 +1247,8 @@
 
         <!-- VISTA MÓVIL: Cards -->
         <div class="citas-container" id="citasList">
-            <div th:each="cita : ${citas}" class="cita-card filterable-card" 
-                 th:attr="data-estado=${cita.estado}, data-fecha=${#strings.substring(cita.fechaHora, 0, 10)}, data-search=${#strings.toLowerCase(cita.nombreMascota + ' ' + cita.nombreUsuario)}">
+            <div th:each="cita : ${citas}" class="cita-card filterable-card"
+                th:attr="data-estado=${cita.estado}, data-fecha=${#strings.substring(cita.fechaHora, 0, 10)}, data-search=${#strings.toLowerCase(cita.nombreMascota + ' ' + cita.nombreUsuario)}">
                 <!-- Header -->
                 <div class="cita-header">
                     <div class="cita-fecha">
@@ -950,11 +1261,10 @@
                             <span class="hora" th:text="${#strings.substring(cita.fechaHora, 11, 16)}">09:00</span>
                         </div>
                     </div>
-                    <span class="badge-estado"
-                          th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
+                    <span class="badge-estado" th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
                                            (cita.estado == 'Confirmada' ? 'badge-confirmada' : 
                                            (cita.estado == 'Completada' ? 'badge-completada' : 'badge-cancelada'))}"
-                          th:text="${cita.estado}">Pendiente</span>
+                        th:text="${cita.estado}">Pendiente</span>
                 </div>
 
                 <!-- Body -->
@@ -968,8 +1278,8 @@
                             <div class="info-label">Paciente</div>
                             <div class="info-value nombre" th:text="${cita.nombreMascota}">Firulais</div>
                         </div>
-                        <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}" 
-                           class="btn-historal btn-historial" title="Ver Historial">
+                        <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}" class="btn-historial"
+                            title="Ver Historial">
                             <i class="bi bi-file-earmark-medical"></i>
                         </a>
                     </div>
@@ -989,8 +1299,8 @@
                                 </div>
                             </div>
                         </div>
-                        <a th:href="'https://wa.me/' + ${#strings.replace(cita.telefonoUsuario, '+', '')} + '?text=Hola ' + ${cita.nombreUsuario} + ', le escribimos de la veterinaria por la cita de ' + ${cita.nombreMascota}" 
-                           target="_blank" class="btn-whatsapp" title="Escribir por WhatsApp">
+                        <a th:href="'https://wa.me/' + ${#strings.replace(cita.telefonoUsuario, '+', '')} + '?text=Hola ' + ${cita.nombreUsuario} + ', le escribimos de la veterinaria por la cita de ' + ${cita.nombreMascota}"
+                            target="_blank" class="btn-whatsapp" title="Escribir por WhatsApp">
                             <i class="bi bi-whatsapp"></i>
                         </a>
                     </div>
@@ -1013,9 +1323,9 @@
                         </div>
                         <div class="info-content">
                             <div class="info-label">Estado de Pago</div>
-                            <span class="badge-pago" 
-                                  th:classappend="${cita.estadoPago == 'PAGADO' ? 'pagado' : 'pendiente'}"
-                                  th:text="${cita.estadoPago}">
+                            <span class="badge-pago"
+                                th:classappend="${cita.estadoPago == 'PAGADO' ? 'pagado' : 'pendiente'}"
+                                th:text="${cita.estadoPago}">
                                 <i class="bi bi-check-circle" th:if="${cita.estadoPago == 'PAGADO'}"></i>
                                 <i class="bi bi-clock" th:if="${cita.estadoPago != 'PAGADO'}"></i>
                                 PAGADO
@@ -1026,27 +1336,23 @@
 
                 <!-- Acciones -->
                 <div class="cita-actions" th:if="${cita.estado != 'Completada' && cita.estado != 'Cancelada'}">
-                    <form th:if="${cita.estado == 'Pendiente'}"
-                          th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}" 
-                          method="post" style="flex: 1;">
+                    <form th:if="${cita.estado == 'Pendiente'}" th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}"
+                        method="post" style="flex: 1;">
                         <button type="submit" class="btn-action btn-confirmar w-100">
                             <i class="bi bi-check2-circle"></i>
                             Confirmar
                         </button>
                     </form>
 
-                    <a th:if="${cita.estado == 'Confirmada'}"
-                       th:href="@{'/clinica/atender/' + ${cita.id}}"
-                       class="btn-action btn-atender">
+                    <a th:if="${cita.estado == 'Confirmada'}" th:href="@{'/clinica/atender/' + ${cita.id}}"
+                        class="btn-action btn-atender">
                         <i class="bi bi-clipboard-pulse"></i>
                         Atender
                     </a>
 
-                    <form th:action="@{'/clinica/citas/cancelar/' + ${cita.id}}" 
-                          method="post" style="flex: 0 0 auto;">
-                        <button type="submit" 
-                                class="btn-action btn-cancelar"
-                                onclick="return confirm('¿Cancelar esta cita?')">
+                    <form th:action="@{'/clinica/citas/cancelar/' + ${cita.id}}" method="post" style="flex: 0 0 auto;">
+                        <button type="submit" class="btn-action btn-cancelar"
+                            onclick="return confirm('¿Cancelar esta cita?')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
@@ -1070,86 +1376,117 @@
                 <p>Aún no tienes citas programadas para esta sede.</p>
             </div>
         </div>
-
         <!-- VISTA DESKTOP: Tabla -->
         <div class="table-container d-none d-lg-block">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>Fecha y Hora</th>
-                            <th>Paciente</th>
-                            <th>Propietario</th>
-                            <th>Servicio</th>
-                            <th>Pago</th>
-                            <th>Estado</th>
-                            <th class="text-center">Acciones</th>
+                            <th><i class="bi bi-calendar3 me-1"></i>Fecha y Hora</th>
+                            <th><i class="bi bi-heart-pulse me-1"></i>Paciente</th>
+                            <th><i class="bi bi-person me-1"></i>Propietario</th>
+                            <th><i class="bi bi-clipboard-pulse me-1"></i>Servicio</th>
+                            <th><i class="bi bi-cash-stack me-1"></i>Pago</th>
+                            <th><i class="bi bi-flag me-1"></i>Estado</th>
+                            <th class="text-center"><i class="bi bi-gear me-1"></i>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="cita : ${citas}">
                             <td>
-                                <div class="fw-bold" th:text="${cita.fechaHora}">10 Oct, 09:00</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div
+                                        style="width: 36px; height: 36px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-calendar3 text-primary" style="font-size: 0.9rem;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="color: #1e293b; font-size: 0.9rem;"
+                                            th:text="${cita.fechaHora}">10 Oct, 09:00</div>
+                                    </div>
+                                </div>
                             </td>
                             <td>
-                                <span th:text="${cita.nombreMascota}"></span>
-                                <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}"
-                                   class="btn btn-link btn-sm p-0 ms-1" title="Ver Historial">
-                                    <i class="bi bi-file-earmark-medical"></i>
-                                </a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #92400e; font-size: 0.8rem;"
+                                        th:text="${#strings.substring(cita.nombreMascota, 0, 1)}">F</div>
+                                    <span class="fw-bold" style="color: #1e293b;"
+                                        th:text="${cita.nombreMascota}"></span>
+                                    <a th:href="@{'/clinica/mascota/' + ${cita.mascotaId} + '/historial'}"
+                                        class="btn btn-link btn-sm p-0 ms-1" title="Ver Historial"
+                                        style="color: #94a3b8; transition: color 0.3s;">
+                                        <i class="bi bi-file-earmark-medical"></i>
+                                    </a>
+                                </div>
                             </td>
                             <td>
-                                <div th:text="${cita.nombreUsuario}"></div>
-                                <small class="text-muted">
-                                    <i class="bi bi-telephone"></i> <span th:text="${cita.telefonoUsuario}"></span>
-                                </small>
-                            </td>
-                            <td th:text="${cita.nombreServicio}">Consulta General</td>
-                            <td>
-                                <span class="badge"
-                                      th:classappend="${cita.estadoPago == 'PAGADO' ? 'bg-success' : 'bg-warning text-dark'}"
-                                      th:text="${cita.estadoPago}"></span>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold" style="color: #334155; font-size: 0.9rem;"
+                                        th:text="${cita.nombreUsuario}"></span>
+                                    <small style="color: #94a3b8; font-size: 0.8rem;">
+                                        <i class="bi bi-telephone me-1"></i><span
+                                            th:text="${cita.telefonoUsuario}"></span>
+                                    </small>
+                                </div>
                             </td>
                             <td>
-                                <span class="badge"
-                                      th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
+                                <span
+                                    style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); color: #be185d; padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600;"
+                                    th:text="${cita.nombreServicio}">Consulta General</span>
+                            </td>
+                            <td>
+                                <span
+                                    style="padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700;"
+                                    th:classappend="${cita.estadoPago == 'PAGADO' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'}"
+                                    th:text="${cita.estadoPago}"></span>
+                            </td>
+                            <td>
+                                <span class="badge-estado"
+                                    th:classappend="${cita.estado == 'Pendiente' ? 'badge-pendiente' : 
                                                        (cita.estado == 'Confirmada' ? 'badge-confirmada' : 
                                                        (cita.estado == 'Completada' ? 'badge-completada' : 'badge-cancelada'))}"
-                                      th:text="${cita.estado}"></span>
+                                    th:text="${cita.estado}"></span>
                             </td>
                             <td class="text-center">
                                 <div class="btn-group-desktop"
-                                     th:if="${cita.estado != 'Completada' && cita.estado != 'Cancelada'}">
+                                    th:if="${cita.estado != 'Completada' && cita.estado != 'Cancelada'}">
                                     <form th:if="${cita.estado == 'Pendiente'}"
-                                          th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}" method="post">
+                                        th:action="@{'/clinica/citas/confirmar/' + ${cita.id}}" method="post">
                                         <button type="submit" class="btn btn-outline-success">
-                                            <i class="bi bi-check2-circle"></i> Confirmar
+                                            <i class="bi bi-check2-circle me-1"></i> Confirmar
                                         </button>
                                     </form>
                                     <a th:if="${cita.estado == 'Confirmada'}"
-                                       th:href="@{'/clinica/atender/' + ${cita.id}}"
-                                       class="btn btn-outline-primary">
-                                        <i class="bi bi-clipboard-pulse"></i> Atender
+                                        th:href="@{'/clinica/atender/' + ${cita.id}}" class="btn btn-outline-primary">
+                                        <i class="bi bi-clipboard-pulse me-1"></i> Atender
                                     </a>
                                     <form th:action="@{'/clinica/citas/cancelar/' + ${cita.id}}" method="post">
                                         <button type="submit" class="btn btn-outline-danger"
-                                                onclick="return confirm('¿Cancelar esta cita?')">
+                                            onclick="return confirm('¿Cancelar esta cita?')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
                                 </div>
-                                <span th:if="${cita.estado == 'Completada'}" class="text-success fw-bold">
-                                    <i class="bi bi-check-all"></i> Finalizada
+                                <span th:if="${cita.estado == 'Completada'}"
+                                    class="d-flex align-items-center justify-content-center gap-2"
+                                    style="color: #059669; font-weight: 700;">
+                                    <i class="bi bi-check-all" style="font-size: 1.2rem;"></i> Finalizada
                                 </span>
-                                <span th:if="${cita.estado == 'Cancelada'}" class="text-danger">
-                                    <i class="bi bi-x-circle"></i> Cancelada
+                                <span th:if="${cita.estado == 'Cancelada'}"
+                                    class="d-flex align-items-center justify-content-center gap-2"
+                                    style="color: #dc2626; font-weight: 700;">
+                                    <i class="bi bi-x-circle" style="font-size: 1.2rem;"></i> Cancelada
                                 </span>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(citas)}">
+                        <tr th:if="${#lists.isEmpty(citas)}" class="empty-state-row">
                             <td colspan="7" class="text-center py-5">
-                                <i class="bi bi-calendar-x display-4 text-muted d-block mb-3"></i>
-                                <p class="text-muted">No tienes citas agendadas por el momento.</p>
+                                <div
+                                    style="width: 60px; height: 60px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                                    <i class="bi bi-calendar-x fs-2" style="color: #94a3b8;"></i>
+                                </div>
+                                <p class="fw-bold text-muted mb-1">No tienes citas agendadas</p>
+                                <small class="text-muted">Las citas aparecerán aquí cuando los clientes las
+                                    agenden</small>
                             </td>
                         </tr>
                     </tbody>
@@ -1157,24 +1494,32 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer Premium -->
         <div class="footer mt-5 pb-4">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <div
+                    style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulse-dot 2s infinite;">
+                </div>
+                <span style="color: #10b981; font-weight: 700; font-size: 0.8rem;">Sistema Operativo</span>
+                <span style="color: #cbd5e1;">|</span>
+                <span style="color: #94a3b8; font-size: 0.8rem;">v2.5</span>
+            </div>
             <p class="mb-1">&copy; 2026 ClínicaApp. Sistema de Gestión Veterinaria Avanzada.</p>
-            <small class="opacity-50">Panel de Control Clínico v2.5</small>
+            <small>Panel de Control Clínico</small>
         </div>
     </div>
 
     <!-- Scripts Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Lógica de Filtrado Inteligente -->
+    <!-- Lógica de Filtrado Inteligente Premium -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
             const filterPills = document.querySelectorAll('.filter-pill');
             const mobileCards = document.querySelectorAll('.filterable-card');
-            const tableRows = document.querySelectorAll('.table tbody tr:not(.empty-row)');
-            
+            const tableRows = document.querySelectorAll('.table tbody tr:not(.empty-state-row)');
+
             // Datos para métricas
             const hoy = new Date().toISOString().split('T')[0];
             let counts = { pendiente: 0, confirmada: 0, hoy: 0 };
@@ -1183,19 +1528,49 @@
             mobileCards.forEach(card => {
                 const estado = card.getAttribute('data-estado').toLowerCase();
                 const fecha = card.getAttribute('data-fecha');
-                
+
                 if (estado === 'pendiente') counts.pendiente++;
                 if (estado === 'confirmada') counts.confirmada++;
                 if (fecha === hoy) {
                     counts.hoy++;
                     const ribbon = card.querySelector('.today-ribbon');
-                    if(ribbon) ribbon.style.display = 'inline-block';
+                    if (ribbon) ribbon.style.display = 'inline-block';
                 }
             });
 
-            document.getElementById('pendingCount').textContent = counts.pendiente;
-            document.getElementById('confirmedCount').textContent = counts.confirmada;
-            document.getElementById('todayCount').textContent = counts.hoy;
+            // Animar contadores
+            animateCounter('pendingCount', 0, counts.pendiente, 1000);
+            animateCounter('confirmedCount', 0, counts.confirmada, 1000);
+            animateCounter('todayCount', 0, counts.hoy, 1000);
+
+            function animateCounter(id, start, end, duration) {
+                let obj = document.getElementById(id);
+                if (!obj) return;
+                
+                if (start === end) {
+                    obj.textContent = end;
+                    return;
+                }
+
+                const startTime = performance.now();
+                
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeProgress = 1 - Math.pow(1 - progress, 4);
+                    const current = Math.floor(start + (end - start) * easeProgress);
+
+                    obj.textContent = current;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        obj.textContent = end;
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
 
             function filterCitas() {
                 const searchTerm = searchInput.value.toLowerCase();
@@ -1209,7 +1584,7 @@
 
                     const matchesSearch = searchData.includes(searchTerm);
                     let matchesFilter = activeFilter === 'all';
-                    
+
                     if (activeFilter === 'hoy') matchesFilter = (fecha === hoy);
                     else if (activeFilter !== 'all') matchesFilter = (estado === activeFilter);
 
@@ -1220,7 +1595,6 @@
                 tableRows.forEach(row => {
                     const text = row.innerText.toLowerCase();
                     const matchesSearch = text.includes(searchTerm);
-                    // (Opcional: implementar filtro de estado en tabla si se requiere)
                     row.style.display = matchesSearch ? '' : 'none';
                 });
             }
