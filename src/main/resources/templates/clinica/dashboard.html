@@ -789,23 +789,19 @@
         }
 
         .stat-card,
-        .card,
-        .waiting-room-card {
+        .card:not(.waiting-room-card) {
             animation: fadeIn 0.6s ease forwards;
             opacity: 0;
         }
 
-        .stat-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .stat-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
         .waiting-room-card {
-            animation-delay: 0.15s;
+            animation: fadeIn 0.6s ease forwards, pulse-border 2.5s infinite;
+            opacity: 0;
         }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(1) { animation-delay: 0.15s; }
     </style>
 </head>
 
@@ -819,7 +815,7 @@
             </a>
             <div class="ms-auto d-flex align-items-center gap-3">
                 <span class="text-white-50 d-none d-md-inline small fw-medium"
-                    th:text="${clinica.email}">email@clinica.com</span>
+                    th:text="${clinica?.email ?: 'email@clinica.com'}">email@clinica.com</span>
                 <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2);" class="d-none d-md-block">
                 </div>
                 <a class="btn btn-outline-danger btn-sm" href="/logout">
@@ -846,7 +842,7 @@
         </div>
 
         <!-- NOTIFICACIÓN: SALA DE ESPERA (Pacientes enviados por recepción) -->
-        <div class="row mb-4" th:if="${not #lists.isEmpty(salaDeEspera)}">
+        <div class="row mb-4" th:if="${salaDeEspera != null and not #lists.isEmpty(salaDeEspera)}">
             <div class="col-12">
                 <div class="card waiting-room-card">
                     <div class="card-header text-white py-3 border-0">
@@ -859,7 +855,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            <div th:each="p, iterStat : ${salaDeEspera}"
+                            <div th:each="p : ${salaDeEspera}"
                                 class="list-group-item d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center gap-3">
                                     <div
@@ -868,14 +864,14 @@
                                     </div>
                                     <div>
                                         <h5 class="mb-1 fw-bold text-primary" style="font-size: 1.2rem;">
-                                            <span th:text="${p.nombreMascota}">Mascota</span>
+                                            <span th:text="${p.nombreMascota ?: 'Sin nombre'}">Mascota</span>
                                         </h5>
                                         <p class="mb-0 text-muted small">
                                             <i class="bi bi-person me-1"></i><strong
-                                                th:text="${p.nombreUsuario}">Nombre</strong>
+                                                th:text="${p.nombreUsuario ?: 'Usuario'}">Nombre</strong>
                                             <span class="mx-2">|</span>
                                             <i class="bi bi-tag me-1"></i><span class="badge bg-secondary"
-                                                th:text="${p.nombreServicio}">Servicio</span>
+                                                th:text="${p.nombreServicio ?: 'General'}">Servicio</span>
                                         </p>
                                     </div>
                                 </div>
@@ -899,7 +895,7 @@
             <!-- GRÁFICOS DE RENDIMIENTO (BI) -->
             <div class="col-lg-8">
                 <!-- Gráfico Principal de Ingresos -->
-                <div class="card mb-4" style="animation-delay: 0.2s;">
+                <div class="card mb-4">
                     <div
                         class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
@@ -927,7 +923,7 @@
                 <!-- Gráficos Secundarios -->
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="card" style="animation-delay: 0.3s;">
+                        <div class="card">
                             <div class="card-header bg-transparent border-0 py-3 text-center">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-pie-chart-fill text-primary" style="font-size: 1.2rem;"></i>
@@ -942,7 +938,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card" style="animation-delay: 0.4s;">
+                        <div class="card">
                             <div class="card-header bg-transparent border-0 py-3 text-center">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-stars text-warning" style="font-size: 1.2rem;"></i>
@@ -962,12 +958,12 @@
             <!-- Columna Lateral: Estadísticas (KPIs) y Menú -->
             <div class="col-lg-4">
                 <!-- Card de Citas -->
-                <div class="stat-card bg-gradient-primary text-white mb-4" style="animation-delay: 0.1s;">
+                <div class="stat-card bg-gradient-primary text-white mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="text-white-50">Citas Totales</h6>
-                                <h1 class="mb-0" id="kpi-citas" th:text="${totalCitas}">0</h1>
+                                <h1 class="mb-0" id="kpi-citas" th:text="${totalCitas ?: 0}">0</h1>
                                 <div class="mt-2 d-flex align-items-center gap-1"
                                     style="font-size: 0.8rem; opacity: 0.8;">
                                     <i class="bi bi-arrow-up-short"></i>
@@ -984,13 +980,13 @@
                 </div>
 
                 <!-- Card de Ingresos -->
-                <div class="stat-card bg-gradient-success text-white mb-4" style="animation-delay: 0.15s;">
+                <div class="stat-card bg-gradient-success text-white mb-4">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="text-white-50">Ingresos Recaudados</h6>
                                 <h1 class="mb-0" id="kpi-ingresos"
-                                    th:text="'$' + ${#numbers.formatDecimal(totalIngresos, 1, 'COMMA', 2, 'POINT')}">
+                                    th:text="'$' + ${#numbers.formatDecimal(totalIngresos ?: 0, 1, 'COMMA', 2, 'POINT')}">
                                     $0.00</h1>
                                 <div class="mt-2 d-flex align-items-center gap-1"
                                     style="font-size: 0.8rem; opacity: 0.8;">
@@ -1009,7 +1005,7 @@
                 </div>
 
                 <!-- Panel Administrativo Premium -->
-                <div class="card mb-4" style="animation-delay: 0.25s;">
+                <div class="card mb-4">
                     <div class="card-header bg-white py-3 border-0">
                         <div class="d-flex align-items-center gap-2">
                             <div
@@ -1057,7 +1053,7 @@
             </div>
             <!-- Columna Derecha: Información de la Sede -->
             <div class="col-lg-8">
-                <div class="card mb-4" style="animation-delay: 0.35s;">
+                <div class="card mb-4">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-0">
                         <div class="d-flex align-items-center gap-2">
                             <div
@@ -1076,26 +1072,25 @@
                             <div class="col-sm-6">
                                 <label class="d-block mb-2"><i class="bi bi-geo-alt-fill me-1 text-danger"></i>Dirección
                                     Registrada</label>
-                                <div class="border" th:text="${clinica.direccion}">Cargando...</div>
+                                <div class="border" th:text="${clinica?.direccion ?: 'No registrada'}">Cargando...</div>
                             </div>
                             <div class="col-sm-6">
                                 <label class="d-block mb-2"><i
                                         class="bi bi-telephone-fill me-1 text-success"></i>Teléfono Público</label>
-                                <div class="border" th:text="${clinica.telefono}">Cargando...</div>
+                                <div class="border" th:text="${clinica?.telefono ?: 'No registrado'}">Cargando...</div>
                             </div>
                             <div class="col-12">
                                 <label class="d-block mb-2"><i class="bi bi-card-text me-1 text-primary"></i>Descripción
                                     para Clientes</label>
                                 <div class="border" style="min-height: 80px; line-height: 1.6;"
-                                    th:text="${clinica.descripcion}">Sin descripción.</div>
+                                    th:text="${clinica?.descripcion ?: 'Sin descripción.'}">Sin descripción.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tip Card Premium -->
-                <div class="alert bg-white shadow-sm d-flex align-items-center p-4" role="alert"
-                    style="animation-delay: 0.45s;">
+                <div class="alert bg-white shadow-sm d-flex align-items-center p-4" role="alert">
                     <div class="bg-info-subtle me-3 flex-shrink-0">
                         <i class="bi bi-lightbulb"></i>
                     </div>
@@ -1117,7 +1112,7 @@
                 </div>
                 <span style="color: #10b981; font-weight: 700; font-size: 0.8rem;">Sistema Operativo</span>
                 <span style="color: #cbd5e1;">|</span>
-                <span style="color: #94a3b8; font-size: 0.8rem;">v2.0</span>
+                <span style="color: #94a3b8; font-size: 0.8rem;">v2.1</span>
             </div>
             <p class="small mb-0">Sistema de Gestión Clínica © 2024</p>
         </footer>
@@ -1126,191 +1121,200 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
         // --- 1. DATOS DEL SERVIDOR ---
-        const labelsEstados = JSON.parse(/*[[${labelsEstadosJson}]]*/ '[]');
-        const dataEstados = JSON.parse(/*[[${dataEstadosJson}]]*/ '[]');
-        const labelsIngresos = JSON.parse(/*[[${labelsIngresosJson}]]*/ '[]');
-        const dataIngresos = JSON.parse(/*[[${dataIngresosJson}]]*/ '[]');
-        const labelsTopServicios = JSON.parse(/*[[${labelsTopServiciosJson}]]*/ '[]');
-        const dataTopServicios = JSON.parse(/*[[${dataTopServiciosJson}]]*/ '[]');
+        const labelsEstados = JSON.parse(/*[[${labelsEstadosJson ?: '[]'}]]*/ '[]');
+        const dataEstados = JSON.parse(/*[[${dataEstadosJson ?: '[]'}]]*/ '[]');
+        const labelsIngresos = JSON.parse(/*[[${labelsIngresosJson ?: '[]'}]]*/ '[]');
+        const dataIngresos = JSON.parse(/*[[${dataIngresosJson ?: '[]'}]]*/ '[]');
+        const labelsTopServicios = JSON.parse(/*[[${labelsTopServiciosJson ?: '[]'}]]*/ '[]');
+        const dataTopServicios = JSON.parse(/*[[${dataTopServiciosJson ?: '[]'}]]*/ '[]');
 
         // --- 2. CONFIGURACIÓN DE GRÁFICOS PREMIUM ---
 
         // Gráfico de Ingresos (Línea) - Premium
-        const ctxRev = document.getElementById('revenueChart').getContext('2d');
-        const gradRev = ctxRev.createLinearGradient(0, 0, 0, 300);
-        gradRev.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
-        gradRev.addColorStop(0.5, 'rgba(99, 102, 241, 0.1)');
-        gradRev.addColorStop(1, 'rgba(99, 102, 241, 0)');
+        const canvasRev = document.getElementById('revenueChart');
+        if (canvasRev) {
+            const ctxRev = canvasRev.getContext('2d');
+            const gradRev = ctxRev.createLinearGradient(0, 0, 0, 300);
+            gradRev.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+            gradRev.addColorStop(0.5, 'rgba(99, 102, 241, 0.1)');
+            gradRev.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
-        new Chart(ctxRev, {
-            type: 'line',
-            data: {
-                labels: labelsIngresos,
-                datasets: [{
-                    label: 'Ingresos ($)',
-                    data: dataIngresos,
-                    borderColor: '#6366f1',
-                    backgroundColor: gradRev,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#6366f1',
-                    pointBorderWidth: 3,
-                    pointRadius: 5,
-                    pointHoverRadius: 8,
-                    pointHoverBackgroundColor: '#6366f1',
-                    pointHoverBorderColor: '#fff',
-                    pointHoverBorderWidth: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        padding: 12,
-                        titleFont: { size: 13, weight: '700', family: 'Plus Jakarta Sans' },
-                        bodyFont: { size: 12, family: 'Plus Jakarta Sans' },
-                        cornerRadius: 12,
-                        displayColors: false,
-                        callbacks: {
-                            label: function (context) {
-                                return '$' + context.parsed.y.toLocaleString();
+            new Chart(ctxRev, {
+                type: 'line',
+                data: {
+                    labels: labelsIngresos,
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: dataIngresos,
+                        borderColor: '#6366f1',
+                        backgroundColor: gradRev,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#6366f1',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            titleFont: { size: 13, weight: '700', family: 'Plus Jakarta Sans' },
+                            bodyFont: { size: 12, family: 'Plus Jakarta Sans' },
+                            cornerRadius: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) {
+                                    return '$' + (context.parsed.y || 0).toLocaleString();
+                                }
                             }
                         }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(99, 102, 241, 0.06)', drawBorder: false },
-                        ticks: {
-                            font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
-                            color: '#94a3b8',
-                            callback: value => '$' + value.toLocaleString(),
-                            padding: 10
-                        },
-                        border: { display: false }
                     },
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
-                            color: '#64748b'
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(99, 102, 241, 0.06)', drawBorder: false },
+                            ticks: {
+                                font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
+                                color: '#94a3b8',
+                                callback: value => '$' + value.toLocaleString(),
+                                padding: 10
+                            },
+                            border: { display: false }
                         },
-                        border: { display: false }
-                    }
-                },
-                animation: {
-                    duration: 2000,
-                    easing: 'easeInOutQuart'
-                }
-            }
-        });
-
-        // Gráfico de Estados (Doughnut) - Premium
-        new Chart(document.getElementById('statusChart'), {
-            type: 'doughnut',
-            data: {
-                labels: labelsEstados,
-                datasets: [{
-                    data: dataEstados,
-                    backgroundColor: [
-                        '#3b82f6', // info
-                        '#f59e0b', // warning
-                        '#6366f1', // primary
-                        '#10b981', // success
-                        '#ef4444'  // danger
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 12
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            boxWidth: 10,
-                            padding: 15,
-                            font: { size: 11, weight: '600', family: 'Plus Jakarta Sans' },
-                            usePointStyle: true,
-                            pointStyle: 'circle'
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { weight: '600', family: 'Plus Jakarta Sans', size: 11 },
+                                color: '#64748b'
+                            },
+                            border: { display: false }
                         }
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        padding: 12,
-                        cornerRadius: 12,
-                        bodyFont: { family: 'Plus Jakarta Sans' }
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
                     }
-                },
-                cutout: '72%',
-                animation: {
-                    animateRotate: true,
-                    duration: 1500
                 }
-            }
-        });
+            });
+        }
+
+        // Gráfico de Estados (Doughnut) - Premium
+        const canvasStatus = document.getElementById('statusChart');
+        if (canvasStatus) {
+            new Chart(canvasStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsEstados,
+                    datasets: [{
+                        data: dataEstados,
+                        backgroundColor: [
+                            '#3b82f6', // info
+                            '#f59e0b', // warning
+                            '#6366f1', // primary
+                            '#10b981', // success
+                            '#ef4444'  // danger
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 10,
+                                padding: 15,
+                                font: { size: 11, weight: '600', family: 'Plus Jakarta Sans' },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            cornerRadius: 12,
+                            bodyFont: { family: 'Plus Jakarta Sans' }
+                        }
+                    },
+                    cutout: '72%',
+                    animation: {
+                        animateRotate: true,
+                        duration: 1500
+                    }
+                }
+            });
+        }
 
         // Gráfico de Servicios (Barra Horizontal) - Premium
-        new Chart(document.getElementById('servicesChart'), {
-            type: 'bar',
-            data: {
-                labels: labelsTopServicios,
-                datasets: [{
-                    label: 'Citas',
-                    data: dataTopServicios,
-                    backgroundColor: 'rgba(99, 102, 241, 0.7)',
-                    borderRadius: 8,
-                    borderSkipped: false,
-                    barThickness: 20
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        padding: 12,
-                        cornerRadius: 12,
-                        bodyFont: { family: 'Plus Jakarta Sans' }
-                    }
+        const canvasServices = document.getElementById('servicesChart');
+        if (canvasServices) {
+            new Chart(canvasServices, {
+                type: 'bar',
+                data: {
+                    labels: labelsTopServicios,
+                    datasets: [{
+                        label: 'Citas',
+                        data: dataTopServicios,
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 20
+                    }]
                 },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            stepSize: 1,
-                            font: { weight: '600', size: 10, family: 'Plus Jakarta Sans' },
-                            color: '#94a3b8'
-                        },
-                        border: { display: false }
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            cornerRadius: 12,
+                            bodyFont: { family: 'Plus Jakarta Sans' }
+                        }
                     },
-                    y: {
-                        grid: { display: false },
-                        ticks: {
-                            font: { weight: '600', size: 11, family: 'Plus Jakarta Sans' },
-                            color: '#475569'
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                stepSize: 1,
+                                font: { weight: '600', size: 10, family: 'Plus Jakarta Sans' },
+                                color: '#94a3b8'
+                            },
+                            border: { display: false }
                         },
-                        border: { display: false }
+                        y: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { weight: '600', size: 11, family: 'Plus Jakarta Sans' },
+                                color: '#475569'
+                            },
+                            border: { display: false }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
                     }
-                },
-                animation: {
-                    duration: 1500,
-                    easing: 'easeOutQuart'
                 }
-            }
-        });
+            });
+        }
 
         // --- 3. ANIMACIONES DE KPI PREMIUM ---
         function animateCounter(id, start, end, duration, isCurrency) {
@@ -1356,8 +1360,8 @@
 
         // Ejecutar animaciones al cargar
         document.addEventListener('DOMContentLoaded', () => {
-            const totalCitas = parseInt(/*[[${totalCitas}]]*/ '0');
-            const totalIngresos = parseFloat(/*[[${totalIngresos}]]*/ '0');
+            const totalCitas = parseInt(/*[[${totalCitas ?: 0}]]*/ '0');
+            const totalIngresos = parseFloat(/*[[${totalIngresos ?: 0}]]*/ '0');
 
             setTimeout(() => {
                 animateCounter('kpi-citas', 0, totalCitas, 2000, false);
