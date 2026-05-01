@@ -1594,14 +1594,14 @@
                     <!-- Map Overlay Info -->
                     <div class="absolute bottom-6 left-6 glass-strong rounded-2xl p-4 max-w-xs">
                         <h4 class="font-bold text-gray-800 dark:text-white mb-1">Cartagena, Colombia</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">15 clínicas disponibles en tu zona</p <div
-                            class="mt-3 flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold">
-                            <i class="bi bi-circle-fill text-[8px] animate-pulse"></i>
-                            Abierto ahora
-                        </span>
-                    </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">15 clínicas disponibles en tu zona</p>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span
+                                class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold">
+                                <i class="bi bi-circle-fill text-[8px] animate-pulse"></i>
+                                Abierto ahora
+                            </span>
+                        </div>
                 </div>
             </div>
         </div>
@@ -1744,42 +1744,12 @@
                                 class="px-3 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold">Consultas</span>
                             <span
                                 class="px-3 py-1 rounded-lg bg-accent-emerald/10 text-accent-emerald text-xs font-semibold">Vacunación</span>
-                    class="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 reveal clinic-card"
-                    data-category="urgencias">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1000&auto=format&fit=crop"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            alt="Vetzone">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                         </div>
-                        <div class="absolute top-4 left-4">
-                            <span
-                                class="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur text-primary-600 text-xs font-bold shadow-lg">
-                                <i class="bi bi-star-fill text-amber-400 mr-1"></i>4.9
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4">
-                            <h3 class="text-white font-bold text-lg">Vetzone</h3>
-                            <p class="text-white/80 text-sm flex items-center gap-1">
-                                <i class="bi bi-geo-alt-fill"></i> Transversal 51B #21C-101, Alto Bosque
-                            </p>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span
-                                class="px-3 py-1 rounded-lg bg-accent-rose/10 text-accent-rose text-xs font-semibold">Urgencias</span>
-                            <span
-                                class="px-3 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 text-xs font-semibold">Traumatología</span>
-                            <span
-                                class="px-3 py-1 rounded-lg bg-accent-purple/10 text-accent-purple text-xs font-semibold">Neurología</span>
-                        </div>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">Centro de especialidades
-                            con resonancia magnética y tomografía para diagnósticos avanzados.</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">Atención integral para tu mascota con los mejores especialistas de la ciudad.</p>
                         <div class="flex gap-3">
-                            <a href="/detalle-clinica/69f009789f07f42b8c2d7a53"
+                            <a th:href="@{/detalle-clinica/{id}(id=${clinica.id})}"
                                 class="flex-1 btn-premium py-3 text-sm justify-center">
-                                Ver Servicios
+                                Ver Detalles
                             </a>
                             <button
                                 class="w-12 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
