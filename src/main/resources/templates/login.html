@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" data-theme="light" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -29,14 +29,65 @@
             --google-red: #ea4335;
             --github-black: #24292e;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Nuevas variables para temas */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #f9fafb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
         }
 
         body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
             overflow-x: hidden;
+        }
+
+        /* Botón de cambio de tema flotante */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1050;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            color: var(--text-main);
+            font-size: 1.4rem;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            background: var(--primary-color);
+            color: white;
         }
 
         /* Layout Principal */
@@ -133,7 +184,7 @@
         /* Panel Derecho - Formulario */
         .login-form-panel {
             flex: 0.8;
-            background: #ffffff;
+            background: var(--bg-body);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -145,7 +196,16 @@
         .form-container {
             width: 100%;
             max-width: 440px;
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
             animation: slideIn 0.6s ease-out;
+        }
+        
+        [data-theme="dark"] .form-container {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes slideIn {
@@ -321,11 +381,12 @@
         .form-control-custom {
             width: 100%;
             padding: 1rem 1rem 1rem 3rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             font-size: 1rem;
             transition: var(--transition);
-            background: #f9fafb;
+            background: var(--bg-input);
+            color: var(--text-main);
         }
 
         .form-control-custom:focus {
@@ -543,6 +604,11 @@
 </head>
 
 <body>
+
+    <!-- Botón Toggle Tema -->
+    <button class="theme-toggle-btn" id="themeToggle" title="Cambiar tema">
+        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+    </button>
 
     <div class="login-wrapper">
         <!-- Panel Izquierdo - Hero -->
@@ -872,6 +938,32 @@
             }
             video.srcObject = null;
             overlay.style.display = 'none';
+        }
+        // --- Lógica del Modo Nocturno ---
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        // Cargar tema guardado
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+            } else {
+                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+            }
         }
     </script>
 </body>
