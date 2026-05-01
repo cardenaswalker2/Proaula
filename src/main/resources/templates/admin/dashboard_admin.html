@@ -14,25 +14,27 @@
 
     <div th:replace="~{fragments/asistente_admin_hex :: hex-admin}"></div>
 
-    
-
     <style>
         :root {
             --primary: #6366f1;
             --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
             --secondary: #ec4899;
             --accent: #06b6d4;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --dark: #1e1b4b;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --shadow-soft: 0 8px 32px rgba(99, 102, 241, 0.1);
-            --shadow-hover: 0 20px 60px rgba(99, 102, 241, 0.15);
+            --dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-bg-strong: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 4px 24px rgba(15, 23, 42, 0.06);
+            --shadow-hover: 0 20px 50px rgba(99, 102, 241, 0.18);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
             --radius-xl: 24px;
             --radius-lg: 16px;
             --radius-md: 12px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -41,31 +43,57 @@
         }
 
         body {
-            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 25%, #c7d2fe 50%, #e0e7ff 75%, #fae8ff 100%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #ede9fe 25%, #e0e7ff 50%, #f5f3ff 75%, #fff1f2 100%);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            animation: gradientShift 20s ease infinite;
             min-height: 100vh;
             color: #334155;
             padding-bottom: 2rem;
+            overflow-x: hidden;
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            33% {
+                background-position: 100% 50%;
+            }
+
+            66% {
+                background-position: 50% 100%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
-        /* Navbar - usa fragmento compartido header-admin */
-        /* Se eliminaron estilos inline del navbar para usar el fragmento unificado */
-
-
+        /* Partículas flotantes de fondo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
         /* Contenedor Principal */
         .admin-container {
             padding: 1.5rem 1rem;
+            position: relative;
+            z-index: 1;
         }
 
-        /* KPI Cards con Glassmorphism y Gradientes */
+        /* KPI Cards - Glassmorphism Premium */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -82,12 +110,13 @@
 
         .kpi-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
             padding: 1.5rem;
             box-shadow: var(--shadow-soft);
             border: 1px solid var(--glass-border);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
             animation: slideUp 0.6s ease forwards;
@@ -102,6 +131,26 @@
             right: 0;
             height: 4px;
             background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
+            opacity: 0.8;
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.8s ease;
+            pointer-events: none;
+        }
+
+        .kpi-card:hover::after {
+            opacity: 0.15;
+            transform: scale(1);
         }
 
         .kpi-card:nth-child(1) {
@@ -133,6 +182,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -140,26 +190,40 @@
         }
 
         .kpi-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: var(--shadow-hover);
+            border-color: rgba(255, 255, 255, 0.8);
         }
 
         .trend-chip {
             font-size: 0.7rem;
             font-weight: 800;
-            padding: 0.25rem 0.6rem;
+            padding: 0.3rem 0.75rem;
             border-radius: 50px;
             display: inline-flex;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
             position: absolute;
             top: 1.5rem;
             right: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .trend-up { background: rgba(16, 185, 129, 0.1); color: #059669; }
-        .trend-down { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
-        .trend-neutral { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+        .trend-up {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.1));
+            color: #059669;
+        }
+
+        .trend-down {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.1));
+            color: #dc2626;
+        }
+
+        .trend-neutral {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748b;
+        }
 
         .kpi-icon {
             width: 56px;
@@ -170,40 +234,45 @@
             justify-content: center;
             font-size: 1.75rem;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            color: #6366f1;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+            color: var(--primary);
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover .kpi-icon {
+            transform: scale(1.1) rotate(-5deg);
         }
 
         .kpi-icon::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.4) 100%);
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.5) 100%);
         }
 
         .kpi-card:nth-child(2) .kpi-icon {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(52, 211, 153, 0.08) 100%);
             color: #10b981;
         }
 
         .kpi-card:nth-child(3) .kpi-icon {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(34, 211, 238, 0.08) 100%);
             color: #0ea5e9;
         }
 
         .kpi-card:nth-child(4) .kpi-icon {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(251, 191, 36, 0.08) 100%);
             color: #f59e0b;
         }
 
         .kpi-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-bottom: 0.5rem;
         }
 
@@ -212,10 +281,11 @@
             font-weight: 800;
             color: #1e293b;
             margin-bottom: 0.5rem;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
             background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         @media (min-width: 768px) {
@@ -224,7 +294,16 @@
             }
         }
 
-        /* Activity Monitor (New) */
+        .kpi-footer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Activity Monitor */
         .activity-feed {
             display: flex;
             flex-direction: column;
@@ -233,27 +312,44 @@
 
         .activity-item {
             background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: var(--radius-lg);
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             display: flex;
             align-items: center;
             gap: 1rem;
             transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
 
         .activity-item:hover {
-            background: white;
-            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(6px) scale(1.01);
             box-shadow: var(--shadow-soft);
+            border-color: rgba(99, 102, 241, 0.2);
         }
 
         .activity-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             flex-shrink: 0;
-            box-shadow: 0 0 10px currentColor;
+            box-shadow: 0 0 12px currentColor;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px currentColor;
+                opacity: 1;
+            }
+
+            50% {
+                box-shadow: 0 0 16px currentColor;
+                opacity: 0.7;
+            }
         }
 
         .activity-content {
@@ -265,17 +361,37 @@
             font-size: 0.75rem;
             color: #94a3b8;
             font-weight: 600;
+            background: rgba(241, 245, 249, 0.8);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
         }
 
         /* Chart Card */
         .chart-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
             border: 1px solid var(--glass-border);
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+            animation-delay: 0.3s;
+        }
+
+        .chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4);
+            opacity: 0.6;
         }
 
         .chart-container {
@@ -283,9 +399,9 @@
             position: relative;
         }
 
-        /* Sección de Gestión */
+        /* Section Title */
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: #1e293b;
             margin-bottom: 1.5rem;
@@ -318,10 +434,15 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            transition: transform 0.3s ease;
         }
 
-        /* Cards de Usuarios (Vista Móvil) */
+        .section-title:hover i {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        /* User Cards Mobile */
         .users-container {
             display: flex;
             flex-direction: column;
@@ -331,12 +452,12 @@
 
         .user-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             border-radius: var(--radius-xl);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-soft);
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             position: relative;
         }
 
@@ -354,7 +475,8 @@
 
         .user-card:hover {
             box-shadow: var(--shadow-hover);
-            transform: translateX(4px);
+            transform: translateX(6px);
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
         .user-card:hover::before {
@@ -363,8 +485,8 @@
 
         .user-header {
             padding: 1.25rem;
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -390,11 +512,12 @@
             color: #4338ca;
             padding: 0.5rem 1rem;
             border-radius: 50px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
         }
 
         .user-body {
@@ -402,7 +525,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
         }
 
         .user-status {
@@ -420,18 +543,19 @@
             align-items: center;
             gap: 0.375rem;
             backdrop-filter: blur(10px);
+            border: 1px solid transparent;
         }
 
         .status-badge.active {
             background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             color: #065f46;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .status-badge.suspended {
             background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
             color: #991b1b;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
         }
 
         .user-actions {
@@ -448,7 +572,7 @@
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: white;
             cursor: pointer;
             position: relative;
@@ -459,7 +583,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.3) 100%);
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.4) 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -477,8 +601,8 @@
             background: linear-gradient(135deg, #ef4444, #f87171);
             border-color: transparent;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
         }
 
         .btn-user-action.activate {
@@ -490,8 +614,8 @@
             background: linear-gradient(135deg, #10b981, #34d399);
             border-color: transparent;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
         }
 
         .btn-user-action.key {
@@ -503,19 +627,23 @@
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             border-color: transparent;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
         }
 
-        /* Panel de Configuración */
+        /* Config Panel */
         .config-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-soft);
             overflow: hidden;
             position: relative;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+            animation-delay: 0.5s;
         }
 
         .config-panel::after {
@@ -525,14 +653,14 @@
             right: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.03) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.04) 0%, transparent 70%);
             pointer-events: none;
         }
 
         .config-header {
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
-            border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            border-bottom: 2px solid rgba(226, 232, 240, 0.5);
             position: relative;
         }
 
@@ -574,7 +702,7 @@
             text-decoration: none;
             color: #334155;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 0.5rem;
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid transparent;
@@ -586,10 +714,10 @@
 
         .config-item:hover {
             background: rgba(255, 255, 255, 0.95);
-            transform: translateX(8px);
+            transform: translateX(10px);
             color: #1e293b;
             border-color: rgba(99, 102, 241, 0.2);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
         }
 
         .config-icon {
@@ -601,11 +729,26 @@
             justify-content: center;
             font-size: 1.25rem;
             flex-shrink: 0;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .config-item:hover .config-icon {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        .config-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.5) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .config-item:hover .config-icon::after {
+            opacity: 1;
         }
 
         .config-item:nth-child(1) .config-icon {
@@ -637,22 +780,27 @@
             margin-left: auto;
             color: #94a3b8;
             transition: all 0.3s ease;
+            font-size: 1.1rem;
         }
 
         .config-item:hover .config-arrow {
-            transform: translateX(4px);
+            transform: translateX(6px);
             color: #6366f1;
         }
 
-        /* Alerta de Seguridad Mejorada */
+        /* Security Alert */
         .security-alert {
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border: 2px solid #fcd34d;
+            border: 2px solid rgba(252, 211, 77, 0.5);
             border-radius: var(--radius-xl);
             padding: 1.5rem;
             margin-top: 1.5rem;
             position: relative;
             overflow: hidden;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+            animation-delay: 0.6s;
+            backdrop-filter: blur(10px);
         }
 
         .security-alert::before {
@@ -662,7 +810,19 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         .security-alert h6 {
@@ -677,12 +837,21 @@
 
         .security-alert h6 i {
             font-size: 1.25rem;
-            animation: pulse 2s infinite;
+            animation: pulse-warning 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        @keyframes pulse-warning {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
         }
 
         .security-alert p {
@@ -693,7 +862,7 @@
             line-height: 1.5;
         }
 
-        /* Alerta de Pendientes Mejorada */
+        /* Alerta de Pendientes */
         .alert-warning-custom {
             background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
             border: none;
@@ -701,6 +870,8 @@
             box-shadow: var(--shadow-soft);
             position: relative;
             overflow: hidden;
+            animation: slideInRight 0.6s ease forwards;
+            opacity: 0;
         }
 
         .alert-warning-custom::before {
@@ -711,6 +882,18 @@
             bottom: 0;
             width: 5px;
             background: linear-gradient(180deg, #f97316, #fbbf24);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* Footer */
@@ -724,9 +907,11 @@
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+            z-index: 1;
         }
 
-        /* Vista Desktop (Tabla) */
+        /* Desktop Table */
         @media (min-width: 992px) {
             .users-container {
                 display: none;
@@ -735,17 +920,20 @@
             .table-container-desktop {
                 display: block;
                 background: var(--glass-bg);
-                backdrop-filter: blur(10px);
+                backdrop-filter: blur(15px);
                 border-radius: var(--radius-xl);
                 box-shadow: var(--shadow-soft);
                 border: 1px solid var(--glass-border);
                 overflow: hidden;
+                animation: fadeIn 0.8s ease forwards;
+                opacity: 0;
+                animation-delay: 0.4s;
             }
 
             .table-header {
                 padding: 1.5rem;
-                background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
-                border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+                border-bottom: 2px solid rgba(226, 232, 240, 0.5);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -759,22 +947,46 @@
             }
 
             .search-box {
-                width: 300px;
+                width: 320px;
+                position: relative;
             }
 
             .search-box .form-control {
                 border: 2px solid #e2e8f0;
-                border-radius: 50px 0 0 50px;
-                border-right: none;
+                border-radius: 50px;
                 padding-left: 1.5rem;
+                padding-right: 3rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                background: rgba(255, 255, 255, 0.8);
             }
 
-            .search-box .btn {
-                border: 2px solid #e2e8f0;
-                border-radius: 0 50px 50px 0;
-                border-left: none;
+            .search-box .form-control:focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
                 background: white;
-                color: #64748b;
+            }
+
+            .search-box .btn-search {
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: none;
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                color: white;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                transition: transform 0.3s ease;
+            }
+
+            .search-box .btn-search:hover {
+                transform: translateY(-50%) scale(1.1);
             }
 
             .table {
@@ -785,11 +997,11 @@
                 background: rgba(248, 250, 252, 0.8);
                 color: #475569;
                 font-weight: 700;
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 1px;
                 padding: 1.25rem;
-                border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+                border-bottom: 2px solid rgba(226, 232, 240, 0.5);
             }
 
             .table tbody tr {
@@ -797,8 +1009,8 @@
             }
 
             .table tbody tr:hover {
-                background: rgba(99, 102, 241, 0.03);
-                transform: scale(1.01);
+                background: rgba(99, 102, 241, 0.04);
+                transform: scale(1.005);
             }
 
             .table td {
@@ -819,14 +1031,14 @@
             }
         }
 
-        /* Scrollbar Personalizado */
+        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(226, 232, 240, 0.5);
+            background: rgba(226, 232, 240, 0.3);
             border-radius: 4px;
         }
 
@@ -839,78 +1051,66 @@
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
         }
 
-        /* Animaciones adicionales */
+        /* Animaciones */
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .config-panel,
-        .security-alert {
-            animation: fadeIn 0.6s ease forwards;
-            opacity: 0;
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
-        .config-panel {
-            animation-delay: 0.5s;
-        }
-
-        .security-alert {
-            animation-delay: 0.6s;
-        }
-
-        /* Efecto de brillo en hover para cards */
-        .kpi-card::after,
-        .user-card::after,
-        .config-panel::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 60%);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.6s ease;
-            pointer-events: none;
-        }
-
-        .kpi-card:hover::after,
-        .user-card:hover::after,
-        .config-panel:hover::after {
-            opacity: 0.1;
-            transform: scale(1);
-        }
-
-        /* Responsive mejoras */
+        /* Responsive */
         @media (max-width: 768px) {
-            .page-header {
-                padding: 2.5rem 0 3.5rem;
+            .kpi-grid {
+                gap: 0.75rem;
             }
-            
-            .page-header h1 {
-                font-size: 1.75rem;
+
+            .kpi-card {
+                padding: 1.25rem;
             }
-            
-            .autocomplete-wrapper {
-                flex-direction: column;
+
+            .kpi-value {
+                font-size: 1.5rem;
             }
-            
-            .btn-ver-todas {
-                width: 100%;
-                justify-content: center;
+
+            .chart-container {
+                height: 280px;
             }
-            
-            .main-card, .summary-card {
-                border-radius: 20px;
+
+            .section-title {
+                font-size: 1.2rem;
             }
+        }
+
+        /* Loading shimmer para valores */
+        .kpi-value {
+            position: relative;
+        }
+
+        /* Efecto de brillo sutil en hover para cards */
+        .kpi-card,
+        .user-card,
+        .config-panel,
+        .chart-card {
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
@@ -927,7 +1127,8 @@
         <div class="kpi-grid">
             <div class="kpi-card">
                 <div class="trend-chip" th:classappend="${tendenciaIngresos >= 0 ? 'trend-up' : 'trend-down'}">
-                    <i class="bi" th:classappend="${tendenciaIngresos >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
+                    <i class="bi"
+                        th:classappend="${tendenciaIngresos >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
                     <span th:text="${(tendenciaIngresos >= 0 ? '+' : '') + tendenciaIngresos + '%'}">+0%</span>
                 </div>
                 <div class="kpi-icon">
@@ -944,7 +1145,8 @@
 
             <div class="kpi-card">
                 <div class="trend-chip" th:classappend="${tendenciaCitas >= 0 ? 'trend-up' : 'trend-down'}">
-                    <i class="bi" th:classappend="${tendenciaCitas >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
+                    <i class="bi"
+                        th:classappend="${tendenciaCitas >= 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}"></i>
                     <span th:text="${(tendenciaCitas >= 0 ? '+' : '') + tendenciaCitas + '%'}">+0%</span>
                 </div>
                 <div class="kpi-icon">
@@ -960,7 +1162,7 @@
 
             <div class="kpi-card">
                 <div class="kpi-icon">
-                    <i class="bi bi-病院"></i>
+                    <i class="bi bi-building"></i>
                 </div>
                 <div class="kpi-label">Sedes Activas</div>
                 <div class="kpi-value" th:text="${totalClinicas}">0</div>
@@ -984,7 +1186,7 @@
         </div>
 
         <!-- Master Analytics Chart -->
-        <div class="chart-card" data-aos="fade-up">
+        <div class="chart-card">
             <h5 class="section-title mb-4">
                 <i class="bi bi-bar-chart-fill"></i>
                 Crecimiento de la Plataforma
@@ -994,21 +1196,25 @@
             </div>
         </div>
 
-        <!-- Alerta de Pendientes (movida fuera del grid para mejor visualización) -->
-        <div th:if="${totalPendientes > 0}" class="alert alert-warning-custom border-0 shadow-sm d-flex align-items-center mb-4 p-4">
-            <div class="d-flex align-items-center justify-content-center rounded-circle me-3" 
-                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #fbbf24); flex-shrink: 0;">
-                <i class="bi bi-exclamation-diamond-fill text-white fs-4"></i>
+        <!-- Alerta de Pendientes -->
+        <div th:if="${totalPendientes > 0}"
+            class="alert alert-warning-custom border-0 shadow-sm d-flex align-items-center mb-4 p-4">
+            <div class="d-flex align-items-center justify-content-center rounded-circle me-3"
+                style="width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #fbbf24); flex-shrink: 0; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);">
+                <i class="bi bi-exclamation-diamond-fill text-white fs-4"
+                    style="animation: pulse-warning 2s ease-in-out infinite;"></i>
             </div>
             <div class="flex-grow-1">
-                <h6 class="fw-bold text-dark mb-1">¡Atención Requerida!</h6>
-                <span class="text-muted">Tienes <span class="badge bg-warning text-dark fw-bold px-2 py-1" th:text="${totalPendientes}">0</span> solicitudes de clínicas esperando tu aprobación.</span>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 1.1rem;">¡Atención Requerida!</h6>
+                <span class="text-muted" style="font-weight: 500;">Tienes <span class="badge fw-bold px-2 py-1"
+                        style="background: linear-gradient(135deg, #f97316, #fbbf24); color: white; font-size: 0.9rem; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);"
+                        th:text="${totalPendientes}">0</span> solicitudes de clínicas esperando tu aprobación.</span>
             </div>
-            <a th:href="@{/admin/solicitudes}" class="btn btn-warning fw-bold rounded-pill px-4 py-2 shadow-sm">
+            <a th:href="@{/admin/solicitudes}" class="btn fw-bold rounded-pill px-4 py-2 shadow-sm"
+                style="background: linear-gradient(135deg, #f97316, #fbbf24); color: white; border: none; transition: all 0.3s ease;">
                 Revisar ahora <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
-
         <div class="row g-4">
             <!-- Gestión de Usuarios -->
             <div class="col-lg-8">
@@ -1019,37 +1225,48 @@
 
                 <!-- Monitor de Operaciones Globales (Actividad en Tiempo Real) -->
                 <div class="users-container">
-                    <div th:each="cita : ${citasRecientes}" class="activity-item" data-aos="fade-right">
-                        <div class="activity-dot" 
-                             th:style="'color: ' + (cita.estado == 'COMPLETADA' ? '#10b981' : (cita.estado == 'CANCELADA' ? '#ef4444' : '#6366f1'))">
+                    <div th:each="cita : ${citasRecientes}" class="activity-item">
+                        <div class="activity-dot"
+                            th:style="'background-color: ' + (cita.estado == 'COMPLETADA' ? '#10b981' : (cita.estado == 'CANCELADA' ? '#ef4444' : '#6366f1')) + '; color: ' + (cita.estado == 'COMPLETADA' ? '#10b981' : (cita.estado == 'CANCELADA' ? '#ef4444' : '#6366f1'))">
                         </div>
-                        <i class="bi fs-4" 
-                           th:classappend="${cita.estado == 'COMPLETADA' ? 'bi-check-circle-fill text-success' : (cita.estado == 'CANCELADA' ? 'bi-x-circle-fill text-danger' : 'bi-clock-history text-primary')}"></i>
+                        <i class="bi fs-4"
+                            th:classappend="${cita.estado == 'COMPLETADA' ? 'bi-check-circle-fill text-success' : (cita.estado == 'CANCELADA' ? 'bi-x-circle-fill text-danger' : 'bi-clock-history text-primary')}"></i>
                         <div class="activity-content">
-                            <div class="d-flex justify-content-between">
-                                <span class="fw-bold text-dark" th:text="${cita.nombreUsuario ?: 'Cliente Desconocido'}">Cliente</span>
-                                <span class="activity-time" th:text="${cita.fechaHora != null ? (cita.fechaHora.contains(',') ? cita.fechaHora.split(',')[1].trim() : cita.fechaHora) : '--:--'}">12:00</span>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-dark"
+                                    th:text="${cita.nombreUsuario ?: 'Cliente Desconocido'}">Cliente</span>
+                                <span class="activity-time"
+                                    th:text="${cita.fechaHora != null ? (cita.fechaHora.contains(',') ? cita.fechaHora.split(',')[1].trim() : cita.fechaHora) : '--:--'}">12:00</span>
                             </div>
-                            <div class="text-muted" style="font-size: 0.85rem;">
-                                <span th:text="${cita.nombreClinica ?: 'Sede no asignada'}">Sede</span> • 
-                                <span class="badge bg-light text-dark border-0 shadow-none px-0" th:text="${cita.estado ?: 'S/E'}">Estado</span>
+                            <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">
+                                <span th:text="${cita.nombreClinica ?: 'Sede no asignada'}">Sede</span> •
+                                <span class="fw-semibold" th:text="${cita.estado ?: 'S/E'}"
+                                    th:style="'color: ' + (cita.estado == 'COMPLETADA' ? '#059669' : (cita.estado == 'CANCELADA' ? '#dc2626' : '#4f46e5'))">Estado</span>
                             </div>
                         </div>
-                        <div class="ms-auto fw-bold text-primary" th:text="${cita.costo != null ? '$' + #numbers.formatDecimal(cita.costo, 1, 'COMMA', 2, 'POINT') : '$0.00'}">$0.00</div>
+                        <div class="ms-auto fw-bold"
+                            style="font-size: 0.95rem; color: #6366f1; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); padding: 0.4rem 0.8rem; border-radius: 12px; white-space: nowrap;"
+                            th:text="${cita.costo != null ? '$' + #numbers.formatDecimal(cita.costo, 1, 'COMMA', 2, 'POINT') : '$0.00'}">
+                            $0.00</div>
                     </div>
-                    <div th:if="${#lists.isEmpty(citasRecientes)}" class="text-center py-4 text-muted">
-                        <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
-                        No hay actividad reciente registrada.
+                    <div th:if="${#lists.isEmpty(citasRecientes)}" class="text-center py-5 text-muted"
+                        style="background: rgba(255,255,255,0.5); border-radius: var(--radius-lg); backdrop-filter: blur(10px);">
+                        <div
+                            style="width: 60px; height: 60px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="bi bi-clock-history fs-2" style="color: #94a3b8;"></i>
+                        </div>
+                        <p class="fw-semibold mb-0">No hay actividad reciente registrada.</p>
+                        <small>Las operaciones aparecerán aquí en tiempo real</small>
                     </div>
                 </div>
 
                 <!-- Vista Desktop: Tabla -->
                 <div class="table-container-desktop d-none d-lg-block">
                     <div class="table-header">
-                        <h5>Cuentas del Sistema</h5>
-                        <div class="input-group input-group-sm search-box">
+                        <h5><i class="bi bi-people me-2" style="color: #6366f1;"></i>Cuentas del Sistema</h5>
+                        <div class="search-box position-relative">
                             <input type="text" class="form-control" placeholder="Buscar por email o nombre...">
-                            <button class="btn btn-outline-secondary">
+                            <button class="btn btn-search">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -1058,41 +1275,54 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Nombre / Email</th>
+                                    <th>Usuario</th>
                                     <th>Rol</th>
                                     <th>Estado</th>
-                                    <th class="text-end">Acción</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="user : ${usuarios}">
+                                <tr th:each="user, iterStat : ${usuarios}"
+                                    th:style="${iterStat.odd} ? 'background: rgba(248, 250, 252, 0.5);' : ''">
                                     <td>
-                                        <div class="fw-bold" th:text="${user.nombre}">Nombre</div>
-                                        <small class="text-muted" th:text="${user.email}">email@ejemplo.com</small>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 42px; height: 42px; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #4338ca; font-size: 0.9rem;"
+                                                th:text="${#strings.substring(user.nombre, 0, 1)}">A</div>
+                                            <div>
+                                                <div class="fw-bold" style="color: #1e293b;" th:text="${user.nombre}">
+                                                    Nombre</div>
+                                                <small class="text-muted" style="font-size: 0.8rem;"
+                                                    th:text="${user.email}">email@ejemplo.com</small>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border"
-                                            th:text="${user.role}">CLIENTE</span>
+                                        <span class="badge-role" th:text="${user.role}">CLIENTE</span>
                                     </td>
                                     <td>
-                                        <span th:if="${user.activo}"
-                                            class="badge bg-success-subtle text-success">Activo</span>
-                                        <span th:unless="${user.activo}"
-                                            class="badge bg-danger-subtle text-danger">Suspendido</span>
+                                        <span th:if="${user.activo}" class="status-badge active">
+                                            <i class="bi bi-check-circle-fill" style="font-size: 0.7rem;"></i> Activo
+                                        </span>
+                                        <span th:unless="${user.activo}" class="status-badge suspended">
+                                            <i class="bi bi-x-circle-fill" style="font-size: 0.7rem;"></i> Suspendido
+                                        </span>
                                     </td>
                                     <td class="text-end">
                                         <form th:action="@{'/admin/usuarios/toggle-status/' + ${user.id}}" method="post"
                                             style="display:inline;">
                                             <button th:if="${user.activo}" class="btn btn-sm btn-outline-danger"
-                                                title="Suspender">
+                                                title="Suspender"
+                                                style="border-radius: 10px; padding: 0.5rem 0.75rem; transition: all 0.3s ease;">
                                                 <i class="bi bi-person-x"></i>
                                             </button>
                                             <button th:unless="${user.activo}" class="btn btn-sm btn-outline-success"
-                                                title="Activar">
+                                                title="Activar"
+                                                style="border-radius: 10px; padding: 0.5rem 0.75rem; transition: all 0.3s ease;">
                                                 <i class="bi bi-person-check"></i>
                                             </button>
                                         </form>
-                                        <button class="btn btn-sm btn-light border ms-1">
+                                        <button class="btn btn-sm btn-light border ms-1" title="Resetear contraseña"
+                                            style="border-radius: 10px; padding: 0.5rem 0.75rem; transition: all 0.3s ease;">
                                             <i class="bi bi-key"></i>
                                         </button>
                                     </td>
@@ -1102,7 +1332,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Panel de Configuración -->
             <div class="col-lg-4">
                 <div class="config-panel">
@@ -1117,28 +1346,44 @@
                             <div class="config-icon">
                                 <i class="bi bi-list-check"></i>
                             </div>
-                            <span>Catálogo Global de Servicios</span>
+                            <div class="d-flex flex-column">
+                                <span>Catálogo Global de Servicios</span>
+                                <small style="font-size: 0.75rem; font-weight: 500; color: #94a3b8;">Gestionar servicios
+                                    disponibles</small>
+                            </div>
                             <i class="bi bi-chevron-right config-arrow"></i>
                         </a>
                         <a th:href="@{/admin/reportes}" class="config-item">
                             <div class="config-icon">
                                 <i class="bi bi-file-earmark-bar-graph"></i>
                             </div>
-                            <span>Reporte Contable Anual</span>
+                            <div class="d-flex flex-column">
+                                <span>Reporte Contable Anual</span>
+                                <small style="font-size: 0.75rem; font-weight: 500; color: #94a3b8;">Estadísticas
+                                    financieras</small>
+                            </div>
                             <i class="bi bi-chevron-right config-arrow"></i>
                         </a>
                         <a th:href="@{/admin/configuracion/stripe}" class="config-item">
                             <div class="config-icon">
                                 <i class="bi bi-percent"></i>
                             </div>
-                            <span>Configurar Comisión Stripe</span>
+                            <div class="d-flex flex-column">
+                                <span>Configurar Comisión Stripe</span>
+                                <small style="font-size: 0.75rem; font-weight: 500; color: #94a3b8;">Tarifas y
+                                    pagos</small>
+                            </div>
                             <i class="bi bi-chevron-right config-arrow"></i>
                         </a>
                         <a th:href="@{/admin/configuracion/email}" class="config-item">
                             <div class="config-icon">
                                 <i class="bi bi-envelope-paper"></i>
                             </div>
-                            <span>Plantillas de Email</span>
+                            <div class="d-flex flex-column">
+                                <span>Plantillas de Email</span>
+                                <small style="font-size: 0.75rem; font-weight: 500; color: #94a3b8;">Personalizar
+                                    notificaciones</small>
+                            </div>
                             <i class="bi bi-chevron-right config-arrow"></i>
                         </a>
                         <a th:href="@{/admin/solicitudes}" class="config-item">
@@ -1147,7 +1392,8 @@
                             </div>
                             <div class="d-flex flex-column">
                                 <span>Aprobar Nuevas Clínicas</span>
-                                <small class="text-muted" style="font-size: 0.75rem; font-weight: 500;">Solicitudes pendientes de revisión</small>
+                                <small style="font-size: 0.75rem; font-weight: 500; color: #94a3b8;">Solicitudes
+                                    pendientes de revisión</small>
                             </div>
                             <i class="bi bi-chevron-right config-arrow"></i>
                         </a>
@@ -1159,27 +1405,39 @@
                         <i class="bi bi-exclamation-triangle-fill"></i>
                         Zona de Seguridad
                     </h6>
-                    <p>Como administrador global, tus cambios afectan a todas las sedes y usuarios del país.</p>
+                    <p>Como administrador global, tus cambios afectan a todas las sedes y usuarios del país. Verifica
+                        antes de confirmar.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <footer class="admin-footer">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <div
+                style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulse-dot 2s infinite;">
+            </div>
+            <span style="color: #10b981; font-weight: 700; font-size: 0.8rem;">Sistema Operativo</span>
+        </div>
         <small>© 2024 ClínicaApp - Dashboard Maestro Evolucionado v2.0</small>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script th:inline="javascript">
-        // --- CONFIGURACIÓN DE CHART.JS ---
+        // --- CONFIGURACIÓN DE CHART.JS PREMIUM ---
         const ctx = document.getElementById('growthChart').getContext('2d');
-        const labels = /*[[${labelsGrafico}]]*/ [];
-        const dataCitas = /*[[${dataCitas}]]*/ [];
-        const dataIngresos = /*[[${dataIngresos}]]*/ [];
+        const labels = /*[[${labelsGrafico}]]*/[];
+        const dataCitas = /*[[${dataCitas}]]*/[];
+        const dataIngresos = /*[[${dataIngresos}]]*/[];
 
         const gradientCitas = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientCitas.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+        gradientCitas.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+        gradientCitas.addColorStop(0.5, 'rgba(99, 102, 241, 0.1)');
         gradientCitas.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+        const gradientIngresos = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientIngresos.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+        gradientIngresos.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
         new Chart(ctx, {
             type: 'line',
@@ -1191,26 +1449,34 @@
                         data: dataCitas,
                         borderColor: '#6366f1',
                         backgroundColor: gradientCitas,
-                        borderWidth: 4,
+                        borderWidth: 3,
                         tension: 0.4,
                         fill: true,
                         yAxisID: 'y',
                         pointBackgroundColor: '#fff',
                         pointBorderColor: '#6366f1',
                         pointBorderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#6366f1',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 3
                     },
                     {
                         label: 'Ingresos ($)',
                         data: dataIngresos,
                         borderColor: '#10b981',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
+                        backgroundColor: gradientIngresos,
+                        borderWidth: 3,
+                        borderDash: [8, 4],
                         tension: 0.4,
-                        fill: false,
+                        fill: true,
                         yAxisID: 'y1',
-                        pointRadius: 0
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#10b981',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7
                     }
                 ]
             },
@@ -1219,21 +1485,40 @@
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: { 
-                        position: 'top', 
+                    legend: {
+                        position: 'top',
                         align: 'end',
-                        labels: { 
+                        labels: {
                             font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
                             usePointStyle: true,
-                            boxWidth: 8
-                        } 
+                            boxWidth: 10,
+                            padding: 20
+                        }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 27, 75, 0.9)',
-                        padding: 15,
-                        titleFont: { size: 14, weight: '800' },
-                        bodyFont: { size: 13 },
-                        cornerRadius: 12
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 16,
+                        titleFont: { size: 14, weight: '800', family: 'Plus Jakarta Sans' },
+                        bodyFont: { size: 13, family: 'Plus Jakarta Sans' },
+                        cornerRadius: 16,
+                        displayColors: true,
+                        boxPadding: 6,
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    if (context.dataset.yAxisID === 'y1') {
+                                        label += '$' + context.parsed.y.toLocaleString();
+                                    } else {
+                                        label += context.parsed.y;
+                                    }
+                                }
+                                return label;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -1241,23 +1526,42 @@
                         type: 'linear',
                         display: true,
                         position: 'left',
-                        grid: { color: 'rgba(0,0,0,0.03)' },
-                        ticks: { font: { weight: '600' } }
+                        grid: {
+                            color: 'rgba(99, 102, 241, 0.06)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { weight: '600', family: 'Plus Jakarta Sans' },
+                            color: '#64748b',
+                            padding: 10
+                        },
+                        border: { display: false }
                     },
                     y1: {
                         type: 'linear',
                         display: true,
                         position: 'right',
                         grid: { display: false },
-                        ticks: { 
-                            callback: value => '$' + value,
-                            font: { weight: '600' }
-                        }
+                        ticks: {
+                            callback: value => '$' + value.toLocaleString(),
+                            font: { weight: '600', family: 'Plus Jakarta Sans' },
+                            color: '#059669',
+                            padding: 10
+                        },
+                        border: { display: false }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { font: { weight: '700' } }
+                        ticks: {
+                            font: { weight: '700', family: 'Plus Jakarta Sans' },
+                            color: '#64748b'
+                        },
+                        border: { display: false }
                     }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
                 }
             }
         });
