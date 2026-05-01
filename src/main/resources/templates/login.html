@@ -980,12 +980,20 @@
         });
 
         function updateThemeIcon(theme) {
+            if (!themeIcon) return;
+            
             if (theme === 'dark') {
-                themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
-                startStars();
+                themeIcon.classList.remove('bi-moon-stars-fill');
+                themeIcon.classList.add('bi-sun-fill');
+                try {
+                    if (typeof startStars === 'function') startStars();
+                } catch (e) { console.error("Error al iniciar estrellas:", e); }
             } else {
-                themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
-                stopStars();
+                themeIcon.classList.remove('bi-sun-fill');
+                themeIcon.classList.add('bi-moon-stars-fill');
+                try {
+                    if (typeof stopStars === 'function') stopStars();
+                } catch (e) { console.error("Error al detener estrellas:", e); }
             }
         }
 
@@ -1027,6 +1035,7 @@
         }
 
         function startStars() {
+            if (!canvas || !ctx) return;
             if (!isAnimating) {
                 isAnimating = true;
                 initStars();
@@ -1036,7 +1045,8 @@
 
         function stopStars() {
             isAnimating = false;
-            cancelAnimationFrame(animationFrame);
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         window.addEventListener('resize', () => {
